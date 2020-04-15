@@ -1,0 +1,42 @@
+{
+  "name": "front-end",
+  "version": "1.0.0",
+  "description": "Fintooth front-end implementation",
+  "main": "index.js",
+  "babel":{
+    "presets" : [
+      "@babel/preset-env",
+      "@babel/preset-react"
+    ]
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "webpack-dev-server --open"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Fintooth/fintooth.git"
+  },
+  "author": "Teodor, Teodor & Rostislav",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Fintooth/fintooth/issues"
+  },
+  "homepage": "https://github.com/Fintooth/fintooth#readme",
+  "dependencies": {
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.9.0",
+    "@babel/preset-env": "^7.9.5",
+    "@babel/preset-react": "^7.9.4",
+    "babel-loader": "^8.1.0",
+    "css-loader": "^3.5.2",
+    "html-webpack-plugin": "^4.2.0",
+    "style-loader": "^1.1.3",
+    "webpack": "^4.42.1",
+    "webpack-cli": "^3.3.11",
+    "webpack-dev-server": "^3.10.3"
+  }
+}

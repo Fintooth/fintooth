@@ -58,7 +58,7 @@ const Login = () => {
                 <Typography component="h1" variant="h5">
                     Login into Fintooth!
                 </Typography>
-                <form className={classes.form} noValidate type='POST'>
+                <form className={classes.form} noValidate>
                     <TextField
                         variant="outlined"
                         margin="normal"
@@ -87,23 +87,22 @@ const Login = () => {
                         variant="contained"
                         color="primary"
                         className={classes.submit}
-                        disabled={true}
+                    // disabled={true}
                     >
                         LogIn
                     </Button>
-
-                    <Button
-                        type="submit"
-                        fullWidth
-                        variant="contained"
-                        color="primary"
-                        className={classes.submit}
-                        onClick={showRegisterInputs}
-                        disabled={true}
-                    >   
-                        I don't have an account!
-                    </Button>
                 </form>
+                <Button
+                    type="submit"
+                    fullWidth
+                    variant="contained"
+                    color="primary"
+                    className={classes.submit}
+                    onClick={showRegisterInputs}
+                //disabled={true}
+                >
+                    I don't have an account!
+                    </Button>
             </div>
         </Container>
     )
@@ -121,7 +120,7 @@ const Register = () => {
                 <Typography component="h1" variant="h5">
                     Sign up into Fintooth!
                 </Typography>
-                <form className={classes.form} noValidate type='POST'>
+                <form className={classes.form} noValidate>
                     <TextField
                         variant="outlined"
                         margin="normal"
@@ -174,17 +173,17 @@ const Register = () => {
                     >
                         Register
                     </Button>
-                    <Button
-                        type="submit"
-                        fullWidth
-                        variant="contained"
-                        color="primary"
-                        className={classes.submit}
-                        onClick={showRegisterInputs}
-                    >
-                        I already have an account!
-                     </Button>
                 </form>
+                <Button
+                    type="submit"
+                    fullWidth
+                    variant="contained"
+                    color="primary"
+                    className={classes.submit}
+                    onClick={showLoginInputs}
+                >
+                    I already have an account!
+                     </Button>
             </div>
         </Container>
     )

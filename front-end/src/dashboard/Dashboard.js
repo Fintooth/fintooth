@@ -23,6 +23,8 @@ import Chart from './Chart';
 import Deposits from './Deposits';
 import Orders from './Orders';
 
+import Activities from './Activities';
+
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
@@ -191,6 +193,13 @@ export default function Dashboard() {
                 <Orders />
               </Paper>
             </Grid>
+
+            <Grid item xs={12}>
+              <Paper className={classes.paper}>
+                <Activities />
+              </Paper>
+            </Grid>
+
           </Grid>
           <Box pt={4}>
             <Copyright />

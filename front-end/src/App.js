@@ -14,25 +14,31 @@ import Dashboard from "./dashboard/Dashboard"
 export default function App() {
   return (
     <Router>
-      <div>
-        <ul>
-          <li>
-            <Link to="/">Dashboard</Link>
-          </li>
-          <li>
-            <Link to="/login">Login</Link>
-          </li>
-        </ul>
-
         <Switch>
           <Route path="/login">
+            <div>
+                <Link to="/dashboard">Dashboard</Link>
+                <br />
+                <Link to="/login">Login</Link>
+            </div>
             <Login />
           </Route>
-          <Route path="/">
+          <Route path="/dashboard">
+            <div>
+                <Link to="/dashboard">Dashboard</Link>
+                <br />
+                <Link to="/login">Login</Link>
+            </div>
             <Dashboard />
           </Route>
+          <Route path="/">
+            <div>
+                <Link to="/dashboard">Dashboard</Link>
+                <br />
+                <Link to="/login">Login</Link>
+            </div>
+          </Route>
         </Switch>
-      </div>
     </Router>
   );
 }

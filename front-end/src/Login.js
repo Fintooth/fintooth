@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
@@ -37,28 +37,62 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function showRegisterInputs() {
-    ReactDOM.render(<Register />, document.getElementById('root'))
-}
-
-function showLoginInputs() {
-    ReactDOM.render(<Login />, document.getElementById('root'))
-}
-
 const Login = () => {
     const classes = useStyles();
+    const [isLoginPage, setIsLoginPage] = useState(true);
+
+    const [loginInput, setLoginInput] = useState({
+        username: '',
+        password: '',
+    });
+
+    const [registerInput, setRegisterInput] = useState({
+        username: '',
+        password: '',
+        repassword: '',
+        email: '',
+        validEmail: true,
+        passwordsMatch: true,
+        validUsername: true,
+        validPassword: true
+    });
 
     return (
         <Container component="main" maxWidth="xs">
             <CssBaseline />
             <div className={classes.paper}>
-
-                <Avatar className={classes.avatar} src="../images/blackTooth.png">
-                </Avatar>
+                <Avatar
+                    className={classes.avatar}
+                    src="../images/blackTooth.png"
+                ></Avatar>
                 <Typography component="h1" variant="h5">
-                    Login into Fintooth!
+                    {isLoginPage ? "Login into Fintooth!" : "Sign up into Fintooth"}
                 </Typography>
-                <form className={classes.form} noValidate>
+                <form className={classes.form} noValidate method='POST'>
+                    {
+                        isLoginPage ? "" :
+                            (
+                                <TextField
+                                    variant="outlined"
+                                    margin="normal"
+                                    required
+                                    fullWidth
+                                    id="email"
+                                    label="Email Address"
+                                    name="email"
+                                    autoComplete="email" s
+                                    value={registerInput.email}
+                                    onChange={(event) => setRegisterInput({ ...registerInput, email: event.target.value })}
+                                    onBlur={
+                                        () => registerInput.email.includes("@") ?
+                                            setRegisterInput({ ...registerInput, validEmail: true }) :
+                                            setRegisterInput({ ...registerInput, validEmail: false })
+                                    }
+                                    error={!registerInput.validEmail}
+                                    helperText={!registerInput.validEmail ? "Please enter a valid email" : ""}
+                                />
+                            )
+                    }
                     <TextField
                         variant="outlined"
                         margin="normal"
@@ -68,7 +102,26 @@ const Login = () => {
                         label="Username"
                         name="username"
                         autoComplete="username"
-                        autoFocus
+                        value={isLoginPage ? loginInput.username : registerInput.username}
+                        onChange={(event) => {
+                            isLoginPage ?
+                                setLoginInput({ ...loginInput, username: event.target.value }) :
+                                setRegisterInput({ ...registerInput, username: event.target.value })
+                        }
+                        }
+                        onBlur={
+                            () => {
+                                if (!isLoginPage) {
+                                    (registerInput.username.length < 3 ||
+                                        registerInput.username.length > 10 ||
+                                        !registerInput.username.match(new RegExp(/^[a-z0-9_]+$/i))) ?
+                                        setRegisterInput({ ...registerInput, validUsername: false }) :
+                                        setRegisterInput({ ...registerInput, validUsername: true })
+                                }
+                            }
+                        }
+                        error={!registerInput.validUsername}
+                        helperText={!registerInput.validUsername ? "Username can be from 3 to 10 characters and can contain only alphanumerical symbols and _" : ""}
                     />
                     <TextField
                         variant="outlined"
@@ -80,16 +133,58 @@ const Login = () => {
                         type="password"
                         id="password"
                         autoComplete="current-password"
+                        value={isLoginPage ? loginInput.password : registerInput.password}
+                        onChange={(event) => {
+                            isLoginPage ?
+                                setLoginInput({ ...loginInput, password: event.target.value }) :
+                                setRegisterInput({ ...registerInput, password: event.target.value })
+                        }
+                        }
+                        onBlur={
+                            () => {
+                                if (!isLoginPage) {
+                                        registerInput.password.length < 6 ?
+                                        setRegisterInput({ ...registerInput, validPassword: false }) :
+                                        setRegisterInput({ ...registerInput, validPassword: true })
+                                }
+                            }
+                        }
+                        error={!registerInput.validPassword}
+                        helperText={!registerInput.validPassword ? "Password must be at least 6 characters" : ""}
                     />
+                    {
+                        isLoginPage ? "" :
+                            (
+                                <TextField
+                                    variant="outlined"
+                                    margin="normal"
+                                    required
+                                    fullWidth
+                                    name="repassword"
+                                    label="Repeat Password"
+                                    type="password"
+                                    id="repassword"
+                                    autoComplete="repeat-password"
+                                    value={registerInput.repassword}
+                                    onChange={(event) => setRegisterInput({ ...registerInput, repassword: event.target.value })}
+                                    onBlur={
+                                        () => registerInput.password === registerInput.repassword ?
+                                            setRegisterInput({ ...registerInput, passwordsMatch: true }) :
+                                            setRegisterInput({ ...registerInput, passwordsMatch: false })
+                                    }
+                                    error={!registerInput.passwordsMatch}
+                                    helperText={!registerInput.passwordsMatch ? "Passwords don\'t match" : ""}
+                                />
+                            )
+                    }
                     <Button
                         type="submit"
                         fullWidth
                         variant="contained"
                         color="primary"
                         className={classes.submit}
-                    // disabled={true}
                     >
-                        LogIn
+                        {isLoginPage ? "Login" : "Register"}
                     </Button>
                 </form>
                 <Button
@@ -98,95 +193,13 @@ const Login = () => {
                     variant="contained"
                     color="primary"
                     className={classes.submit}
-                    onClick={showRegisterInputs}
-                //disabled={true}
+                    onClick={() => setIsLoginPage(!isLoginPage)}
                 >
-                    I don't have an account!
-                    </Button>
+                    {isLoginPage ? "I don't have an account!" : "I already have an account"}
+                </Button>
             </div>
         </Container>
-    )
-}
-
-const Register = () => {
-    const classes = useStyles();
-
-    return (
-        <Container component="main" maxWidth="xs">
-            <CssBaseline />
-            <div className={classes.paper}>
-                <Avatar className={classes.avatar} src="../images/blackTooth.png">
-                </Avatar>
-                <Typography component="h1" variant="h5">
-                    Sign up into Fintooth!
-                </Typography>
-                <form className={classes.form} noValidate>
-                    <TextField
-                        variant="outlined"
-                        margin="normal"
-                        required
-                        fullWidth
-                        id="email"
-                        label="Email Address"
-                        name="email"
-                        autoComplete="email"
-                        autoFocus
-                    />
-                    <TextField
-                        variant="outlined"
-                        margin="normal"
-                        required
-                        fullWidth
-                        id="username"
-                        label="Username"
-                        name="username"
-                        autoComplete="username"
-                    />
-                    <TextField
-                        variant="outlined"
-                        margin="normal"
-                        required
-                        fullWidth
-                        name="password"
-                        label="Password"
-                        type="password"
-                        id="password"
-                        autoComplete="current-password"
-                    />
-                    <TextField
-                        variant="outlined"
-                        margin="normal"
-                        required
-                        fullWidth
-                        name="password"
-                        label="Repeat Password"
-                        type="password"
-                        id="repassword"
-                        autoComplete="repeat-password"
-                    />
-                    <Button
-                        type="submit"
-                        fullWidth
-                        variant="contained"
-                        color="primary"
-                        className={classes.submit}
-                    >
-                        Register
-                    </Button>
-                </form>
-                <Button
-                    type="submit"
-                    fullWidth
-                    variant="contained"
-                    color="primary"
-                    className={classes.submit}
-                    onClick={showLoginInputs}
-                >
-                    I already have an account!
-                     </Button>
-            </div>
-        </Container>
-    )
-}
+    );
+};
 
 export default Login;

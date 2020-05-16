@@ -1,0 +1,11 @@
+{
+    "length": 5,
+    "activities": {
+        "1005425": {
+            "user": "Marko",
+            "from": "VISA **** 7162",
+            "amount": 10.39,
+            "currency": "BGN"
+        }
+    }
+}

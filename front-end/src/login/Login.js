@@ -1,4 +1,7 @@
 import React, { useState } from "react";
+import { connect } from "react-redux";
+import { addUser } from "../redux/actions/userActions";
+
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -6,37 +9,38 @@ import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
-import blackTooth from "./images/blackTooth.png";
+import blackTooth from "../images/blackTooth.png";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   paper: {
     marginTop: theme.spacing(8),
     display: "flex",
     flexDirection: "column",
-    alignItems: "center",
+    alignItems: "center"
   },
   avatar: {
     margin: theme.spacing(1),
     //backgroundColor: theme.palette.secondary.main,
     height: 200,
-    width: 200,
+    width: 200
   },
   form: {
     width: "100%", // Fix IE 11 issue.
-    marginTop: theme.spacing(1),
+    marginTop: theme.spacing(1)
   },
   submit: {
-    margin: theme.spacing(3, 0, 2),
-  },
+    margin: theme.spacing(3, 0, 2)
+  }
 }));
 
-const Login = () => {
+const Login = props => {
+  console.log(props);
   const classes = useStyles();
   const [isLoginPage, setIsLoginPage] = useState(true);
 
   const [loginInput, setLoginInput] = useState({
     username: "",
-    password: "",
+    password: ""
   });
 
   const [registerInput, setRegisterInput] = useState({
@@ -47,8 +51,21 @@ const Login = () => {
     validEmail: true,
     passwordsMatch: true,
     validUsername: true,
-    validPassword: true,
+    validPassword: true
   });
+
+  const submitForm = event => {
+    event.preventDefault();
+
+    if (!isLoginPage) {
+      const user = {
+        username: registerInput.username,
+        password: registerInput.password,
+        email: registerInput.email
+      };
+      props.registerUser(user);
+    }
+  };
 
   return (
     <Container component="main" maxWidth="xs">
@@ -62,7 +79,12 @@ const Login = () => {
         <Typography component="h1" variant="h5">
           {isLoginPage ? "Login into Fintooth!" : "Sign up into Fintooth"}
         </Typography>
-        <form className={classes.form} noValidate method="POST">
+        <form
+          className={classes.form}
+          onSubmit={event => submitForm(event)}
+          noValidate
+          method="POST"
+        >
           {isLoginPage ? (
             ""
           ) : (
@@ -76,10 +98,10 @@ const Login = () => {
               name="email"
               autoComplete="email"
               value={registerInput.email}
-              onChange={(event) =>
+              onChange={event =>
                 setRegisterInput({
                   ...registerInput,
-                  email: event.target.value,
+                  email: event.target.value
                 })
               }
               onBlur={() => {
@@ -104,12 +126,12 @@ const Login = () => {
             name="username"
             autoComplete="username"
             value={isLoginPage ? loginInput.username : registerInput.username}
-            onChange={(event) => {
+            onChange={event => {
               isLoginPage
                 ? setLoginInput({ ...loginInput, username: event.target.value })
                 : setRegisterInput({
                     ...registerInput,
-                    username: event.target.value,
+                    username: event.target.value
                   });
             }}
             onBlur={() => {
@@ -139,12 +161,12 @@ const Login = () => {
             id="password"
             autoComplete="current-password"
             value={isLoginPage ? loginInput.password : registerInput.password}
-            onChange={(event) => {
+            onChange={event => {
               isLoginPage
                 ? setLoginInput({ ...loginInput, password: event.target.value })
                 : setRegisterInput({
                     ...registerInput,
-                    password: event.target.value,
+                    password: event.target.value
                   });
             }}
             onBlur={() => {
@@ -175,10 +197,10 @@ const Login = () => {
               id="repassword"
               autoComplete="repeat-password"
               value={registerInput.repassword}
-              onChange={(event) =>
+              onChange={event =>
                 setRegisterInput({
                   ...registerInput,
-                  repassword: event.target.value,
+                  repassword: event.target.value
                 })
               }
               onBlur={() =>
@@ -186,7 +208,7 @@ const Login = () => {
                   ? setRegisterInput({ ...registerInput, passwordsMatch: true })
                   : setRegisterInput({
                       ...registerInput,
-                      passwordsMatch: false,
+                      passwordsMatch: false
                     })
               }
               error={!registerInput.passwordsMatch}
@@ -201,6 +223,7 @@ const Login = () => {
             variant="contained"
             color="primary"
             className={classes.submit}
+            onClick={event => submitForm(event)}
           >
             {isLoginPage ? "Login" : "Register"}
           </Button>
@@ -222,4 +245,16 @@ const Login = () => {
   );
 };
 
-export default Login;
+function mapStateToProps(state) {
+  return {
+    users: state.users
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    registerUser: user => dispatch(addUser(user))
+  };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Login);

@@ -50,30 +50,6 @@ const Login = () => {
     validPassword: true,
   });
 
-  function pagesChange() {
-    if (!registerInput.validUsername) {
-      const newRegister = { ...registerInput, validUsername: true };
-      setRegisterInput(newRegister);
-      console.log(newRegister);
-    }
-
-    if (!registerInput.validPassword) {
-      setRegisterInput({ ...registerInput, validPassword: true });
-      console.log(registerInput);
-    }
-
-    if (!registerInput.passwordsMatch) {
-      setRegisterInput({ ...registerInput, passwordsMatch: true });
-      console.log(registerInput);
-    }
-    if (!registerInput.validEmail) {
-      setRegisterInput({ ...registerInput, validEmail: true });
-      console.log(registerInput);
-    }
-
-    setIsLoginPage(!isLoginPage);
-  }
-
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
@@ -106,11 +82,12 @@ const Login = () => {
                   email: event.target.value,
                 })
               }
-              onBlur={() =>
-                registerInput.email.includes("@")
+              onBlur={() => {
+                var emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+                emailPattern.test(registerInput.email)
                   ? setRegisterInput({ ...registerInput, validEmail: true })
-                  : setRegisterInput({ ...registerInput, validEmail: false })
-              }
+                  : setRegisterInput({ ...registerInput, validEmail: false });
+              }}
               error={!registerInput.validEmail}
               helperText={
                 !registerInput.validEmail ? "Please enter a valid email" : ""
@@ -144,9 +121,9 @@ const Login = () => {
                   : setRegisterInput({ ...registerInput, validUsername: true });
               }
             }}
-            error={!registerInput.validUsername}
+            error={!registerInput.validUsername && !isLoginPage}
             helperText={
-              !registerInput.validUsername
+              !registerInput.validUsername && !isLoginPage
                 ? "Username can be from 3 to 10 characters and can contain only alphanumerical symbols and _"
                 : ""
             }
@@ -177,9 +154,9 @@ const Login = () => {
                   : setRegisterInput({ ...registerInput, validPassword: true });
               }
             }}
-            error={!registerInput.validPassword}
+            error={!registerInput.validPassword && !isLoginPage}
             helperText={
-              !registerInput.validPassword
+              !registerInput.validPassword && !isLoginPage
                 ? "Password must be at least 6 characters"
                 : ""
             }
@@ -234,7 +211,7 @@ const Login = () => {
           variant="contained"
           color="primary"
           className={classes.submit}
-          onClick={() => pagesChange()}
+          onClick={() => setIsLoginPage(!isLoginPage)}
         >
           {isLoginPage
             ? "I don't have an account!"

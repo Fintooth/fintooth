@@ -38,7 +38,7 @@ exports.users_get_all = (req, res, next) => {
             groups: doc.groups,
             request: {
               type: "GET DELETE",
-              url: "http://localhost:3000/users/" + doc._id,
+              url: "http://localhost:3001/users/" + doc._id,
             },
           };
         }),
@@ -59,10 +59,6 @@ exports.users_get_one = (req, res, next) => {
     .exec()
     .then((doc) => {
       if (doc) {
-        let avatar = "";
-        if (doc.avatar) {
-          avatar = "http://localhost:3000/" + doc.avatar;
-        }
         res.status(200).json({
           email: doc.email,
           nickname: doc.nickname,
@@ -73,7 +69,7 @@ exports.users_get_one = (req, res, next) => {
           id: doc._id,
           requestAll: {
             type: "GET",
-            url: "http://localhost:3000/users",
+            url: "http://localhost:3001/users",
           },
         });
       } else {
@@ -185,7 +181,7 @@ exports.users_patch = (req, res, next) => {
         message: "User updated",
         request: {
           type: "GET PATCH DELETE",
-          url: "http://localhost:3000/users/" + id,
+          url: "http://localhost:3001/users/" + id,
         },
       });
     })
@@ -214,7 +210,7 @@ exports.users_change_password = (req, res, next) => {
             message: "User password updated",
             request: {
               type: "GET PATCH DELETE",
-              url: "http://localhost:3000/users/" + id,
+              url: "http://localhost:3001/users/" + id,
             },
           });
         })

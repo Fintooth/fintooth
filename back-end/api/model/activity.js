@@ -27,6 +27,7 @@ const activitySchema = mongoose.Schema({
   description: { type: String },
   picture: { type: String },
   date: { type: Date, default: Date.now },
+  amount: { type: Number },
 });
 
 module.exports = mongoose.model("Activity", activitySchema);

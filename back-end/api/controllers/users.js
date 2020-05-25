@@ -83,6 +83,38 @@ exports.users_get_one = (req, res, next) => {
     });
 };
 
+// exports.users_get_accounts = (req, res, next) => {
+//   const id = req.params.userId;
+//   User.findById(id)
+//     .select("accounts")
+//     //.populate("groups.group", "name")
+//     .exec()
+//     .then((doc) => {
+//       if (doc) {
+//         res.status(200).json({
+//           email: doc.email,
+//           nickname: doc.nickname,
+//           dateCreated: doc.dateCreated,
+//           password: doc.password,
+//           groups: doc.groups,
+//           accounts: doc.accounts,
+//           id: doc._id,
+//           requestAll: {
+//             type: "GET",
+//             url: "http://localhost:3001/users",
+//           },
+//         });
+//       } else {
+//         res.status(404).json({
+//           message: "No valid entry for provided ID",
+//         });
+//       }
+//     })
+//     .catch((err) => {
+//       res.status(500).json({ error: err });
+//     });
+// };
+
 exports.users_signup = (req, res, next) => {
   User.find({ email: req.body.email })
     .exec()
@@ -161,6 +193,51 @@ exports.users_login = (req, res, next) => {
     });
 };
 
+exports.add_account = (req, res, next) => {
+  const id = req.params.userId;
+  const name = req.body.name;
+  const type = req.body.type;
+  const amount = req.body.amount;
+  const currency = req.body.currency;
+  const bankAccType = req.body.bankAccType;
+  const rate = req.body.rate;
+  const period = req.body.period;
+  User.update(
+    { _id: id },
+    {
+      $push: {
+        accounts: {
+          _id: mongoose.Types.ObjectId(),
+          name: name,
+          type: type,
+          amount: amount,
+          currency: currency,
+          bankAccType: bankAccType,
+          bankAccInterest: {
+            rate: rate,
+            period: period,
+          },
+        },
+      },
+    }
+  )
+    .exec()
+    .then((result) => {
+      res.status(200).json({
+        message: "Account created",
+        request: {
+          type: "GET PATCH DELETE",
+          url: "http://localhost:3001/users/" + id,
+        },
+      });
+    })
+    .catch((err) => {
+      res.status(500).json({
+        error: err,
+      });
+    });
+};
+
 exports.users_patch = (req, res, next) => {
   const id = req.params.userId;
   const updateOps = {};
@@ -230,6 +307,31 @@ exports.users_delete = (req, res, next) => {
       deleteFolderRecursive("./uploads/" + req.params.userId + "/");
       res.status(200).json({
         message: "User deleted",
+      });
+    })
+    .catch((err) => {
+      res.status(500).json({
+        error: err,
+      });
+    });
+};
+
+exports.account_delete = (req, res, next) => {
+  const id = req.params.accId;
+  User.update(
+    {},
+    {
+      $pull: {
+        accounts: {
+          _id: id,
+        },
+      },
+    }
+  )
+    .exec()
+    .then((response) => {
+      res.status(200).json({
+        message: "Account deleted",
       });
     })
     .catch((err) => {

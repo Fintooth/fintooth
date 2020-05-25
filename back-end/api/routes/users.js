@@ -51,6 +51,8 @@ router.post("/signup", UsersController.users_signup);
 
 router.post("/login", UsersController.users_login);
 
+router.post("/add-account/:userId", UsersController.add_account);
+
 router.patch(
   "/change-avatar/:userId",
   checkToken,
@@ -82,5 +84,7 @@ router.delete(
   checkSelfOrAdmin,
   UsersController.users_delete
 );
+
+router.delete("/delete-account/:accId", UsersController.account_delete);
 
 module.exports = router;

@@ -24,7 +24,7 @@ function* getUsersSaga() {
 function* postUserSaga(user) {
   try {
     yield put(requestActions.startRequest());
-    const response = postUser(user.user);
+    const response = yield postUser(user.user);
     yield put(userActions.addUser(user.user));
     yield put(requestActions.successRequest(response.data));
   } catch (e) {

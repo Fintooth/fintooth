@@ -11,6 +11,7 @@ import store from "../src/redux/configureStore";
 
 import Login from "./login/Login";
 import Dashboard from "./dashboard/Dashboard";
+import AdminView from './admin-view/layout';
 
 export default function App() {
   return (
@@ -22,6 +23,9 @@ export default function App() {
           </Route>
           <Route path="/dashboard">
             <Dashboard />
+          </Route>
+          <Route path="/admin-view">
+            <AdminView />
           </Route>
           <Route path="/">
             <Redirect to="/login" />

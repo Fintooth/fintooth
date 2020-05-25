@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { connect } from "react-redux";
-import { addUser } from "../redux/actions/userActions";
 
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
@@ -10,6 +9,8 @@ import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import blackTooth from "../images/blackTooth.png";
+
+import { SAGA_USER_ACTIONS } from "../redux/constants";
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -34,7 +35,6 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const Login = props => {
-  console.log(props);
   const classes = useStyles();
   const [isLoginPage, setIsLoginPage] = useState(true);
 
@@ -59,9 +59,9 @@ const Login = props => {
 
     if (!isLoginPage) {
       const user = {
-        username: registerInput.username,
+        email: registerInput.email,
         password: registerInput.password,
-        email: registerInput.email
+        username: registerInput.username
       };
       props.registerUser(user);
     }
@@ -247,13 +247,15 @@ const Login = props => {
 
 function mapStateToProps(state) {
   return {
-    users: state.users
+    users: state.users,
+    request: state.reques
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
-    registerUser: user => dispatch(addUser(user))
+    registerUser: user =>
+      dispatch({ type: SAGA_USER_ACTIONS.ADD_USER_ASYNC, user })
   };
 }
 

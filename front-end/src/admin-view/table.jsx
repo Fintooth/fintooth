@@ -1,6 +1,7 @@
 import React, { forwardRef } from "react";
 import MaterialTable from "material-table";
 import { makeStyles } from "@material-ui/core/styles";
+import axios from "axios";
 
 import AddBox from "@material-ui/icons/AddBox";
 import ArrowUpward from "@material-ui/icons/ArrowUpward";
@@ -17,6 +18,9 @@ import Remove from "@material-ui/icons/Remove";
 import SaveAlt from "@material-ui/icons/SaveAlt";
 import Search from "@material-ui/icons/Search";
 import ViewColumn from "@material-ui/icons/ViewColumn";
+
+import UserDetail from "./user-detail";
+import { URL } from "../redux/constants";
 
 const tableIcons = {
   Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -49,7 +53,7 @@ function createData(email, id, dateCreated, nickname, groups) {
 const useStyles = makeStyles(theme => ({
   root: {
     display: "flex",
-    width: "100%"
+    width: "auto"
   }
 }));
 
@@ -57,7 +61,7 @@ const addUsersToRows = users => {
   let rows = [];
   users.map(user => {
     const { email, id, dateCreated, nickname, groups } = user;
-    rows.push(createData(email, id, dateCreated, nickname, groups));
+    return rows.push(createData(email, id, dateCreated, nickname, groups));
   });
 
   return rows;
@@ -83,9 +87,9 @@ export default function UserTable(props) {
   return (
     <MaterialTable
       className={classes.root}
-      title="Users"
+      title="Here you can modify the user database directly"
       columns={state.columns}
-      data={state.data}
+      data={Array.from(state.data)}
       icons={tableIcons}
       options={{
         pageSize: 10
@@ -98,6 +102,7 @@ export default function UserTable(props) {
               setState(prevState => {
                 const data = [...prevState.data];
                 data.push(newData);
+                props.addUser(newData);
                 return { ...prevState, data };
               });
             }, 600);
@@ -110,6 +115,7 @@ export default function UserTable(props) {
                 setState(prevState => {
                   const data = [...prevState.data];
                   data[data.indexOf(oldData)] = newData;
+                  props.updateUser(newData);
                   return { ...prevState, data };
                 });
               }
@@ -121,11 +127,17 @@ export default function UserTable(props) {
               resolve();
               setState(prevState => {
                 const data = [...prevState.data];
+                props.deleteUser(oldData.id);
                 data.splice(data.indexOf(oldData), 1);
                 return { ...prevState, data };
               });
             }, 600);
           })
+      }}
+      detailPanel={rowData => {
+        let data;
+
+        return <UserDetail {...data} />;
       }}
     />
   );

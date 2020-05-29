@@ -1,8 +1,8 @@
 export const REQUEST_ACTIONS = Object.freeze({
-    REQUEST_START: "REQUEST_START",
-    REQUEST_SUCCESS: "REQUEST_SUCCESS",
-    REQUEST_ERROR: "REQUEST_ERROR"
-})
+  REQUEST_START: "REQUEST_START",
+  REQUEST_SUCCESS: "REQUEST_SUCCESS",
+  REQUEST_ERROR: "REQUEST_ERROR"
+});
 
 export const USER_ACTIONS = Object.freeze({
   ADD_USER: "ADD_USER",
@@ -17,3 +17,5 @@ export const SAGA_USER_ACTIONS = Object.freeze({
   MODIFY_USER_ASYNC: "MODIFY_USER_ASYNC",
   GET_USERS_ASYNC: "GET_USERS_ASYNC"
 });
+
+export const URL = "http://localhost:3001";

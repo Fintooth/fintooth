@@ -5,6 +5,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import ToolBar from "../common/toolbar";
 import UserTable from "./table";
 import Progress from "../common/progress";
+import { SAGA_USER_ACTIONS } from "../redux/constants";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -19,24 +20,33 @@ const useStyles = makeStyles(theme => ({
 const AdminView = props => {
   const classes = useStyles();
 
+  const { getUsers, request } = props;
+
   React.useEffect(() => {
-    props.dispatch({ type: "GET_USERS_ASYNC" });
-  }, []);
+    let mounted = true;
+
+    if (mounted) {
+      getUsers();
+    }
+
+    return () => {
+      mounted = false;
+    };
+  }, [getUsers]);
 
   const requestStatus = () => {
-    if (props.request.fetching) {
+    if (request.fetching) {
       return <Progress />;
-    } else if (props.request.error) {
-      return <h2 className={classes.errorMessage}>{props.request.error}</h2>;
+    } else if (request.error) {
+      return <h2 className={classes.errorMessage}>{request.error}</h2>;
     } else {
-      return <UserTable users={props.users} />;
+      return <UserTable {...props} />;
     }
   };
 
   return (
     <div className={classes.root}>
-      <ToolBar title="User Controll Center" />
-      {requestStatus()}
+      <ToolBar title="User Controll Center" element={requestStatus()} />
     </div>
   );
 };
@@ -46,4 +56,14 @@ const mapStateToProps = state => ({
   users: state.users
 });
 
-export default connect(mapStateToProps)(AdminView);
+const mapDispatchToProps = dispatch => ({
+  getUsers: () => dispatch({ type: SAGA_USER_ACTIONS.GET_USERS_ASYNC }),
+  addUser: user =>
+    dispatch({ type: SAGA_USER_ACTIONS.ADD_USER_ASYNC, user: user }),
+  updateUser: user =>
+    dispatch({ type: SAGA_USER_ACTIONS.MODIFY_USER_ASYNC, user }),
+  deleteUser: userId =>
+    dispatch({ type: SAGA_USER_ACTIONS.REMOVE_USER_ASYNC, userId })
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(AdminView);

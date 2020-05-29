@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { connect } from "react-redux";
+import axios from "axios";
+import { useHistory } from "react-router-dom";
 
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
@@ -10,7 +12,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import blackTooth from "../images/blackTooth.png";
 
-import { SAGA_USER_ACTIONS } from "../redux/constants";
+import { SAGA_USER_ACTIONS, URL } from "../redux/constants";
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -38,8 +40,10 @@ const Login = props => {
   const classes = useStyles();
   const [isLoginPage, setIsLoginPage] = useState(true);
 
+  const history = useHistory();
+
   const [loginInput, setLoginInput] = useState({
-    username: "",
+    email: "",
     password: ""
   });
 
@@ -64,6 +68,22 @@ const Login = props => {
         username: registerInput.username
       };
       props.registerUser(user);
+    } else if (isLoginPage) {
+      const user = {
+        email: loginInput.email,
+        password: loginInput.password
+      };
+
+      axios
+        .post(`${URL}/users/login`, user)
+        .then(response => {
+          sessionStorage.setItem("token", response.data.token);
+          history.push("/dashboard");
+        })
+        .catch(e => {
+          window.alert("Incorrect username or password :(");
+          window.location.reload();
+        });
     }
   };
 
@@ -125,10 +145,10 @@ const Login = props => {
             label="Username"
             name="username"
             autoComplete="username"
-            value={isLoginPage ? loginInput.username : registerInput.username}
+            value={isLoginPage ? loginInput.email : registerInput.username}
             onChange={event => {
               isLoginPage
-                ? setLoginInput({ ...loginInput, username: event.target.value })
+                ? setLoginInput({ ...loginInput, email: event.target.value })
                 : setRegisterInput({
                     ...registerInput,
                     username: event.target.value

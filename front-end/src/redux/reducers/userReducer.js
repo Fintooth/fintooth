@@ -5,7 +5,7 @@ const userReducer = (state = [], action) => {
     case USER_ACTIONS.ADD_USER:
       return [...state, ...action.user];
     case USER_ACTIONS.REMOVE_USER:
-      return state.filter(user => user.email !== action.user.id);
+      return state.filter(user => user.id !== action.userId);
     case USER_ACTIONS.MODIFY_USER:
       const toModifyIndex = state.findIndex(
         user => user.email === action.user.email

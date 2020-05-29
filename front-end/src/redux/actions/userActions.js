@@ -4,8 +4,8 @@ export function addUser(user) {
   return { type: USER_ACTIONS.ADD_USER, user };
 }
 
-export function removeUser(user) {
-  return { type: USER_ACTIONS.REMOVE_USER, user };
+export function removeUser(userId) {
+  return { type: USER_ACTIONS.REMOVE_USER, userId };
 }
 
 export function modifyUser(user) {

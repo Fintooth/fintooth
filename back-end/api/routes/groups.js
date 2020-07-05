@@ -6,6 +6,7 @@ const checkSelfOrAdmin = require("../middleware/check-self-admin");
 const GroupsController = require("../controllers/groups");
 
 router.get("/:groupId", GroupsController.groups_get_one);
+router.get("/", GroupsController.groups_get_all);
 
 router.post("/create", GroupsController.create_group);
 router.post("/:groupId/add-user", GroupsController.add_user);

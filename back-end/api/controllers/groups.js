@@ -5,6 +5,7 @@ const fs = require("fs");
 
 const Group = require("../model/group");
 const User = require("../model/user");
+const { domainToASCII } = require("url");
 
 exports.create_group = (req, res, next) => {
   const group = new Group({
@@ -94,6 +95,39 @@ exports.groups_get_one = (req, res, next) => {
       } else {
         res.status(404).json({
           message: "No valid entry for provided ID",
+        });
+      }
+    })
+    .catch((err) => {
+      res.status(500).json({ error: err });
+    });
+};
+
+exports.groups_get_all = (req, res, next) => {
+  Group.find()
+    .select("id name members dateCreated accounts")
+    .exec()
+    .then((docs) => {
+      if (docs) {
+        res.status(200).json({
+          count: docs.length,
+          groups: docs.map((doc) => {
+            return {
+              name: doc.name,
+              dateCreated: doc.dateCreated,
+              id: doc._id,
+              members: doc.members,
+              accounts: doc.accounts,
+              request: {
+                type: "GET DELETE",
+                url: "http://localhost:3001/groups/" + doc._id,
+              },
+            };
+          }),
+        });
+      } else {
+        res.status(404).json({
+          message: "No created groups",
         });
       }
     })

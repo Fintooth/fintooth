@@ -1,11 +1,13 @@
 import React from "react";
 import { connect } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
+import { useLocation } from "react-router-dom";
 
 import ToolBar from "../common/toolbar";
-import UserTable from "./table";
+import UserTable from "./user-table";
 import Progress from "../common/progress";
-import { SAGA_USER_ACTIONS } from "../redux/constants";
+import GroupsTable from "./groups-table";
+import { SAGA_USER_ACTIONS, SAGA_GROUP_ACTIONS } from "../redux/constants";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -19,14 +21,21 @@ const useStyles = makeStyles(theme => ({
 
 const AdminView = props => {
   const classes = useStyles();
+  let location = useLocation();
+  const page = location.pathname.split("/").slice(-1)[0];
+  console.log(page);
 
-  const { getUsers, request } = props;
+  const { getUsers, getGroups, request } = props;
 
   React.useEffect(() => {
     let mounted = true;
 
     if (mounted) {
-      getUsers();
+      if (page === "users") {
+        getUsers();
+      } else {
+        getGroups();
+      }
     }
 
     return () => {
@@ -40,7 +49,11 @@ const AdminView = props => {
     } else if (request.error) {
       return <h2 className={classes.errorMessage}>{request.error}</h2>;
     } else {
-      return <UserTable {...props} />;
+      if (page === "groups") {
+        return <GroupsTable {...props} />;
+      } else {
+        return <UserTable {...props} />;
+      }
     }
   };
 
@@ -53,7 +66,8 @@ const AdminView = props => {
 
 const mapStateToProps = state => ({
   request: state.request,
-  users: state.users
+  users: state.users,
+  groups: state.groups
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -63,7 +77,9 @@ const mapDispatchToProps = dispatch => ({
   updateUser: user =>
     dispatch({ type: SAGA_USER_ACTIONS.MODIFY_USER_ASYNC, user }),
   deleteUser: userId =>
-    dispatch({ type: SAGA_USER_ACTIONS.REMOVE_USER_ASYNC, userId })
+    dispatch({ type: SAGA_USER_ACTIONS.REMOVE_USER_ASYNC, userId }),
+
+  getGroups: () => dispatch({ type: SAGA_GROUP_ACTIONS.GET_GROUPS_ASYNC })
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(AdminView);

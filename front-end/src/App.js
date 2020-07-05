@@ -24,7 +24,10 @@ export default function App() {
           <Route path="/dashboard">
             <Dashboard />
           </Route>
-          <Route path="/admin-view">
+          <Route path="/admin-view/users">
+            <AdminView />
+          </Route>
+          <Route path="/admin-view/groups">
             <AdminView />
           </Route>
           <Route path="/">

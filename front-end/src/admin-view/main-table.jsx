@@ -1,7 +1,6 @@
 import React, { forwardRef } from "react";
 import MaterialTable from "material-table";
 import { makeStyles } from "@material-ui/core/styles";
-import axios from "axios";
 
 import AddBox from "@material-ui/icons/AddBox";
 import ArrowUpward from "@material-ui/icons/ArrowUpward";
@@ -20,7 +19,6 @@ import Search from "@material-ui/icons/Search";
 import ViewColumn from "@material-ui/icons/ViewColumn";
 
 import UserDetail from "./user-detail";
-import { URL } from "../redux/constants";
 
 const tableIcons = {
   Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -46,10 +44,6 @@ const tableIcons = {
   ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
 
-function createData(email, id, dateCreated, nickname, groups) {
-  return { email, id, dateCreated, nickname, groups };
-}
-
 const useStyles = makeStyles(theme => ({
   root: {
     display: "flex",
@@ -57,32 +51,11 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const addUsersToRows = users => {
-  let rows = [];
-  users.map(user => {
-    const { email, id, dateCreated, nickname, groups } = user;
-    return rows.push(createData(email, id, dateCreated, nickname, groups));
-  });
-
-  return rows;
-};
-
-export default function UserTable(props) {
+export default function MainTable(props) {
   const classes = useStyles();
 
-  const [state, setState] = React.useState({
-    columns: [
-      { title: "Email", field: "email" },
-      { title: "Id", field: "id" },
-      { title: "Date Created", field: "dateCreated" },
-      {
-        title: "Nickname",
-        field: "nickname"
-      },
-      { title: "Groups", field: "groups" }
-    ],
-    data: addUsersToRows(props.users)
-  });
+  const [state, setState] = React.useState(props.state);
+  console.log(state.data)
 
   return (
     <MaterialTable
@@ -137,7 +110,7 @@ export default function UserTable(props) {
       detailPanel={rowData => {
         let data;
 
-        return <UserDetail {...data} />;
+        //return <UserDetail {...data} />;
       }}
     />
   );

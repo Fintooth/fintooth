@@ -1,19 +1,22 @@
-import userReducer from "./reducers/userReducer";
 import { createStore, combineReducers, applyMiddleware } from "redux";
-import createSagaMiddleware from 'redux-saga';
+import createSagaMiddleware from "redux-saga";
 
-import {usersWatcherSaga} from './sagas/userSaga';
 import { requestReducer } from "./reducers/requestReducer";
+import groupReducer from "./reducers/groupReducer";
+import userReducer from "./reducers/userReducer";
+
+import rootSaga from "./sagas/rootSaga";
 
 const rootReducer = combineReducers({
-    users: userReducer,
-    request: requestReducer
-})
+  users: userReducer,
+  request: requestReducer,
+  groups: groupReducer
+});
 
 const sagaMiddleware = createSagaMiddleware();
 
 const store = createStore(rootReducer, applyMiddleware(sagaMiddleware));
 
-sagaMiddleware.run(usersWatcherSaga);
+sagaMiddleware.run(rootSaga);
 
 export default store;

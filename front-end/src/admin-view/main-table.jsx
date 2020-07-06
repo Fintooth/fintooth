@@ -18,8 +18,6 @@ import SaveAlt from "@material-ui/icons/SaveAlt";
 import Search from "@material-ui/icons/Search";
 import ViewColumn from "@material-ui/icons/ViewColumn";
 
-import UserDetail from "./user-detail";
-
 const tableIcons = {
   Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
   Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
@@ -41,38 +39,41 @@ const tableIcons = {
   Search: forwardRef((props, ref) => <Search {...props} ref={ref} />),
   SortArrow: forwardRef((props, ref) => <ArrowUpward {...props} ref={ref} />),
   ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
-  ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
+  ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />),
 };
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
-    width: "auto"
-  }
+    width: "auto",
+  },
 }));
 
 export default function MainTable(props) {
   const classes = useStyles();
 
-  const [state, setState] = React.useState(props.state);
-  console.log(state.data)
+  const [state, setState] = React.useState({
+    columns: [],
+    data: [],
+    ...props.state,
+  });
 
   return (
     <MaterialTable
       className={classes.root}
-      title="Here you can modify the user database directly"
+      title="Here you can modify the group database directly"
       columns={state.columns}
       data={Array.from(state.data)}
       icons={tableIcons}
       options={{
-        pageSize: 10
+        pageSize: 10,
       }}
       editable={{
-        onRowAdd: newData =>
-          new Promise(resolve => {
+        onRowAdd: (newData) =>
+          new Promise((resolve) => {
             setTimeout(() => {
               resolve();
-              setState(prevState => {
+              setState((prevState) => {
                 const data = [...prevState.data];
                 data.push(newData);
                 props.addUser(newData);
@@ -81,11 +82,11 @@ export default function MainTable(props) {
             }, 600);
           }),
         onRowUpdate: (newData, oldData) =>
-          new Promise(resolve => {
+          new Promise((resolve) => {
             setTimeout(() => {
               resolve();
               if (oldData) {
-                setState(prevState => {
+                setState((prevState) => {
                   const data = [...prevState.data];
                   data[data.indexOf(oldData)] = newData;
                   props.updateUser(newData);
@@ -94,20 +95,20 @@ export default function MainTable(props) {
               }
             }, 600);
           }),
-        onRowDelete: oldData =>
-          new Promise(resolve => {
+        onRowDelete: (oldData) =>
+          new Promise((resolve) => {
             setTimeout(() => {
               resolve();
-              setState(prevState => {
+              setState((prevState) => {
                 const data = [...prevState.data];
                 props.deleteUser(oldData.id);
                 data.splice(data.indexOf(oldData), 1);
                 return { ...prevState, data };
               });
             }, 600);
-          })
+          }),
       }}
-      detailPanel={rowData => {
+      detailPanel={(rowData) => {
         let data;
 
         //return <UserDetail {...data} />;

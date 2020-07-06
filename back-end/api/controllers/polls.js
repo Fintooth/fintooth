@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 
-const Group = require("../model/group");
 const Poll = require("../model/poll");
 
 exports.poll_create = (req, res, next) => {
@@ -11,7 +10,7 @@ exports.poll_create = (req, res, next) => {
     title,
     description,
     creator,
-    groupId,
+    group: groupId,
     created: Date.now(),
     expires,
   });
@@ -58,56 +57,105 @@ exports.poll_get_all = (req, res, next) => {
     });
 };
 
-// exports.poll_get_by_id = (req, res, next) => {
-//   const id = req.params.pollId;
-//   Poll.findById(pollId)
-//     .select(
-//       "_id title description creator group members result votes created expires comments"
-//     )
+exports.poll_get_by_id = (req, res, next) => {
+  const pollId = req.params.pollId;
+  Poll.findById(pollId)
+    .select(
+      "_id title description creator group result votes created expires comments"
+    )
+    .exec()
+    .then((doc) => {
+      if (doc) {
+        res.status(201).json({
+          _id: doc._id,
+          title: doc.title,
+          description: doc.description,
+          creator: doc.creator,
+          group: doc.group,
+          result: doc.result,
+          votes: doc.votes,
+          created: doc.created,
+          expires: doc.expires,
+          comments: doc.comments,
+        });
+      } else {
+        res.status(404).json({
+          message: `No such poll with id: ${pollId} exists`,
+        });
+      }
+    })
+    .catch((e) => {
+      res.status(500).json({
+        error: e,
+      });
+    });
+};
+
+exports.poll_add_comment = (req, res, next) => {
+  const pollId = req.params.pollId;
+  const comment = req.body.comment;
+  const commentId = req.body.commentId;
+  const authorId = req.body.authorId;
+  Poll.update(
+    { _id: pollId },
+    {
+      $push: {
+        comments: { idNum: commentId, author: authorId, comment: comment },
+      },
+    }
+  )
+    .exec()
+    .then((result) => {
+      res.status(200).json({
+        message: "Comment Added",
+      });
+    })
+    .catch((err) => {
+      res.status(500).json({
+        error: err,
+      });
+    });
+};
+
+// exports.poll_delete_comment = (req, res, next) => {
+//   const pollId = req.params.pollId;
+//   const commentId = req.body.commentId;
+//   Poll.update(
+//     { _id: pollId },
+//     {
+//       $pull: {
+//         comments: { idNum: commentId },
+//       },
+//     }
+//   )
 //     .exec()
 //     .then((result) => {
-//       if (result) {
-//         res.status(201).json({
-//           _id: poll._id,
-//           title: poll.title,
-//           description: poll.description,
-//           creator: poll.creator,
-//           group: poll.group,
-//           members: poll.members,
-//           result: poll.result,
-//           votes: poll.votes,
-//           created: poll.created,
-//           expires: poll.expires,
-//           comments: poll.comments,
-//         });
-//       } else {
-//         res.status(404).json({
-//           message: `No such poll with id: ${pollId} exists`,
-//         });
-//       }
+//       res.status(200).json({
+//         message: "Comment Removed",
+//       });
 //     })
-//     .catch((e) => {
+//     .catch((err) => {
 //       res.status(500).json({
-//         error: e,
+//         error: err,
 //       });
 //     });
 // };
 
-// exports.poll_delete = (req, res, next) => {
-//   const pollId = req.body.id;
-//   Poll.deleteOne({ _id: pollId })
-//     .exec()
-//     .then((result) => {
-//       res.status(201).json({
-//         message: "Successully deleted poll with id: " + pollId,
-//       });
-//     })
-//     .catch((e) => {
-//       res.status(500).json({
-//         error: e,
-//       });
-//     });
-// };
+exports.poll_delete = (req, res, next) => {
+  const pollId = req.params.pollId;
+  Poll.deleteOne({ _id: pollId })
+    .exec()
+    .then((result) => {
+      res.status(201).json({
+        message: "Successully deleted poll with id: " + pollId,
+      });
+    })
+    .catch((e) => {
+      res.status(500).json({
+        error: e,
+      });
+    });
+};
 
 /*
 TODO:

@@ -45,6 +45,8 @@ const UsersController = require("../controllers/users");
 
 router.get("/", UsersController.users_get_all);
 
+router.get("/:userId/accounts", UsersController.users_get_accounts);
+
 router.get("/:userId", UsersController.users_get_one);
 
 router.post("/signup", UsersController.users_signup);

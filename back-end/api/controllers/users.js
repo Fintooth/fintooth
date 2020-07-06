@@ -83,37 +83,26 @@ exports.users_get_one = (req, res, next) => {
     });
 };
 
-// exports.users_get_accounts = (req, res, next) => {
-//   const id = req.params.userId;
-//   User.findById(id)
-//     .select("accounts")
-//     //.populate("groups.group", "name")
-//     .exec()
-//     .then((doc) => {
-//       if (doc) {
-//         res.status(200).json({
-//           email: doc.email,
-//           nickname: doc.nickname,
-//           dateCreated: doc.dateCreated,
-//           password: doc.password,
-//           groups: doc.groups,
-//           accounts: doc.accounts,
-//           id: doc._id,
-//           requestAll: {
-//             type: "GET",
-//             url: "http://localhost:3001/users",
-//           },
-//         });
-//       } else {
-//         res.status(404).json({
-//           message: "No valid entry for provided ID",
-//         });
-//       }
-//     })
-//     .catch((err) => {
-//       res.status(500).json({ error: err });
-//     });
-// };
+exports.users_get_accounts = (req, res, next) => {
+  const id = req.params.userId;
+  User.findById(id)
+    .select("accounts")
+    .exec()
+    .then((docs) => {
+      if (docs) {
+        res.status(200).json({
+          accounts: docs.accounts,
+        });
+      } else {
+        res.status(404).json({
+          message: "No valid entry for provided ID",
+        });
+      }
+    })
+    .catch((err) => {
+      res.status(500).json({ error: err });
+    });
+};
 
 exports.users_signup = (req, res, next) => {
   User.find({ email: req.body.email })

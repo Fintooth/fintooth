@@ -7,6 +7,7 @@ const mongoose = require("mongoose");
 const userRoutes = require("./api/routes/users");
 const activityRoutes = require("./api/routes/activities");
 const groupRoutes = require("./api/routes/groups");
+const pollRoutes = require("./api/routes/polls");
 
 mongoose.connect(
   "mongodb+srv://teodor:" +
@@ -39,6 +40,7 @@ app.use((req, res, next) => {
 app.use("/users", userRoutes);
 app.use("/activities", activityRoutes);
 app.use("/groups", groupRoutes);
+app.use("/polls", pollRoutes);
 
 app.use((req, res, next) => {
   const error = new Error("Not found");

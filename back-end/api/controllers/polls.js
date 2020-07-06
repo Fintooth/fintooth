@@ -4,37 +4,28 @@ const Group = require("../model/group");
 const Poll = require("../model/poll");
 
 exports.poll_create = (req, res, next) => {
-  const {
-    title,
-    description,
-    creator,
-    group,
-    members,
-    result,
-    expires
-  } = req.body;
+  const groupId = req.params.groupId;
+  const { title, description, creator, expires } = req.body;
   const poll = new Poll({
     _id: mongoose.Types.ObjectId(),
     title,
     description,
     creator,
-    group,
-    members,
-    result,
+    groupId,
     created: Date.now(),
-    expires
+    expires,
   });
 
   poll
     .save()
-    .then(result => {
+    .then((result) => {
       res.status(201).json({
-        message: "Created poll with id: " + poll._id
+        message: "Created poll with id: " + poll._id,
       });
     })
-    .catch(err => {
+    .catch((err) => {
       req.status(500).json({
-        error: err
+        error: err,
       });
     });
 };
@@ -43,10 +34,10 @@ exports.poll_get_all = (req, res, next) => {
   Poll.find()
     .select("_id title description group creator")
     .exec()
-    .then(count => {
+    .then((count) => {
       res.status(201).json({
         count: count.length,
-        polls: count.map(poll => ({
+        polls: count.map((poll) => ({
           _id: poll._id,
           title: poll.title,
           description: poll.description,
@@ -55,68 +46,68 @@ exports.poll_get_all = (req, res, next) => {
           created: poll.created,
           request: {
             type: "GET DELETE",
-            url: "http://localhost:3001/polls/" + poll._id
-          }
-        }))
+            url: "http://localhost:3001/polls/" + poll._id,
+          },
+        })),
       });
     })
-    .catch(e => {
+    .catch((e) => {
       res.status(500).json({
-        error: e
+        error: e,
       });
     });
 };
 
-exports.poll_get_by_id = (req, res, next) => {
-  const id = req.params.pollId;
-  Poll.findById(pollId)
-    .select(
-      "_id title description creator group members result votes created expires comments"
-    )
-    .exec()
-    .then(result => {
-      if (result) {
-        res.status(201).json({
-          _id: poll._id,
-          title: poll.title,
-          description: poll.description,
-          creator: poll.creator,
-          group: poll.group,
-          members: poll.members,
-          result: poll.result,
-          votes: poll.votes,
-          created: poll.created,
-          expires: poll.expires,
-          comments: poll.comments
-        });
-      } else {
-        res.status(404).json({
-          message: `No such poll with id: ${pollId} exists`
-        });
-      }
-    })
-    .catch(e => {
-      res.status(500).json({
-        error: e
-      });
-    });
-};
+// exports.poll_get_by_id = (req, res, next) => {
+//   const id = req.params.pollId;
+//   Poll.findById(pollId)
+//     .select(
+//       "_id title description creator group members result votes created expires comments"
+//     )
+//     .exec()
+//     .then((result) => {
+//       if (result) {
+//         res.status(201).json({
+//           _id: poll._id,
+//           title: poll.title,
+//           description: poll.description,
+//           creator: poll.creator,
+//           group: poll.group,
+//           members: poll.members,
+//           result: poll.result,
+//           votes: poll.votes,
+//           created: poll.created,
+//           expires: poll.expires,
+//           comments: poll.comments,
+//         });
+//       } else {
+//         res.status(404).json({
+//           message: `No such poll with id: ${pollId} exists`,
+//         });
+//       }
+//     })
+//     .catch((e) => {
+//       res.status(500).json({
+//         error: e,
+//       });
+//     });
+// };
 
-exports.poll_delete = (req, res, next) => {
-  const pollId = req.body.id;
-  Poll.deleteOne({ _id: pollId })
-    .exec()
-    .then(result => {
-      res.status(201).json({
-        message: "Successully deleted poll with id: " + pollId
-      });
-    })
-    .catch(e => {
-      res.status(500).json({
-        error: e
-      });
-    });
-};
+// exports.poll_delete = (req, res, next) => {
+//   const pollId = req.body.id;
+//   Poll.deleteOne({ _id: pollId })
+//     .exec()
+//     .then((result) => {
+//       res.status(201).json({
+//         message: "Successully deleted poll with id: " + pollId,
+//       });
+//     })
+//     .catch((e) => {
+//       res.status(500).json({
+//         error: e,
+//       });
+//     });
+// };
 
 /*
 TODO:

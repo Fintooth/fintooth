@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { text } = require("body-parser");
 
 const pollSchema = mongoose.Schema({
   _id: mongoose.Schema.Types.ObjectId,
@@ -9,26 +10,29 @@ const pollSchema = mongoose.Schema({
   members: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User"
-    }
+      ref: "User",
+    },
   ],
-  votes: [{
-    type: String,
-    default: "Abstained",
-    enum: ["For", "Against", "Abstained"]
-  }],
+  votes: [
+    {
+      type: String,
+      default: "Abstained",
+      enum: ["For", "Against", "Abstained"],
+    },
+  ],
   result: {
     type: Array,
-    default: [0, 0, 0]
+    default: [0, 0, 0],
   },
   created: { type: Date, default: Date.now },
   expires: { type: Date },
   comments: [
     {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Comment"
-    }
-  ]
+      idNum: { type: Number, default: 0 },
+      author: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+      comment: String,
+    },
+  ],
 });
 
 module.exports = mongoose.model("Poll", pollSchema);

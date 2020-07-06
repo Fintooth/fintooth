@@ -4,7 +4,11 @@ import { connect } from "react-redux";
 const UserSettingsForm = props => {
   console.log(props);
 
-  return <div></div>;
+  return (
+    <div>
+      <h1>Settings go here :)</h1>
+    </div>
+  );
 };
 
 const mapStateToProps = state => {

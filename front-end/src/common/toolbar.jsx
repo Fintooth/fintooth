@@ -12,9 +12,12 @@ import IconButton from "@material-ui/core/IconButton";
 import Badge from "@material-ui/core/Badge";
 import MenuIcon from "@material-ui/icons/Menu";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
-import NotificationsIcon from "@material-ui/icons/Notifications";
-import { mainListItems, secondaryListItems } from "../dashboard/listItems";
 import AccountCircle from "@material-ui/icons/AccountCircle";
+import { mainListItems, secondaryListItems } from "../dashboard/listItems";
+import MenuItem from "@material-ui/core/MenuItem";
+import Menu from "@material-ui/core/Menu";
+
+import { useHistory } from "react-router-dom";
 
 const drawerWidth = 240;
 
@@ -98,6 +101,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function Dashboard(props) {
+  const history = useHistory();
   const classes = useStyles();
   const [open, setOpen] = React.useState(true);
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -109,8 +113,13 @@ export default function Dashboard(props) {
     setOpen(false);
   };
 
+  const openAcc = Boolean(anchorEl);
   const handleMenu = event => {
     setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
   };
 
   return (
@@ -142,11 +151,6 @@ export default function Dashboard(props) {
           >
             {props.title}
           </Typography>
-          <IconButton color="inherit">
-            <Badge badgeContent={4} color="secondary">
-              <NotificationsIcon />
-            </Badge>
-          </IconButton>
           <IconButton
             aria-label="account of current user"
             aria-controls="menu-appbar"
@@ -156,6 +160,26 @@ export default function Dashboard(props) {
           >
             <AccountCircle />
           </IconButton>
+          <Menu
+            id="menu-appbar"
+            anchorEl={anchorEl}
+            anchorOrigin={{
+              vertical: "top",
+              horizontal: "right"
+            }}
+            keepMounted
+            transformOrigin={{
+              vertical: "top",
+              horizontal: "right"
+            }}
+            open={openAcc}
+            onClose={handleClose}
+          >
+            <MenuItem onClick={() => history.push("/settings")}>
+              Settings
+            </MenuItem>
+            <MenuItem onClick={handleClose}>Log out</MenuItem>
+          </Menu>
         </Toolbar>
         {props.element}
       </AppBar>

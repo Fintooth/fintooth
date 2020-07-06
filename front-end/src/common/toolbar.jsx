@@ -14,6 +14,7 @@ import MenuIcon from "@material-ui/icons/Menu";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import NotificationsIcon from "@material-ui/icons/Notifications";
 import { mainListItems, secondaryListItems } from "../dashboard/listItems";
+import AccountCircle from "@material-ui/icons/AccountCircle";
 
 const drawerWidth = 240;
 
@@ -99,11 +100,17 @@ const useStyles = makeStyles(theme => ({
 export default function Dashboard(props) {
   const classes = useStyles();
   const [open, setOpen] = React.useState(true);
+  const [anchorEl, setAnchorEl] = React.useState(null);
+
   const handleDrawerOpen = () => {
     setOpen(true);
   };
   const handleDrawerClose = () => {
     setOpen(false);
+  };
+
+  const handleMenu = event => {
+    setAnchorEl(event.currentTarget);
   };
 
   return (
@@ -139,6 +146,15 @@ export default function Dashboard(props) {
             <Badge badgeContent={4} color="secondary">
               <NotificationsIcon />
             </Badge>
+          </IconButton>
+          <IconButton
+            aria-label="account of current user"
+            aria-controls="menu-appbar"
+            aria-haspopup="true"
+            onClick={handleMenu}
+            color="inherit"
+          >
+            <AccountCircle />
           </IconButton>
         </Toolbar>
         {props.element}

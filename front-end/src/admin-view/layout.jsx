@@ -23,7 +23,7 @@ const AdminView = props => {
   const classes = useStyles();
   let location = useLocation();
   const page = location.pathname.split("/").slice(-1)[0];
-  console.log(page);
+  //console.log(page);
 
   const { getUsers, getGroups, request } = props;
 
@@ -67,7 +67,8 @@ const AdminView = props => {
 const mapStateToProps = state => ({
   request: state.request,
   users: state.users,
-  groups: state.groups
+  groups: state.groups,
+  currentUser: state.currentUser
 });
 
 const mapDispatchToProps = dispatch => ({

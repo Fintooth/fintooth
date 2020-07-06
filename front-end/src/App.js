@@ -12,6 +12,7 @@ import store from "../src/redux/configureStore";
 import Login from "./login/Login";
 import Dashboard from "./dashboard/Dashboard";
 import AdminView from "./admin-view/layout";
+import UserSettingsForm from "./settings-view/user-settings";
 
 export default function App() {
   return (
@@ -29,6 +30,9 @@ export default function App() {
           </Route>
           <Route path="/admin-view/groups">
             <AdminView />
+          </Route>
+          <Route path="/settings">
+            <UserSettingsForm />
           </Route>
           <Route path="/">
             <Redirect to="/login" />

@@ -12,7 +12,11 @@ import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import blackTooth from "../images/blackTooth.png";
 
-import { SAGA_USER_ACTIONS, URL } from "../redux/constants";
+import {
+  SAGA_USER_ACTIONS,
+  URL,
+  CURRENT_USER_ACTIONS
+} from "../redux/constants";
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -65,7 +69,7 @@ const Login = props => {
       const user = {
         email: registerInput.email,
         password: registerInput.password,
-        username: registerInput.username
+        nickname: registerInput.username
       };
       props.registerUser(user);
     } else if (isLoginPage) {
@@ -78,6 +82,10 @@ const Login = props => {
         .post(`${URL}/users/login`, user)
         .then(response => {
           sessionStorage.setItem("token", response.data.token);
+          props.addUserData({
+            userId: response.data.id,
+            token: response.data.token
+          });
           history.push("/dashboard");
         })
         .catch(e => {
@@ -268,14 +276,17 @@ const Login = props => {
 function mapStateToProps(state) {
   return {
     users: state.users,
-    request: state.reques
+    request: state.reques,
+    currentUser: state.currentUser
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
     registerUser: user =>
-      dispatch({ type: SAGA_USER_ACTIONS.ADD_USER_ASYNC, user })
+      dispatch({ type: SAGA_USER_ACTIONS.ADD_USER_ASYNC, user }),
+    addUserData: userData =>
+      dispatch({ type: CURRENT_USER_ACTIONS.SET_CURRENT_USER, userData })
   };
 }
 

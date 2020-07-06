@@ -4,13 +4,15 @@ import createSagaMiddleware from "redux-saga";
 import { requestReducer } from "./reducers/requestReducer";
 import groupReducer from "./reducers/groupReducer";
 import userReducer from "./reducers/userReducer";
+import { userDataReducer } from "./reducers/userIdReducer";
 
 import rootSaga from "./sagas/rootSaga";
 
 const rootReducer = combineReducers({
   users: userReducer,
   request: requestReducer,
-  groups: groupReducer
+  groups: groupReducer,
+  currentUser: userDataReducer
 });
 
 const sagaMiddleware = createSagaMiddleware();

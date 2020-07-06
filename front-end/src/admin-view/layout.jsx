@@ -67,6 +67,7 @@ const mapStateToProps = (state) => ({
   request: state.request,
   users: state.users,
   groups: state.groups,
+  currentUser: state.currentUser
 });
 
 const mapDispatchToProps = (dispatch) => ({

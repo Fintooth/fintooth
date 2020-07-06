@@ -32,4 +32,9 @@ export const SAGA_GROUP_ACTIONS = Object.freeze({
   GET_GROUPS_ASYNC: "GET_GROUPS_ASYNC"
 });
 
+export const CURRENT_USER_ACTIONS = Object.freeze({
+  SET_CURRENT_USER: "SET_CURRENT_USER",
+  UNSET_CURRENT_USER: "UNSET_CURRENT_USER"
+});
+
 export const URL = "http://localhost:3001";

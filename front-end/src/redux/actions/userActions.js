@@ -11,3 +11,11 @@ export function removeUser(userId) {
 export function modifyUser(user) {
   return { type: USER_ACTIONS.MODIFY_USER, user };
 }
+
+export function addAccount(user) {
+  return { type: USER_ACTIONS.ADD_ACCOUNT, user };
+}
+
+export function deleteAccount(accountId, user) {
+  return { type: USER_ACTIONS.DELETE_ACCOUNT, user };
+}

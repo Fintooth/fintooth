@@ -28,7 +28,8 @@ const pollSchema = mongoose.Schema({
   expires: { type: Date },
   comments: [
     {
-      idNum: { type: Number, default: 0 },
+      _id: mongoose.Schema.Types.ObjectId,
+      date: { type: Date, default: Date.now },
       author: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
       comment: String,
     },

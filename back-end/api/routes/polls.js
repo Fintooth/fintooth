@@ -6,12 +6,15 @@ const checkSelfOrAdmin = require("../middleware/check-self-admin");
 const PollsController = require("../controllers/polls");
 
 router.get("/", PollsController.poll_get_all);
-router.get("/:pollId", PollsController.poll_get_by_id);
+router.get("/:pollId", PollsController.poll_get_one);
 
 router.post("/:groupId", PollsController.poll_create);
 
-router.patch("/:pollId/make-comment", PollsController.poll_add_comment);
-// router.patch("/:pollId/delete-commentt", PollsController.poll_delete_comment);
+router.post("/:pollId/comment", PollsController.poll_add_comment);
+router.delete(
+  "/:pollId/comment/:commentId",
+  PollsController.poll_delete_comment
+);
 
 router.delete("/:pollId", PollsController.poll_delete);
 

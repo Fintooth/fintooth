@@ -57,7 +57,7 @@ exports.poll_get_all = (req, res, next) => {
     });
 };
 
-exports.poll_get_by_id = (req, res, next) => {
+exports.poll_get_one = (req, res, next) => {
   const pollId = req.params.pollId;
   Poll.findById(pollId)
     .select(
@@ -96,18 +96,22 @@ exports.poll_add_comment = (req, res, next) => {
   const comment = req.body.comment;
   const commentId = req.body.commentId;
   const authorId = req.body.authorId;
-  Poll.update(
+  Poll.updateOne(
     { _id: pollId },
     {
       $push: {
-        comments: { idNum: commentId, author: authorId, comment: comment },
+        comments: {
+          _id: mongoose.Types.ObjectId(),
+          author: authorId,
+          comment: comment,
+        },
       },
     }
   )
     .exec()
     .then((result) => {
       res.status(200).json({
-        message: "Comment Added",
+        message: "Comment added",
       });
     })
     .catch((err) => {
@@ -117,29 +121,28 @@ exports.poll_add_comment = (req, res, next) => {
     });
 };
 
-// exports.poll_delete_comment = (req, res, next) => {
-//   const pollId = req.params.pollId;
-//   const commentId = req.body.commentId;
-//   Poll.update(
-//     { _id: pollId },
-//     {
-//       $pull: {
-//         comments: { idNum: commentId },
-//       },
-//     }
-//   )
-//     .exec()
-//     .then((result) => {
-//       res.status(200).json({
-//         message: "Comment Removed",
-//       });
-//     })
-//     .catch((err) => {
-//       res.status(500).json({
-//         error: err,
-//       });
-//     });
-// };
+exports.poll_delete_comment = (req, res, next) => {
+  const { pollId, commentId } = req.params;
+  Poll.updateOne(
+    { _id: pollId },
+    {
+      $pull: {
+        comments: { _id: commentId },
+      },
+    }
+  )
+    .exec()
+    .then((result) => {
+      res.status(200).json({
+        message: "Comment deleted",
+      });
+    })
+    .catch((err) => {
+      res.status(500).json({
+        error: err,
+      });
+    });
+};
 
 exports.poll_delete = (req, res, next) => {
   const pollId = req.params.pollId;

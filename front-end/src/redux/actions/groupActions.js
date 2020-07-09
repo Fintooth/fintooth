@@ -11,3 +11,10 @@ export function removeGroup(groupId) {
 export function modifyGroup(group) {
   return { type: GROUP_ACTIONS.MODIFY_GROUP, group };
 }
+export function addAccount(group) {
+  return { type: GROUP_ACTIONS.ADD_ACCOUNT, group };
+}
+
+export function addUser(group) {
+  return { type: GROUP_ACTIONS.ADD_USER, group };
+}

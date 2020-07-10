@@ -33,6 +33,15 @@ const groupReducer = (state = [], action) => {
         action.group,
         ...state.slice(toModifyIndex2 + 1, state.length),
       ];
+    case GROUP_ACTIONS.REMOVE_USER:
+      const toModifyIndex3 = state.findIndex(
+        (group) => group.groupId === action.group.groupId
+      );
+      return [
+        ...state.slice(0, toModifyIndex3),
+        action.group,
+        ...state.slice(toModifyIndex3 + 1, state.length),
+      ];
     default:
       return state;
   }

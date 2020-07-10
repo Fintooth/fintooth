@@ -29,6 +29,7 @@ export const GROUP_ACTIONS = Object.freeze({
   GET_GROUPS: "GET_GROUPS",
   ADD_ACCOUNT: "ADD_ACCOUNT",
   ADD_USER: "ADD_USER",
+  REMOVE_USER: "REMOVE_USER",
 });
 
 export const SAGA_GROUP_ACTIONS = Object.freeze({
@@ -38,6 +39,7 @@ export const SAGA_GROUP_ACTIONS = Object.freeze({
   GET_GROUPS_ASYNC: "GET_GROUPS_ASYNC",
   ADD_ACCOUNT_ASYNC: "ADD_ACCOUNT_ASYNC",
   ADD_USER_ASYNC: "ADD_USER_ASYNC",
+  REMOVE_USER_ASYNC: "REMOVE_USER_ASYNC",
 });
 
 export const CURRENT_USER_ACTIONS = Object.freeze({

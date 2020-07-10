@@ -12,6 +12,8 @@ const getGroups = () => axios.get(`${URL}/groups`);
 const addAccount = (group) =>
   axios.post(`${URL}/groups/${group.id}/add-account`);
 const addUser = (group) => axios.post(`${URL}/groups/${group.id}/add-user`);
+const removeUser = (group) =>
+  axios.delete(`${URL}/groups/${group.id}/remove-user`);
 
 function* getGroupsSaga() {
   try {
@@ -40,6 +42,17 @@ function* addUserSaga(action) {
     yield put(requestActions.startRequest());
     const response = yield addUser(action.group);
     yield put(groupActions.addUser(action.group));
+    yield put(requestActions.successRequest(response));
+  } catch (e) {
+    yield put(requestActions.errorRequest(e.message));
+  }
+}
+
+function* removeUserSaga(action) {
+  try {
+    yield put(requestActions.startRequest());
+    const response = yield removeUser(action.group);
+    yield put(groupActions.removeUser(action.userId, action.group));
     yield put(requestActions.successRequest(response));
   } catch (e) {
     yield put(requestActions.errorRequest(e.message));
@@ -84,5 +97,6 @@ export function* groupsWatcherSaga() {
     takeLatest(SAGA_GROUP_ACTIONS.GET_GROUPS_ASYNC, getGroupsSaga),
     takeLatest(SAGA_GROUP_ACTIONS.ADD_ACCOUNT_ASYNC, addAccountSaga),
     takeLatest(SAGA_GROUP_ACTIONS.ADD_USER_ASYNC, addUserSaga),
+    takeLatest(SAGA_GROUP_ACTIONS.REMOVE_USER_ASYNC, removeUserSaga),
   ]);
 }

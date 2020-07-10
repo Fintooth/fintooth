@@ -181,50 +181,46 @@ exports.add_account = (req, res, next) => {
     });
 };
 
-// exports.remove_user = (req, res, next) => {
-//   const id = req.params.groupId;
-//   const userId = req.body.userId;
-//   Group.findOneAndUpdate(
-//     { _id: id },
-//     {
-//       $pull: {
-//         members: {
-//           User: userId,
-//         },
-//       },
-//     }
-//   )
-//     .exec()
-//     .then((result) => {
-//       res.status(200).json({
-//         message: "User with id " + userId + " removed from group with id " + id,
-//       });
-//     })
-//     .catch((err) => {
-//       res.status(500).json({
-//         error: err,
-//       });
-//     });
+exports.remove_user = (req, res, next) => {
+  const id = req.params.groupId;
+  const userId = req.body.userId;
+  Group.updateOne(
+    { _id: id },
+    {
+      $pull: {
+        members: userId,
+      },
+    }
+  )
+    .exec()
+    .then((result) => {
+      res.status(200).json({
+        message: "User with id " + userId + " removed from group with id " + id,
+      });
+    })
+    .catch((err) => {
+      res.status(500).json({
+        error: err,
+      });
+    });
 
-//   //   User.findByIdAndUpdate(
-//   //     { _id: userId },
-//   //     {
-//   //       $pull: {
-//   //         groups: {
-//   //           _id: id,
-//   //         },
-//   //       },
-//   //     }
-//   //   )
-//   //     .exec()
-//   //     .then((result) => {
-//   //       res.status(200).json({
-//   //         message: "Group with id " + id + " removed from user with id " + userId,
-//   //       });
-//   //     })
-//   //     .catch((err) => {
-//   //       res.status(500).json({
-//   //         error: err,
-//   //       });
-//   //     });
-// };
+  User.update(
+    { _id: userId },
+    {
+      $pull: {
+        groups: id,
+      },
+    }
+  )
+    .exec()
+    .then((result) => {
+      res.status(200).json({
+        message: "Group with id " + id + " removed from user with id " + userId,
+      });
+    })
+    .catch((err) => {
+      res.status(500).json({
+        error: err,
+      });
+    });
+};

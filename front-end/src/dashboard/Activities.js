@@ -1,10 +1,11 @@
 import React from "react";
+import { connect } from "react-redux";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import clsx from "clsx";
-import ExpansionPanel from "@material-ui/core/ExpansionPanel";
-import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
-import MuiExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
-import ExpansionPanelActions from "@material-ui/core/ExpansionPanelActions";
+import Accordion from "@material-ui/core/Accordion";
+import AccordionDetails from "@material-ui/core/AccordionDetails";
+import MuiAccordionSummary from "@material-ui/core/AccordionSummary";
+import AccordionActions from "@material-ui/core/AccordionActions";
 import Typography from "@material-ui/core/Typography";
 import MoreVert from "@material-ui/icons/MoreVert";
 import MuiChip from "@material-ui/core/Chip";
@@ -16,14 +17,11 @@ import Modal from "@material-ui/core/Modal";
 import Backdrop from "@material-ui/core/Backdrop";
 import Fade from "@material-ui/core/Fade";
 
-import NumberFormat from "react-number-format";
-import TextField from "@material-ui/core/TextField";
-import MenuItem from "@material-ui/core/MenuItem";
-import InputAdornment from "@material-ui/core/InputAdornment";
-
 import PlusIcon from "@material-ui/icons/Add";
 import MinusIcon from "@material-ui/icons/Remove";
 import NeutralIcon from "@material-ui/icons/FiberManualRecordOutlined";
+
+import ActivityToEdit from "./ActivityToEdit";
 
 const Chip = withStyles({
   root: {
@@ -39,15 +37,15 @@ const Chip = withStyles({
   },
 })(MuiChip);
 
-const ExpansionPanelSummary = withStyles({
+const AccordionSummary = withStyles({
   root: {
-    backgroundColor: "rgba(0, 0, 0, .03)",
+    backgroundColor: "rgba(0, 0, 0, .04)",
   },
   content: {
     alignItems: "center",
     justifyContent: "space-between",
   },
-})(MuiExpansionPanelSummary);
+})(MuiAccordionSummary);
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -81,6 +79,7 @@ const useStyles = makeStyles((theme) => ({
     flexBasis: "50%",
   },
   columnImg: {
+    marginLeft: "6px",
     flexBasis: "50%",
     textAlign: "center",
   },
@@ -117,19 +116,6 @@ const useStyles = makeStyles((theme) => ({
     boxShadow: theme.shadows[5],
     padding: theme.spacing(2, 4, 3),
   },
-
-  //Input
-  typeField: {
-    width: "100px",
-  },
-  amountField: {
-    marginLeft: "2px",
-    width: "150px",
-  },
-  iconInput: {
-    fontSize: "small",
-    opacity: 0.74,
-  },
 }));
 
 const emptyFunc = (event) => {
@@ -137,140 +123,99 @@ const emptyFunc = (event) => {
   return false;
 };
 
-function NumberFormatCustom(props) {
-  const { inputRef, onChange, ...other } = props;
-
-  return (
-    <NumberFormat
-      {...other}
-      getInputRef={inputRef}
-      onValueChange={(values) => {
-        onChange({
-          target: {
-            name: props.name,
-            value: values.value,
-          },
-        });
-      }}
-      thousandSeparator={" "}
-      decimalSeparator={","}
-      decimalScale={2}
-      isNumericString
-    />
-  );
-}
-
-export default function DetailedExpansionPanel() {
+export default function Activities({ activities }) {
   const classes = useStyles();
+
+  const activityColor = {
+    Income: "primary",
+    Expenditure: "secondary",
+    Move: "",
+  };
 
   // for modal
   const [open, setOpen] = React.useState(0);
   const handleOpen = (event) => {
-    setOpen(event.target.id.slice(-1));
+    setOpen(parseInt(event.target.id.slice(-1)));
   };
   const handleClose = () => {
     setOpen(false);
   };
 
-  // for input
-  const [type, setType] = React.useState("Spend");
-  const [amount, setAmount] = React.useState({
-    numberformat: "",
+  const getActivityDate = (date) => {
+    const d = new Date(date);
+    return d.toString().substr(0, 24);
+  };
+
+  const [activityToEdit, setActivityToEdit] = React.useState({
+    id: "",
+    user: "",
+    type: "Expenditure",
+    accountSrc: "",
+    accountDest: "",
+    description: "",
+    picure: "",
+    date: "Now",
+    amount: "",
   });
-  const getSymbol = {
-    Add: <PlusIcon color="primary" className={classes.iconInput} />,
-    Spend: <MinusIcon color="secondary" className={classes.iconInput} />,
-    Move: <NeutralIcon color="disabled" className={classes.iconInput} />,
-  };
-
-  const handleChangeType = (event) => {
-    setType(event.target.value);
-  };
-
-  const handleChangeAmount = (event) => {
-    setAmount({
-      ...amount,
-      [event.target.name]: event.target.value,
-    });
-  };
 
   return (
     <div className={classes.root}>
-      <form noValidate autoComplete="off">
-        <ExpansionPanel disabled>
-          <ExpansionPanelSummary
-            aria-controls="panel0-content"
-            id="panel0-header"
+      <ActivityToEdit
+        activityToEdit={activityToEdit}
+        setActivityToEdit={setActivityToEdit}
+      />
+      {activities.map((activity, ind) => (
+        <Accordion key={ind + 1}>
+          <AccordionSummary
+            expandIcon={<MoreVert />}
+            aria-controls={`panel${ind + 1}-content`}
+            id={`panel${ind + 1}-header`}
           >
             <div className={classes.column}>
-              <div>
-                <TextField
-                  className={classes.typeField}
-                  id="outlined-select-currency"
-                  select
-                  label="Type"
-                  value={type}
-                  onChange={handleChangeType}
-                  variant="outlined"
-                >
-                  <MenuItem key="add" value="Add">
-                    Add
-                  </MenuItem>
-                  <MenuItem key="spend" value="Spend">
-                    Spend
-                  </MenuItem>
-                  <MenuItem key="move" value="Move">
-                    Move
-                  </MenuItem>
-                </TextField>
-                <TextField
-                  label="Amount"
-                  value={amount.numberformat}
-                  onChange={handleChangeAmount}
-                  name="numberformat"
-                  id="formatted-numberformat-input"
-                  className={classes.amountField}
-                  InputProps={{
-                    inputComponent: NumberFormatCustom,
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        {getSymbol[type]}
-                      </InputAdornment>
-                    ),
-                  }}
-                  variant="outlined"
-                />
-              </div>
+              <Chip
+                variant="outlined"
+                color={activityColor[activity.type]}
+                label={activity.amount}
+                onClick={emptyFunc}
+                avatar={
+                  <Avatar>
+                    {activity.type === "Income" && <PlusIcon />}
+                    {activity.type === "Expenditure" && <MinusIcon />}
+                    {activity.type === "Move" && <NeutralIcon />}
+                  </Avatar>
+                }
+              />
             </div>
             <div className={classes.column}>
               <Typography className={classes.secondaryHeading}>
-                13:27 April 21, Tuesday
+                {getActivityDate(activity.date)}
               </Typography>
             </div>
-          </ExpansionPanelSummary>
-          <ExpansionPanelDetails className={classes.details}>
+          </AccordionSummary>
+          <AccordionDetails className={classes.details}>
             <div className={classes.columnAccount}>
               <Typography variant="caption">
-                spent from Visa •••• 7162
+                {"from" in activity && activity.from}
+                {"to" in activity && "->" + activity.to}
               </Typography>
             </div>
             <div className={clsx(classes.columnDescripImg, classes.helper)}>
               <div className={classes.columnDescrip}>
-                <p>Комплект отвертки за ремонта в хола това лято</p>
+                <p>{activity.description}</p>
               </div>
               <div className={classes.columnImg}>
                 <img
-                  id="imgPanel1"
+                  id={"imgPanel" + (ind + 1)}
                   className={classes.activityImage}
-                  src="../../images/activities/1/bill.png"
+                  src={activity.picture}
                   onClick={handleOpen}
-                  alt="bill.png"
+                  alt="activity"
                 />
                 <Modal
                   aria-labelledby="transition-modal-title"
                   aria-describedby="transition-modal-description"
                   className={classes.modal}
-                  open={open === "1"}
+                  open={open === ind + 1}
                   onClose={handleClose}
                   closeAfterTransition
                   BackdropComponent={Backdrop}
@@ -278,258 +223,29 @@ export default function DetailedExpansionPanel() {
                     timeout: 500,
                   }}
                 >
-                  <Fade in={open === "1"}>
+                  <Fade in={open === ind + 1}>
                     <div className={classes.paper}>
                       <img
                         className={classes.modalImage}
-                        src="../../images/activities/1/bill.png"
-                        alt="bill.png"
+                        src={activity.picture}
                         onClick={handleOpen}
+                        alt="activity"
                       />
                     </div>
                   </Fade>
                 </Modal>
               </div>
             </div>
-          </ExpansionPanelDetails>
+          </AccordionDetails>
           <Divider />
-          <ExpansionPanelActions>
+          <AccordionActions>
             <Button size="small">Change</Button>
             <Button size="small" color="primary">
               Delete
             </Button>
-          </ExpansionPanelActions>
-        </ExpansionPanel>
-      </form>
-
-      <ExpansionPanel>
-        <ExpansionPanelSummary
-          expandIcon={<MoreVert />}
-          aria-controls="panel1-content"
-          id="panel1-header"
-        >
-          <div className={classes.column}>
-            <Chip
-              variant="outlined"
-              color="secondary"
-              label="714.29"
-              onClick={emptyFunc}
-              avatar={
-                <Avatar>
-                  <MinusIcon />
-                </Avatar>
-              }
-            />
-          </div>
-          <div className={classes.column}>
-            <Typography className={classes.secondaryHeading}>
-              13:27 April 21, Tuesday
-            </Typography>
-          </div>
-        </ExpansionPanelSummary>
-        <ExpansionPanelDetails className={classes.details}>
-          <div className={classes.columnAccount}>
-            <Typography variant="caption">spent from Visa •••• 7162</Typography>
-          </div>
-          <div className={clsx(classes.columnDescripImg, classes.helper)}>
-            <div className={classes.columnDescrip}>
-              <p>Комплект отвертки за ремонта в хола това лято</p>
-            </div>
-            <div className={classes.columnImg}>
-              <img
-                id="imgPanel1"
-                className={classes.activityImage}
-                src="../../images/activities/1/bill.png"
-                onClick={handleOpen}
-                alt="bill.png"
-              />
-              <Modal
-                aria-labelledby="transition-modal-title"
-                aria-describedby="transition-modal-description"
-                className={classes.modal}
-                open={open === "1"}
-                onClose={handleClose}
-                closeAfterTransition
-                BackdropComponent={Backdrop}
-                BackdropProps={{
-                  timeout: 500,
-                }}
-              >
-                <Fade in={open === "1"}>
-                  <div className={classes.paper}>
-                    <img
-                      className={classes.modalImage}
-                      src="../../images/activities/1/bill.png"
-                      onClick={handleOpen}
-                      alt="bill.png"
-                    />
-                  </div>
-                </Fade>
-              </Modal>
-            </div>
-          </div>
-        </ExpansionPanelDetails>
-        <Divider />
-        <ExpansionPanelActions>
-          <Button size="small">Change</Button>
-          <Button size="small" color="primary">
-            Delete
-          </Button>
-        </ExpansionPanelActions>
-      </ExpansionPanel>
-
-      <ExpansionPanel>
-        <ExpansionPanelSummary
-          expandIcon={<MoreVert />}
-          aria-controls="panel2-content"
-          id="panel2-header"
-        >
-          <div className={classes.column}>
-            <Chip
-              variant="outlined"
-              color="primary"
-              label="2000.00"
-              onClick={emptyFunc}
-              avatar={
-                <Avatar>
-                  <PlusIcon />
-                </Avatar>
-              }
-            />
-          </div>
-          <div className={classes.column}>
-            <Typography className={classes.secondaryHeading}>
-              00:10 April 20, Monday
-            </Typography>
-          </div>
-        </ExpansionPanelSummary>
-        <ExpansionPanelDetails className={classes.details}>
-          <div className={classes.columnAccount}>
-            <Typography variant="caption">added to Home Account</Typography>
-          </div>
-          <div className={clsx(classes.columnDescripImg, classes.helper)}>
-            <div className={classes.columnDescrip}>
-              <p></p>
-            </div>
-            <div className={classes.columnImg}>
-              <img
-                id="imgPanel2"
-                className={classes.activityImage}
-                src="../../images/activities/1/shop.jpg"
-                onClick={handleOpen}
-                alt="shop.jpg"
-              />
-              <Modal
-                aria-labelledby="transition-modal-title"
-                aria-describedby="transition-modal-description"
-                className={classes.modal}
-                open={open === "2"}
-                onClose={handleClose}
-                closeAfterTransition
-                BackdropComponent={Backdrop}
-                BackdropProps={{
-                  timeout: 500,
-                }}
-              >
-                <Fade in={open === "2"}>
-                  <div className={classes.paper}>
-                    <img
-                      className={classes.modalImage}
-                      src="../../images/activities/1/shop.jpg"
-                      onClick={handleOpen}
-                      alt="shop.jpg"
-                    />
-                  </div>
-                </Fade>
-              </Modal>
-            </div>
-          </div>
-        </ExpansionPanelDetails>
-        <Divider />
-        <ExpansionPanelActions>
-          <Button size="small">Change</Button>
-          <Button size="small" color="primary">
-            Delete
-          </Button>
-        </ExpansionPanelActions>
-      </ExpansionPanel>
-
-      <ExpansionPanel>
-        <ExpansionPanelSummary
-          expandIcon={<MoreVert />}
-          aria-controls="panel3-content"
-          id="panel3-header"
-        >
-          <div className={classes.column}>
-            <Chip
-              variant="outlined"
-              label="420.00"
-              onClick={emptyFunc}
-              avatar={
-                <Avatar>
-                  <NeutralIcon />
-                </Avatar>
-              }
-            />
-          </div>
-          <div className={classes.column}>
-            <Typography className={classes.secondaryHeading}>
-              00:07 April 20, Monday
-            </Typography>
-          </div>
-        </ExpansionPanelSummary>
-        <ExpansionPanelDetails className={classes.details}>
-          <div className={classes.columnAccount}>
-            <Typography variant="caption">
-              moved from Visa •••• 7162 to Home Account
-            </Typography>
-          </div>
-          <div className={clsx(classes.columnDescripImg, classes.helper)}>
-            <div className={classes.columnDescrip}>
-              <p></p>
-            </div>
-            <div className={classes.columnImg}>
-              <img
-                id="imgPanel3"
-                className={classes.activityImage}
-                src="../../images/activities/1/product.png"
-                onClick={handleOpen}
-                alt="product.png"
-              />
-              <Modal
-                aria-labelledby="transition-modal-title"
-                aria-describedby="transition-modal-description"
-                className={classes.modal}
-                open={open === "3"}
-                onClose={handleClose}
-                closeAfterTransition
-                BackdropComponent={Backdrop}
-                BackdropProps={{
-                  timeout: 500,
-                }}
-              >
-                <Fade in={open === "3"}>
-                  <div className={classes.paper}>
-                    <img
-                      className={classes.modalImage}
-                      src="../../images/activities/1/product.png"
-                      onClick={handleOpen}
-                      alt="product.png"
-                    />
-                  </div>
-                </Fade>
-              </Modal>
-            </div>
-          </div>
-        </ExpansionPanelDetails>
-        <Divider />
-        <ExpansionPanelActions>
-          <Button size="small">Change</Button>
-          <Button size="small" color="primary">
-            Delete
-          </Button>
-        </ExpansionPanelActions>
-      </ExpansionPanel>
+          </AccordionActions>
+        </Accordion>
+      ))}
     </div>
   );
 }

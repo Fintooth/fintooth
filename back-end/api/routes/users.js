@@ -53,7 +53,12 @@ router.post("/signup", UsersController.users_signup);
 
 router.post("/login", UsersController.users_login);
 
-router.post("/add-account/:userId", UsersController.add_account);
+router.post("/:userId/accounts", UsersController.add_account);
+
+router.patch(
+  "/:userId/accounts/:accountId",
+  UsersController.users_patch_account_amount
+);
 
 router.patch(
   "/change-avatar/:userId",

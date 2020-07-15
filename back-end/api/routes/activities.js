@@ -11,7 +11,7 @@ router.get("/:id", ActivitiesController.activity_get_one);
 
 router.post("/user/:id", ActivitiesController.add_activity);
 
-router.patch("/edit-activity/:activityId", ActivitiesController.edit_activity);
+router.patch("/:activityId", ActivitiesController.edit_activity);
 
 router.delete("/:activityId", ActivitiesController.activities_delete);
 

@@ -20,8 +20,12 @@ exports.activity_get_all_for_user = (req, res, next) => {
           return {
             id: doc._id,
             amount: doc.amount,
+            description: doc.description,
+            picture: doc.picture,
             type: doc.type,
             date: doc.date,
+            from: doc.accountSrc,
+            to: doc.accountDest,
             request: {
               type: "GET DELETE",
               url: "http://localhost:3001/activities/" + doc._id,

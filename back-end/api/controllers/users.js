@@ -172,7 +172,13 @@ exports.users_login = (req, res, next) => {
         return res.status(200).json({
           message: "Auth successful",
           token: token,
-          id: user._id,
+          user: {
+            id: user._id,
+            email: user.email,
+            nickname: user.nickname,
+            admin: user.admin,
+            accounts: user.accounts,
+          },
         });
       });
     })
@@ -184,20 +190,23 @@ exports.users_login = (req, res, next) => {
 };
 
 exports.add_account = (req, res, next) => {
-  const id = req.params.userId;
-  const name = req.body.name;
-  const type = req.body.type;
-  const amount = req.body.amount;
-  const currency = req.body.currency;
-  const bankAccType = req.body.bankAccType;
-  const rate = req.body.rate;
-  const period = req.body.period;
+  const userId = req.params.userId;
+  const {
+    name,
+    type = "bank",
+    amount = 0,
+    currency = "usd",
+    bankAccType = "debit",
+    rate = 0,
+    period = 12,
+  } = req.body;
+  const id = mongoose.Types.ObjectId();
   User.updateOne(
-    { _id: id },
+    { _id: userId },
     {
       $push: {
         accounts: {
-          _id: mongoose.Types.ObjectId(),
+          _id: id,
           name: name,
           type: type,
           amount: amount,
@@ -215,9 +224,34 @@ exports.add_account = (req, res, next) => {
     .then((result) => {
       res.status(200).json({
         message: "Account created",
+        Location: id,
+      });
+    })
+    .catch((err) => {
+      res.status(500).json({
+        error: err,
+      });
+    });
+};
+
+exports.users_patch_account_amount = (req, res, next) => {
+  const { userId, accountId } = req.params;
+  const amount = parseInt(req.body.amount);
+  console.log(userId, accountId, amount);
+  User.updateOne(
+    { _id: userId },
+    { $inc: { "accounts.$[element].amount": amount } },
+    {
+      arrayFilters: [{ "element._id": { $eq: accountId } }],
+    }
+  )
+    .exec()
+    .then((result) => {
+      res.status(200).json({
+        message: "User account updated",
         request: {
           type: "GET PATCH DELETE",
-          url: "http://localhost:3001/users/" + id,
+          url: "http://localhost:3001/users/" + userId,
         },
       });
     })

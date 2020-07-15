@@ -15,32 +15,32 @@ import blackTooth from "../images/blackTooth.png";
 import {
   SAGA_USER_ACTIONS,
   URL,
-  CURRENT_USER_ACTIONS
+  CURRENT_USER_ACTIONS,
 } from "../redux/constants";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   paper: {
     marginTop: theme.spacing(8),
     display: "flex",
     flexDirection: "column",
-    alignItems: "center"
+    alignItems: "center",
   },
   avatar: {
     margin: theme.spacing(1),
     //backgroundColor: theme.palette.secondary.main,
     height: 200,
-    width: 200
+    width: 200,
   },
   form: {
     width: "100%", // Fix IE 11 issue.
-    marginTop: theme.spacing(1)
+    marginTop: theme.spacing(1),
   },
   submit: {
-    margin: theme.spacing(3, 0, 2)
-  }
+    margin: theme.spacing(3, 0, 2),
+  },
 }));
 
-const Login = props => {
+const Login = (props) => {
   const classes = useStyles();
   const [isLoginPage, setIsLoginPage] = useState(true);
 
@@ -48,7 +48,7 @@ const Login = props => {
 
   const [loginInput, setLoginInput] = useState({
     email: "",
-    password: ""
+    password: "",
   });
 
   const [registerInput, setRegisterInput] = useState({
@@ -59,36 +59,43 @@ const Login = props => {
     validEmail: true,
     passwordsMatch: true,
     validUsername: true,
-    validPassword: true
+    validPassword: true,
   });
 
-  const submitForm = event => {
+  const submitForm = (event) => {
     event.preventDefault();
 
     if (!isLoginPage) {
       const user = {
         email: registerInput.email,
         password: registerInput.password,
-        nickname: registerInput.username
+        nickname: registerInput.username,
       };
       props.registerUser(user);
     } else if (isLoginPage) {
       const user = {
         email: loginInput.email,
-        password: loginInput.password
+        password: loginInput.password,
       };
 
       axios
         .post(`${URL}/users/login`, user)
-        .then(response => {
-          sessionStorage.setItem("token", response.data.token);
+        .then((response) => {
+          window.localStorage.setItem(
+            "currentUser",
+            JSON.stringify({
+              user: response.data.user,
+              token: response.data.token,
+              expiry: Date.now() + 1000 * 60 * 60,
+            })
+          );
           props.addUserData({
-            userId: response.data.id,
-            token: response.data.token
+            user: response.data.user,
+            token: response.data.token,
           });
-          history.push("/dashboard");
+          history.replace("/dashboard");
         })
-        .catch(e => {
+        .catch((e) => {
           window.alert("Incorrect username or password :(");
           window.location.reload();
         });
@@ -109,7 +116,7 @@ const Login = props => {
         </Typography>
         <form
           className={classes.form}
-          onSubmit={event => submitForm(event)}
+          onSubmit={(event) => submitForm(event)}
           noValidate
           method="POST"
         >
@@ -126,10 +133,10 @@ const Login = props => {
               name="email"
               autoComplete="email"
               value={registerInput.email}
-              onChange={event =>
+              onChange={(event) =>
                 setRegisterInput({
                   ...registerInput,
-                  email: event.target.value
+                  email: event.target.value,
                 })
               }
               onBlur={() => {
@@ -154,12 +161,12 @@ const Login = props => {
             name="username"
             autoComplete="username"
             value={isLoginPage ? loginInput.email : registerInput.username}
-            onChange={event => {
+            onChange={(event) => {
               isLoginPage
                 ? setLoginInput({ ...loginInput, email: event.target.value })
                 : setRegisterInput({
                     ...registerInput,
-                    username: event.target.value
+                    username: event.target.value,
                   });
             }}
             onBlur={() => {
@@ -189,12 +196,12 @@ const Login = props => {
             id="password"
             autoComplete="current-password"
             value={isLoginPage ? loginInput.password : registerInput.password}
-            onChange={event => {
+            onChange={(event) => {
               isLoginPage
                 ? setLoginInput({ ...loginInput, password: event.target.value })
                 : setRegisterInput({
                     ...registerInput,
-                    password: event.target.value
+                    password: event.target.value,
                   });
             }}
             onBlur={() => {
@@ -225,10 +232,10 @@ const Login = props => {
               id="repassword"
               autoComplete="repeat-password"
               value={registerInput.repassword}
-              onChange={event =>
+              onChange={(event) =>
                 setRegisterInput({
                   ...registerInput,
-                  repassword: event.target.value
+                  repassword: event.target.value,
                 })
               }
               onBlur={() =>
@@ -236,7 +243,7 @@ const Login = props => {
                   ? setRegisterInput({ ...registerInput, passwordsMatch: true })
                   : setRegisterInput({
                       ...registerInput,
-                      passwordsMatch: false
+                      passwordsMatch: false,
                     })
               }
               error={!registerInput.passwordsMatch}
@@ -251,7 +258,7 @@ const Login = props => {
             variant="contained"
             color="primary"
             className={classes.submit}
-            onClick={event => submitForm(event)}
+            onClick={(event) => submitForm(event)}
           >
             {isLoginPage ? "Login" : "Register"}
           </Button>
@@ -277,16 +284,16 @@ function mapStateToProps(state) {
   return {
     users: state.users,
     request: state.reques,
-    currentUser: state.currentUser
+    currentUser: state.currentUser,
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
-    registerUser: user =>
+    registerUser: (user) =>
       dispatch({ type: SAGA_USER_ACTIONS.ADD_USER_ASYNC, user }),
-    addUserData: userData =>
-      dispatch({ type: CURRENT_USER_ACTIONS.SET_CURRENT_USER, userData })
+    addUserData: (userData) =>
+      dispatch({ type: CURRENT_USER_ACTIONS.SET_CURRENT_USER, userData }),
   };
 }
 

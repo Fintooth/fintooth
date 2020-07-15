@@ -72,6 +72,7 @@ const Login = (props) => {
         nickname: registerInput.username,
       };
       props.registerUser(user);
+      setIsLoginPage(!isLoginPage);
     } else if (isLoginPage) {
       const user = {
         email: loginInput.email,
@@ -162,7 +163,7 @@ const Login = (props) => {
               required
               fullWidth
               id="username"
-              label="Username"
+              label="Nickname"
               name="username"
               autoComplete="username"
               value={registerInput.username}
@@ -188,7 +189,7 @@ const Login = (props) => {
               error={!registerInput.validUsername && !isLoginPage}
               helperText={
                 !registerInput.validUsername && !isLoginPage
-                  ? "Username can be from 3 to 10 characters and can contain only alphanumerical symbols and _"
+                  ? "Nickname can be from 3 to 10 characters and can contain only alphanumerical symbols and _"
                   : ""
               }
             />

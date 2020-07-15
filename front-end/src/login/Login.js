@@ -120,6 +120,39 @@ const Login = (props) => {
           noValidate
           method="POST"
         >
+          <TextField
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            id="email"
+            label="Email Address"
+            name="email"
+            autoComplete="email"
+            value={isLoginPage ? loginInput.email : registerInput.email}
+            onChange={(event) => {
+              isLoginPage
+                ? setLoginInput({ ...loginInput, email: event.target.value })
+                : setRegisterInput({
+                    ...registerInput,
+                    email: event.target.value,
+                  });
+            }}
+            onBlur={() => {
+              if (!isLoginPage) {
+                var emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+                emailPattern.test(registerInput.email)
+                  ? setRegisterInput({ ...registerInput, validEmail: true })
+                  : setRegisterInput({ ...registerInput, validEmail: false });
+              }
+            }}
+            error={!registerInput.validEmail && !isLoginPage}
+            helperText={
+              !registerInput.validEmail && !isLoginPage
+                ? "Please enter a valid email"
+                : ""
+            }
+          />
           {isLoginPage ? (
             ""
           ) : (
@@ -128,63 +161,38 @@ const Login = (props) => {
               margin="normal"
               required
               fullWidth
-              id="email"
-              label="Email Address"
-              name="email"
-              autoComplete="email"
-              value={registerInput.email}
-              onChange={(event) =>
+              id="username"
+              label="Username"
+              name="username"
+              autoComplete="username"
+              value={registerInput.username}
+              onChange={(event) => {
                 setRegisterInput({
                   ...registerInput,
-                  email: event.target.value,
-                })
-              }
-              onBlur={() => {
-                var emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
-                emailPattern.test(registerInput.email)
-                  ? setRegisterInput({ ...registerInput, validEmail: true })
-                  : setRegisterInput({ ...registerInput, validEmail: false });
+                  username: event.target.value,
+                });
               }}
-              error={!registerInput.validEmail}
-              helperText={
-                !registerInput.validEmail ? "Please enter a valid email" : ""
-              }
-            />
-          )}
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            id="username"
-            label="Username"
-            name="username"
-            autoComplete="username"
-            value={isLoginPage ? loginInput.email : registerInput.username}
-            onChange={(event) => {
-              isLoginPage
-                ? setLoginInput({ ...loginInput, email: event.target.value })
-                : setRegisterInput({
-                    ...registerInput,
-                    username: event.target.value,
-                  });
-            }}
-            onBlur={() => {
-              if (!isLoginPage) {
+              onBlur={() => {
                 registerInput.username.length < 3 ||
                 registerInput.username.length > 10 ||
                 !registerInput.username.match(new RegExp(/^[a-z0-9_]+$/i))
-                  ? setRegisterInput({ ...registerInput, validUsername: false })
-                  : setRegisterInput({ ...registerInput, validUsername: true });
+                  ? setRegisterInput({
+                      ...registerInput,
+                      validUsername: false,
+                    })
+                  : setRegisterInput({
+                      ...registerInput,
+                      validUsername: true,
+                    });
+              }}
+              error={!registerInput.validUsername && !isLoginPage}
+              helperText={
+                !registerInput.validUsername && !isLoginPage
+                  ? "Username can be from 3 to 10 characters and can contain only alphanumerical symbols and _"
+                  : ""
               }
-            }}
-            error={!registerInput.validUsername && !isLoginPage}
-            helperText={
-              !registerInput.validUsername && !isLoginPage
-                ? "Username can be from 3 to 10 characters and can contain only alphanumerical symbols and _"
-                : ""
-            }
-          />
+            />
+          )}
           <TextField
             variant="outlined"
             margin="normal"

@@ -3,6 +3,8 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const fs = require("fs");
 
+const UsersController = require("../controllers/users");
+
 const Activity = require("../model/activity");
 const User = require("../model/user");
 
@@ -12,6 +14,7 @@ exports.activity_get_all_for_user = (req, res, next) => {
     .select(
       "id type accountSrc accountDest description picture date group amount"
     )
+    .sort("-date")
     .exec()
     .then((docs) => {
       res.status(200).json({
@@ -24,8 +27,8 @@ exports.activity_get_all_for_user = (req, res, next) => {
             picture: doc.picture,
             type: doc.type,
             date: doc.date,
-            from: doc.accountSrc,
-            to: doc.accountDest,
+            accountSrc: doc.accountSrc,
+            accountDest: doc.accountDest,
             request: {
               type: "GET DELETE",
               url: "http://localhost:3001/activities/" + doc._id,
@@ -58,8 +61,8 @@ exports.activity_get_one = (req, res, next) => {
             type: doc.type,
             date: doc.date,
             description: doc.description,
-            account_source: doc.accountSrc,
-            account_destination: doc.accountDest,
+            from: doc.accountSrc,
+            to: doc.accountDest,
             picture: doc.picture,
             group: doc.group,
             request: {
@@ -78,28 +81,108 @@ exports.activity_get_one = (req, res, next) => {
 };
 
 exports.add_activity = (req, res, next) => {
+  console.log(req.body);
   const activity = new Activity({
     _id: mongoose.Types.ObjectId(),
     user: req.params.id,
     type: req.body.type,
     description: req.body.description,
     amount: req.body.amount,
-    group: req.body.group,
-    accountSrc: req.accountSrc,
-    accountDest: req.accountDest,
+    //group: req.body.group,
+    picture: req.body.picture,
   });
-  activity
-    .save()
-    .then((result) =>
-      res.status(201).json({
-        message: "Activity created",
-      })
+  if ("Expenditure" === activity.type && req.body.accountSrc) {
+    activity.accountSrc = req.body.accountSrc;
+    UsersController.change_account_amount(
+      activity.user,
+      activity.accountSrc,
+      -parseInt(activity.amount)
     )
-    .catch((err) =>
-      res.status(500).json({
-        error: err,
-      })
+      .then((result) =>
+        activity.save(function (err) {
+          if (err) {
+            console.log(err);
+            return;
+          }
+          res.status(201).json({
+            message: "Activity created",
+            activity,
+            Location: activity.id,
+          });
+        })
+      )
+      .catch((err) => {
+        console.log("here2");
+        res.status(500).json({
+          error: err,
+        });
+      });
+  } else if ("Income" === activity.type && req.body.accountDest) {
+    activity.accountDest = req.body.accountDest;
+    UsersController.change_account_amount(
+      activity.user,
+      activity.accountDest,
+      parseInt(activity.amount)
+    )
+      .then((result) =>
+        activity.save(function (err) {
+          if (err) {
+            console.log(err);
+            return;
+          }
+          res.status(201).json({
+            message: "Activity created",
+            activity,
+            Location: activity.id,
+          });
+        })
+      )
+      .catch((err) =>
+        res.status(500).json({
+          error: err,
+        })
+      );
+  } else if (
+    "Move" === activity.type &&
+    req.body.accountSrc &&
+    req.body.accountDest
+  ) {
+    activity.accountSrc = req.body.accountSrc;
+    activity.accountDest = req.body.accountDest;
+    UsersController.change_account_amount(
+      activity.user,
+      activity.accountSrc,
+      -parseInt(activity.amount)
+    ).then((result) =>
+      UsersController.change_account_amount(
+        activity.user,
+        activity.accountDest,
+        parseInt(activity.amount)
+      )
+        .then((result) =>
+          activity.save(function (err) {
+            if (err) {
+              console.log(err);
+              return;
+            }
+            res.status(201).json({
+              message: "Activity created",
+              activity,
+              Location: activity.id,
+            });
+          })
+        )
+        .catch((err) =>
+          res.status(500).json({
+            error: err,
+          })
+        )
     );
+  } else {
+    res.status(400).json({
+      message: "Send data according to the activity model",
+    });
+  }
 };
 
 exports.edit_activity = (req, res, next) => {

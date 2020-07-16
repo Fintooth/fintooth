@@ -6,8 +6,8 @@ import * as activityActions from "../actions/activityActions";
 import { SAGA_ACTIVITY_ACTIONS, URL } from "../constants";
 
 const getActivities = (userId) => axios.get(`${URL}/activities/user/${userId}`);
-const postActivity = (activity, userId) =>
-  axios.post(`${URL}/activities/user/${userId}`, activity);
+const postActivity = (activity) =>
+  axios.post(`${URL}/activities/user/${activity.user}`, activity);
 const updateActivity = (activity) =>
   axios.patch(`${URL}/activities/${activity.id}`, activity);
 const deleteActivity = (activityId) =>
@@ -28,7 +28,7 @@ function* postActivitySaga(action) {
   try {
     yield put(requestActions.startRequest());
     const response = yield postActivity(action.activity);
-    yield put(activityActions.addActivity([action.activity]));
+    yield put(activityActions.addActivity(response.data.activity));
     yield put(requestActions.successRequest(response.data));
   } catch (e) {
     yield put(requestActions.errorRequest(e.message));

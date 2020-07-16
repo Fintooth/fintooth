@@ -56,11 +56,6 @@ router.post("/login", UsersController.users_login);
 router.post("/:userId/accounts", UsersController.add_account);
 
 router.patch(
-  "/:userId/accounts/:accountId",
-  UsersController.users_patch_account_amount
-);
-
-router.patch(
   "/change-avatar/:userId",
   checkToken,
   checkSelfOrAdmin,

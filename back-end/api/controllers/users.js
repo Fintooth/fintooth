@@ -234,32 +234,15 @@ exports.add_account = (req, res, next) => {
     });
 };
 
-exports.users_patch_account_amount = (req, res, next) => {
-  const { userId, accountId } = req.params;
-  const amount = parseInt(req.body.amount);
+exports.change_account_amount = (userId, accountId, amount) => {
   console.log(userId, accountId, amount);
-  User.updateOne(
+  return User.updateOne(
     { _id: userId },
     { $inc: { "accounts.$[element].amount": amount } },
     {
       arrayFilters: [{ "element._id": { $eq: accountId } }],
     }
-  )
-    .exec()
-    .then((result) => {
-      res.status(200).json({
-        message: "User account updated",
-        request: {
-          type: "GET PATCH DELETE",
-          url: "http://localhost:3001/users/" + userId,
-        },
-      });
-    })
-    .catch((err) => {
-      res.status(500).json({
-        error: err,
-      });
-    });
+  ).exec();
 };
 
 exports.users_patch = (req, res, next) => {

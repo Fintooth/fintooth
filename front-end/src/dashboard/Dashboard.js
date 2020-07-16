@@ -116,6 +116,11 @@ function Dashboard(props) {
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
   let history = useHistory();
 
+  const localCurrentUserString = window.localStorage.getItem("currentUser");
+  if (!localCurrentUserString) {
+    history.replace("/login");
+  }
+
   const {
     activities,
     addActivity,
@@ -125,10 +130,6 @@ function Dashboard(props) {
     request,
     currentUser,
   } = props;
-
-  if (!window.localStorage.getItem("currentUser")) {
-    history.replace("/login");
-  }
 
   React.useEffect(() => {
     let mounted = true;
@@ -141,9 +142,7 @@ function Dashboard(props) {
   }, [getActivities, currentUser]);
 
   const requestStatus = () => {
-    if (request.fetching) {
-      return <Progress />;
-    } else if (request.error) {
+    if (request.error) {
       return <h2 className={classes.errorMessage}>{request.error}</h2>;
     } else {
       return (
@@ -152,6 +151,7 @@ function Dashboard(props) {
           <main className={classes.content}>
             <div className={classes.appBarSpacer} />
             <Container maxWidth="lg" className={classes.container}>
+              {request.fetching && <Progress />}
               <Grid container spacing={3}>
                 {/* Chart */}
                 <Grid item xs={12} md={8} lg={9}>

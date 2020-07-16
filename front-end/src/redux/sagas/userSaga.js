@@ -3,12 +3,13 @@ import axios from "axios";
 
 import * as requestActions from "../actions/requestActions";
 import * as userActions from "../actions/userActions";
+import * as userIdActions from "../actions/userIdActions";
 import { SAGA_USER_ACTIONS, URL } from "../constants";
 
 const getUsers = () => axios.get(`${URL}/users`);
 const postUser = (user) => axios.post(`${URL}/users/signup`, user);
 const addAccount = (user) =>
-  axios.post(`${URL}/users/add-account/${user.id}`, user);
+  axios.post(`${URL}/users/${user.id}/accounts`, user);
 const updateUser = (user) => axios.patch(`${URL}/users/${user.id}`, user);
 const deleteUser = (userId) => axios.delete(`${URL}/users/${userId}`);
 const deleteAccount = (accountId) =>

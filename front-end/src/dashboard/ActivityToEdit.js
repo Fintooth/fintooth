@@ -1,7 +1,7 @@
 import React from "react";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import { connect } from "react-redux";
-import { SAGA_ACTIVITY_ACTIONS } from "../redux/constants";
+import { SAGA_ACTIVITY_ACTIONS, SAGA_USER_ACTIONS } from "../redux/constants";
 import clsx from "clsx";
 import Accordion from "@material-ui/core/Accordion";
 import AccordionDetails from "@material-ui/core/AccordionDetails";
@@ -123,12 +123,20 @@ function NumberFormatCustom(props) {
   );
 }
 
-function ActivityToEdit({ currentUser, activityToEdit, setActivityToEdit }) {
+function ActivityToEdit({
+  currentUser,
+  activityToEdit,
+  setActivityToEdit,
+  addActivity,
+  addToAccount,
+}) {
   const classes = useStyles();
 
-  if (!activityToEdit.user) {
-    setActivityToEdit({ ...activityToEdit, user: currentUser.user.id });
-  }
+  React.useEffect(() => {
+    if (!activityToEdit.user && currentUser.user.id) {
+      setActivityToEdit({ ...activityToEdit, user: currentUser.user.id });
+    }
+  }, [activityToEdit, setActivityToEdit, currentUser]);
 
   const getSymbol = {
     Income: <PlusIcon color="primary" className={classes.iconInput} />,
@@ -143,137 +151,147 @@ function ActivityToEdit({ currentUser, activityToEdit, setActivityToEdit }) {
     });
   };
 
+  const handleSave = (event) => {
+    event.preventDefault();
+    addActivity(activityToEdit);
+  };
+
   return (
-    <Accordion>
-      <AccordionSummary
-        expandIcon={<MoreVert />}
-        aria-controls="panel0-content"
-        id="panel0-header"
-      >
-        <div className={classes.column}>
-          <div>
-            <TextField
-              className={classes.typeField}
-              id="outlined-select-currency"
-              variant="outlined"
-              select
-              label="Type"
-              name="type"
-              value={activityToEdit.type}
-              onChange={handleChangeActivity}
-              onClick={(event) => event.stopPropagation()}
-            >
-              <MenuItem key="add" value="Income">
-                Add
-              </MenuItem>
-              <MenuItem key="spend" value="Expenditure">
-                Spend
-              </MenuItem>
-              <MenuItem key="move" value="Move">
-                Move
-              </MenuItem>
-            </TextField>
-            <TextField
-              label="Amount"
-              value={activityToEdit.amount}
-              onClick={(event) => event.stopPropagation()}
-              onChange={handleChangeActivity}
-              name="amount"
-              id="formatted-numberformat-input"
-              className={classes.amountField}
-              InputProps={{
-                inputComponent: NumberFormatCustom,
-                startAdornment: (
-                  <InputAdornment position="start">
-                    {getSymbol[activityToEdit.type]}
-                  </InputAdornment>
-                ),
-              }}
-              variant="outlined"
-            />
-          </div>
-        </div>
-        <div className={classes.column}>
-          <Typography className={classes.secondaryHeading}>Now</Typography>
-        </div>
-      </AccordionSummary>
-      <AccordionDetails className={classes.details}>
-        <div className={classes.columnAccount}>
-          <Typography variant="caption">
-            <TextField
-              className={classes.accField}
-              select
-              label={
-                activityToEdit.type === "Add" ? "To account" : "From account"
-              }
-              variant="outlined"
-              name="accountSrc"
-              value={activityToEdit.accountSrc}
-              onChange={handleChangeActivity}
-            >
-              <MenuItem value="">
-                <em>None</em>
-              </MenuItem>
-              {currentUser.user.accounts &&
-                currentUser.user.accounts.map((account, ind) => (
-                  <MenuItem key={ind} value={account._id}>
-                    {account.name}
-                  </MenuItem>
-                ))}
-            </TextField>
-            {activityToEdit.type === "Move" && (
+    <form onSubmit={handleSave}>
+      <Accordion>
+        <AccordionSummary
+          expandIcon={<MoreVert />}
+          aria-controls="panel0-content"
+          id="panel0-header"
+        >
+          <div className={classes.column}>
+            <div>
               <TextField
-                className={classes.accField}
-                select
-                label="To account"
+                className={classes.typeField}
+                id="outlined-select-currency"
                 variant="outlined"
-                name="accountDest"
-                value={activityToEdit.accountDest}
+                select
+                label="Type"
+                name="type"
+                value={activityToEdit.type}
                 onChange={handleChangeActivity}
+                onClick={(event) => event.stopPropagation()}
               >
-                <MenuItem value="">
-                  <em>None</em>
+                <MenuItem key="add" value="Income">
+                  Add
                 </MenuItem>
-                {currentUser.user.accounts &&
-                  currentUser.user.accounts.map((account, ind) => (
-                    <MenuItem key={ind} value={account._id}>
-                      {account.name}
-                    </MenuItem>
-                  ))}
+                <MenuItem key="spend" value="Expenditure">
+                  Spend
+                </MenuItem>
+                <MenuItem key="move" value="Move">
+                  Move
+                </MenuItem>
               </TextField>
-            )}
-          </Typography>
-        </div>
-        <div className={clsx(classes.columnDescripImg, classes.helper)}>
-          <div className={classes.columnDescrip}>
-            <TextField
-              className={classes.selectField}
-              label="Description"
-              variant="outlined"
-              name="description"
-              value={activityToEdit.description}
-              onChange={handleChangeActivity}
-            />
+              <TextField
+                label="Amount"
+                value={activityToEdit.amount}
+                onClick={(event) => event.stopPropagation()}
+                onChange={handleChangeActivity}
+                name="amount"
+                id="formatted-numberformat-input"
+                className={classes.amountField}
+                InputProps={{
+                  inputComponent: NumberFormatCustom,
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      {getSymbol[activityToEdit.type]}
+                    </InputAdornment>
+                  ),
+                }}
+                variant="outlined"
+                required
+              />
+            </div>
           </div>
-          <div className={classes.columnImg}>
-            <TextField
-              className={classes.selectField}
-              label="Picture url"
-              variant="outlined"
-              name="picture"
-              value={activityToEdit.picure}
-              onChange={handleChangeActivity}
-            />
+          <div className={classes.column}>
+            <Typography className={classes.secondaryHeading}>Now</Typography>
           </div>
-        </div>
-      </AccordionDetails>
-      <Divider />
-      <AccordionActions>
-        <Button size="small" color="primary">
-          Add
-        </Button>
-      </AccordionActions>
-    </Accordion>
+        </AccordionSummary>
+        <AccordionDetails className={classes.details}>
+          <div className={classes.columnAccount}>
+            <Typography variant="caption">
+              {["Move", "Expenditure"].includes(activityToEdit.type) && (
+                <TextField
+                  className={classes.accField}
+                  select
+                  label="From account"
+                  variant="outlined"
+                  name="accountSrc"
+                  value={activityToEdit.accountSrc}
+                  onChange={handleChangeActivity}
+                  required
+                >
+                  <MenuItem value="">
+                    <em>None</em>
+                  </MenuItem>
+                  {currentUser.user.accounts &&
+                    currentUser.user.accounts.map((account, ind) => (
+                      <MenuItem key={ind} value={account._id}>
+                        {account.name}
+                      </MenuItem>
+                    ))}
+                </TextField>
+              )}
+              {["Move", "Income"].includes(activityToEdit.type) && (
+                <TextField
+                  className={classes.accField}
+                  select
+                  label="To account"
+                  variant="outlined"
+                  name="accountDest"
+                  value={activityToEdit.accountDest}
+                  onChange={handleChangeActivity}
+                  required
+                >
+                  <MenuItem value="">
+                    <em>None</em>
+                  </MenuItem>
+                  {currentUser.user.accounts &&
+                    currentUser.user.accounts.map((account, ind) => (
+                      <MenuItem key={ind} value={account._id}>
+                        {account.name}
+                      </MenuItem>
+                    ))}
+                </TextField>
+              )}
+            </Typography>
+          </div>
+          <div className={clsx(classes.columnDescripImg, classes.helper)}>
+            <div className={classes.columnDescrip}>
+              <TextField
+                className={classes.selectField}
+                label="Description"
+                variant="outlined"
+                name="description"
+                value={activityToEdit.description}
+                onChange={handleChangeActivity}
+              />
+            </div>
+            <div className={classes.columnImg}>
+              <TextField
+                className={classes.selectField}
+                label="Picture url"
+                variant="outlined"
+                name="picture"
+                value={activityToEdit.picture}
+                onChange={handleChangeActivity}
+              />
+            </div>
+          </div>
+        </AccordionDetails>
+        <Divider />
+        <AccordionActions>
+          <Button size="small" color="primary" type="submit">
+            Save
+          </Button>
+        </AccordionActions>
+      </Accordion>
+    </form>
   );
 }
 
@@ -289,6 +307,13 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch({ type: SAGA_ACTIVITY_ACTIONS.ADD_ACTIVITY_ASYNC, activity }),
   editActivity: (activity) =>
     dispatch({ type: SAGA_ACTIVITY_ACTIONS.EDIT_ACTIVITY_ASYNC, activity }),
+  addToAccount: (userId, accountId, amount) =>
+    dispatch({
+      type: SAGA_USER_ACTIONS.ADD_TO_ACCOUNT_ASYNC,
+      userId,
+      accountId,
+      amount,
+    }),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(ActivityToEdit);

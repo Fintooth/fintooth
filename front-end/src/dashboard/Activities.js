@@ -129,13 +129,13 @@ export default function Activities({ activities }) {
   const activityColor = {
     Income: "primary",
     Expenditure: "secondary",
-    Move: "",
+    Move: "default",
   };
 
   // for modal
   const [open, setOpen] = React.useState(0);
   const handleOpen = (event) => {
-    setOpen(parseInt(event.target.id.slice(-1)));
+    setOpen(parseInt(event.target.id.substr(8)));
   };
   const handleClose = () => {
     setOpen(false);
@@ -153,7 +153,7 @@ export default function Activities({ activities }) {
     accountSrc: "",
     accountDest: "",
     description: "",
-    picure: "",
+    picture: "",
     date: "Now",
     amount: "",
   });
@@ -195,8 +195,10 @@ export default function Activities({ activities }) {
           <AccordionDetails className={classes.details}>
             <div className={classes.columnAccount}>
               <Typography variant="caption">
-                {"from" in activity && activity.from}
-                {"to" in activity && "->" + activity.to}
+                {"accountSrc" in activity && activity.accountSrc}
+                {("accountSrc" in activity || "accountDest" in activity) &&
+                  " -> "}
+                {"accountDest" in activity && activity.accountDest}
               </Typography>
             </div>
             <div className={clsx(classes.columnDescripImg, classes.helper)}>

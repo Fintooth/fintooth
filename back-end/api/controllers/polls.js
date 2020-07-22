@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 
 const Poll = require("../model/poll");
+const poll = require("../model/poll");
 
 exports.poll_create = (req, res, next) => {
   const groupId = req.params.groupId;
@@ -30,7 +31,36 @@ exports.poll_create = (req, res, next) => {
 };
 
 exports.poll_get_all = (req, res, next) => {
-  Poll.find()
+  Poll.find({ expires: { $gt: new Date() } })
+    .select("_id title description group creator")
+    .exec()
+    .then((count) => {
+      res.status(201).json({
+        count: count.length,
+        polls: count.map((poll) => ({
+          _id: poll._id,
+          title: poll.title,
+          description: poll.description,
+          creator: poll.creator,
+          group: poll.group,
+          created: poll.created,
+          request: {
+            type: "GET DELETE",
+            url: "http://localhost:3001/polls/" + poll._id,
+          },
+        })),
+      });
+    })
+    .catch((e) => {
+      res.status(500).json({
+        error: e,
+      });
+    });
+};
+
+exports.poll_get_all_for_group = (req, res, next) => {
+  const groupId = req.params.groupId;
+  Poll.find({ group: groupId, expires: { $gt: new Date() } })
     .select("_id title description group creator")
     .exec()
     .then((count) => {
@@ -59,9 +89,10 @@ exports.poll_get_all = (req, res, next) => {
 
 exports.poll_get_one = (req, res, next) => {
   const pollId = req.params.pollId;
+  console.log(pollId);
   Poll.findById(pollId)
     .select(
-      "_id title description creator group result votes created expires comments"
+      "_id title description creator group result votes created expires comments members"
     )
     .exec()
     .then((doc) => {
@@ -77,6 +108,7 @@ exports.poll_get_one = (req, res, next) => {
           created: doc.created,
           expires: doc.expires,
           comments: doc.comments,
+          members: doc.members,
         });
       } else {
         res.status(404).json({
@@ -160,10 +192,29 @@ exports.poll_delete = (req, res, next) => {
     });
 };
 
-/*
-TODO:
-Figure out how to store results
-A user votes by sending a request which includes his vote, id, and pollId. So make a function that will handle that logic
-Make a function that gets all relevant polls (relevant = has not expired)
-Test
-*/
+exports.poll_vote = (req, res, next) => {
+  const pollId = req.params.pollId;
+  const vote = req.body.vote;
+  const voterId = req.body.voterId;
+  Poll.updateOne(
+    { _id: pollId, members: { $ne: voterId } },
+    {
+      $push: {
+        votes: vote,
+        members: voterId,
+      },
+    },
+    { runValidators: true }
+  )
+    .exec()
+    .then((result) => {
+      res.status(200).json({
+        message: "Vote added",
+      });
+    })
+    .catch((err) => {
+      res.status(500).json({
+        error: err,
+      });
+    });
+};

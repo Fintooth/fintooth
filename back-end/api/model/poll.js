@@ -13,13 +13,11 @@ const pollSchema = mongoose.Schema({
       ref: "User",
     },
   ],
-  votes: [
-    {
-      type: String,
-      default: "Abstained",
-      enum: ["For", "Against", "Abstained"],
-    },
-  ],
+  votes: {
+    type: [String],
+    default: "Abstained",
+    enum: ["For", "Against", "Abstained"],
+  },
   result: {
     type: Array,
     default: [0, 0, 0],

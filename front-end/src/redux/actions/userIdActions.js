@@ -1,7 +1,11 @@
 import { CURRENT_USER_ACTIONS } from "../constants";
 
-export const setCurrentUser = (userData) => {
-  return { type: CURRENT_USER_ACTIONS.SET_CURRENT_USER, userData };
+export const setCurrentUser = (user) => {
+  return { type: CURRENT_USER_ACTIONS.SET_CURRENT_USER, user };
+};
+
+export const setCurrentUserData = (userData) => {
+  return { type: CURRENT_USER_ACTIONS.SET_CURRENT_USER_DATA, userData };
 };
 
 export const unsetCurrentUser = () => {

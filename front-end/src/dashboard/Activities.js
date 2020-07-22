@@ -123,7 +123,7 @@ const emptyFunc = (event) => {
   return false;
 };
 
-export default function Activities({ activities }) {
+export default function Activities({ activities, accounts }) {
   const classes = useStyles();
 
   const activityColor = {
@@ -157,6 +157,11 @@ export default function Activities({ activities }) {
     date: "Now",
     amount: "",
   });
+
+  function getAccountName(accId) {
+    const acc = accounts ? accounts.find((acc) => acc._id === accId) : false;
+    return acc ? acc.name : accId;
+  }
 
   return (
     <div className={classes.root}>
@@ -195,48 +200,53 @@ export default function Activities({ activities }) {
           <AccordionDetails className={classes.details}>
             <div className={classes.columnAccount}>
               <Typography variant="caption">
-                {"accountSrc" in activity && activity.accountSrc}
-                {("accountSrc" in activity || "accountDest" in activity) &&
-                  " -> "}
-                {"accountDest" in activity && activity.accountDest}
+                {"accountSrc" in activity &&
+                  "From: " + getAccountName(activity.accountSrc)}
+                {"accountSrc" in activity && "accountDest" in activity && (
+                  <br />
+                )}
+                {"accountDest" in activity &&
+                  "To: " + getAccountName(activity.accountDest)}
               </Typography>
             </div>
             <div className={clsx(classes.columnDescripImg, classes.helper)}>
               <div className={classes.columnDescrip}>
                 <p>{activity.description}</p>
               </div>
-              <div className={classes.columnImg}>
-                <img
-                  id={"imgPanel" + (ind + 1)}
-                  className={classes.activityImage}
-                  src={activity.picture}
-                  onClick={handleOpen}
-                  alt="activity"
-                />
-                <Modal
-                  aria-labelledby="transition-modal-title"
-                  aria-describedby="transition-modal-description"
-                  className={classes.modal}
-                  open={open === ind + 1}
-                  onClose={handleClose}
-                  closeAfterTransition
-                  BackdropComponent={Backdrop}
-                  BackdropProps={{
-                    timeout: 500,
-                  }}
-                >
-                  <Fade in={open === ind + 1}>
-                    <div className={classes.paper}>
-                      <img
-                        className={classes.modalImage}
-                        src={activity.picture}
-                        onClick={handleOpen}
-                        alt="activity"
-                      />
-                    </div>
-                  </Fade>
-                </Modal>
-              </div>
+              {activity.picture && (
+                <div className={classes.columnImg}>
+                  <img
+                    id={"imgPanel" + (ind + 1)}
+                    className={classes.activityImage}
+                    src={activity.picture}
+                    onClick={handleOpen}
+                    alt="activity"
+                  />
+                  <Modal
+                    aria-labelledby="transition-modal-title"
+                    aria-describedby="transition-modal-description"
+                    className={classes.modal}
+                    open={open === ind + 1}
+                    onClose={handleClose}
+                    closeAfterTransition
+                    BackdropComponent={Backdrop}
+                    BackdropProps={{
+                      timeout: 500,
+                    }}
+                  >
+                    <Fade in={open === ind + 1}>
+                      <div className={classes.paper}>
+                        <img
+                          className={classes.modalImage}
+                          src={activity.picture}
+                          onClick={handleOpen}
+                          alt="activity"
+                        />
+                      </div>
+                    </Fade>
+                  </Modal>
+                </div>
+              )}
             </div>
           </AccordionDetails>
           <Divider />

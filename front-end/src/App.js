@@ -6,14 +6,18 @@ import {
   Redirect,
 } from "react-router-dom";
 import { connect } from "react-redux";
-import { CURRENT_USER_ACTIONS } from "./redux/constants";
+import {
+  CURRENT_USER_ACTIONS,
+  USER_ACTIONS,
+  SAGA_USER_ACTIONS,
+} from "./redux/constants";
 
 import Login from "./login/Login";
 import Dashboard from "./dashboard/Dashboard";
 import AdminView from "./admin-view/layout";
 import UserSettingsForm from "./settings-view/user-settings";
 
-function App({ addUserData, removeUserData }) {
+function App({ setToken, removeUserData, getCurrentUser }) {
   React.useEffect(() => {
     const localCurrentUserString = localStorage.getItem("currentUser");
     if (localCurrentUserString) {
@@ -22,15 +26,13 @@ function App({ addUserData, removeUserData }) {
         localStorage.removeItem("currentUser");
         removeUserData();
       } else {
-        addUserData({
-          user: localCurrentUser.user,
-          token: localCurrentUser.token,
-        });
+        setToken(localCurrentUser.token);
+        getCurrentUser(localCurrentUser.user.id);
       }
     } else {
       removeUserData();
     }
-  }, [addUserData, removeUserData]);
+  }, [setToken, getCurrentUser, removeUserData]);
 
   return (
     <Router>
@@ -66,8 +68,10 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    addUserData: (userData) =>
-      dispatch({ type: CURRENT_USER_ACTIONS.SET_CURRENT_USER, userData }),
+    getCurrentUser: (userId) =>
+      dispatch({ type: SAGA_USER_ACTIONS.GET_CURRENT_USER_ASYNC, userId }),
+    setToken: (token) =>
+      dispatch({ type: CURRENT_USER_ACTIONS.SET_CURRENT_USER_TOKEN, token }),
     removeUserData: () =>
       dispatch({ type: CURRENT_USER_ACTIONS.UNSET_CURRENT_USER }),
   };

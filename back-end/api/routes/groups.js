@@ -13,5 +13,6 @@ router.post("/:groupId/add-user", GroupsController.add_user);
 router.post("/:groupId/add-account", GroupsController.add_account);
 
 router.delete("/:groupId/remove-user", GroupsController.remove_user);
+router.delete("/delete-account/:accId", GroupsController.account_delete);
 
 module.exports = router;

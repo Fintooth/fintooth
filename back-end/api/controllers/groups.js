@@ -224,3 +224,28 @@ exports.remove_user = (req, res, next) => {
       });
     });
 };
+
+exports.account_delete = (req, res, next) => {
+  const id = req.params.accId;
+  Group.update(
+    {},
+    {
+      $pull: {
+        accounts: {
+          _id: id,
+        },
+      },
+    }
+  )
+    .exec()
+    .then((response) => {
+      res.status(200).json({
+        message: "Account deleted",
+      });
+    })
+    .catch((err) => {
+      res.status(500).json({
+        error: err,
+      });
+    });
+};

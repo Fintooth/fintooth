@@ -6,6 +6,7 @@ const checkSelfOrAdmin = require("../middleware/check-self-admin");
 const PollsController = require("../controllers/polls");
 
 router.get("/", PollsController.poll_get_all);
+router.get("/group-polls/:groupId", PollsController.poll_get_all_for_group);
 router.get("/:pollId", PollsController.poll_get_one);
 
 router.post("/:groupId", PollsController.poll_create);

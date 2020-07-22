@@ -32,7 +32,7 @@ exports.add_user = (req, res, next) => {
   Group.update(
     { _id: id },
     {
-      $push: {
+      $addToSet: {
         members: {
           _id: userId,
         },
@@ -54,7 +54,7 @@ exports.add_user = (req, res, next) => {
   User.update(
     { _id: userId },
     {
-      $push: {
+      $addToSet: {
         groups: {
           _id: id,
         },
@@ -162,7 +162,8 @@ exports.add_account = (req, res, next) => {
           },
         },
       },
-    }
+    },
+    { runValidators: true }
   )
     .exec()
     .then((result) => {

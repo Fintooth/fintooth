@@ -1,7 +1,11 @@
 import React from "react";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import { connect } from "react-redux";
-import { SAGA_ACTIVITY_ACTIONS, SAGA_USER_ACTIONS } from "../redux/constants";
+import {
+  SAGA_ACTIVITY_ACTIONS,
+  SAGA_USER_ACTIONS,
+  CURRENT_USER_ACTIONS,
+} from "../redux/constants";
 import clsx from "clsx";
 import Accordion from "@material-ui/core/Accordion";
 import AccordionDetails from "@material-ui/core/AccordionDetails";
@@ -128,7 +132,7 @@ function ActivityToEdit({
   activityToEdit,
   setActivityToEdit,
   addActivity,
-  addToAccount,
+  addToCurrentUserAccount,
 }) {
   const classes = useStyles();
 
@@ -154,6 +158,37 @@ function ActivityToEdit({
   const handleSave = (event) => {
     event.preventDefault();
     addActivity(activityToEdit);
+    if (activityToEdit.type === "Expenditure") {
+      addToCurrentUserAccount(
+        activityToEdit.accountSrc,
+        -activityToEdit.amount
+      );
+    } else if (activityToEdit.type === "Income") {
+      addToCurrentUserAccount(
+        activityToEdit.accountDest,
+        activityToEdit.amount
+      );
+    } else if (activityToEdit.type === "Move") {
+      addToCurrentUserAccount(
+        activityToEdit.accountSrc,
+        -activityToEdit.amount
+      );
+      addToCurrentUserAccount(
+        activityToEdit.accountDest,
+        activityToEdit.amount
+      );
+    }
+    setActivityToEdit({
+      id: currentUser.user.id,
+      user: "",
+      type: "Expenditure",
+      accountSrc: "",
+      accountDest: "",
+      description: "",
+      picture: "",
+      date: "Now",
+      amount: "",
+    });
   };
 
   return (
@@ -303,6 +338,12 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = (dispatch) => ({
+  addToCurrentUserAccount: (accountId, amount) =>
+    dispatch({
+      type: CURRENT_USER_ACTIONS.ADD_TO_CURRENT_USER_ACCOUNT,
+      accountId,
+      amount,
+    }),
   addActivity: (activity) =>
     dispatch({ type: SAGA_ACTIVITY_ACTIONS.ADD_ACTIVITY_ASYNC, activity }),
   editActivity: (activity) =>

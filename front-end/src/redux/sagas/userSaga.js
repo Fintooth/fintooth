@@ -6,6 +6,7 @@ import * as userActions from "../actions/userActions";
 import * as userIdActions from "../actions/userIdActions";
 import { SAGA_USER_ACTIONS, URL } from "../constants";
 
+const getUser = (userId) => axios.get(`${URL}/users/${userId}`);
 const getUsers = () => axios.get(`${URL}/users`);
 const postUser = (user) => axios.post(`${URL}/users/signup`, user);
 const addAccount = (user) =>
@@ -14,6 +15,17 @@ const updateUser = (user) => axios.patch(`${URL}/users/${user.id}`, user);
 const deleteUser = (userId) => axios.delete(`${URL}/users/${userId}`);
 const deleteAccount = (accountId) =>
   axios.delete(`${URL}/users/delete-account/${accountId}`);
+
+function* getCurrentUserSaga(action) {
+  try {
+    yield put(requestActions.startRequest());
+    const response = yield getUser(action.userId);
+    yield put(userIdActions.setCurrentUser(response.data));
+    yield put(requestActions.successRequest(response));
+  } catch (e) {
+    yield put(requestActions.errorRequest(e.message));
+  }
+}
 
 function* getUsersSaga() {
   try {
@@ -83,6 +95,7 @@ function* deleteAccountSaga(action) {
 
 export function* usersWatcherSaga() {
   yield all([
+    takeLatest(SAGA_USER_ACTIONS.GET_CURRENT_USER_ASYNC, getCurrentUserSaga),
     takeLatest(SAGA_USER_ACTIONS.GET_USERS_ASYNC, getUsersSaga),
     takeLatest(SAGA_USER_ACTIONS.ADD_USER_ASYNC, postUserSaga),
     takeLatest(SAGA_USER_ACTIONS.MODIFY_USER_ASYNC, modifyUserSaga),

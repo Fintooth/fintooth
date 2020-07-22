@@ -54,7 +54,7 @@ exports.users_get_all = (req, res, next) => {
 exports.users_get_one = (req, res, next) => {
   const id = req.params.userId;
   User.findById(id)
-    .select("email nickname dateCreated groups accounts password _id")
+    .select("email nickname dateCreated groups accounts _id")
     //.populate("groups.group", "name")
     .exec()
     .then((doc) => {
@@ -63,14 +63,9 @@ exports.users_get_one = (req, res, next) => {
           email: doc.email,
           nickname: doc.nickname,
           dateCreated: doc.dateCreated,
-          password: doc.password,
           groups: doc.groups,
           accounts: doc.accounts,
           id: doc._id,
-          requestAll: {
-            type: "GET",
-            url: "http://localhost:3001/users",
-          },
         });
       } else {
         res.status(404).json({

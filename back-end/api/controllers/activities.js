@@ -96,7 +96,7 @@ exports.add_activity = (req, res, next) => {
     UsersController.change_account_amount(
       activity.user,
       activity.accountSrc,
-      -parseInt(activity.amount)
+      -parseFloat(activity.amount)
     )
       .then((result) =>
         activity.save(function (err) {
@@ -122,7 +122,7 @@ exports.add_activity = (req, res, next) => {
     UsersController.change_account_amount(
       activity.user,
       activity.accountDest,
-      parseInt(activity.amount)
+      parseFloat(activity.amount)
     )
       .then((result) =>
         activity.save(function (err) {
@@ -152,12 +152,12 @@ exports.add_activity = (req, res, next) => {
     UsersController.change_account_amount(
       activity.user,
       activity.accountSrc,
-      -parseInt(activity.amount)
+      -parseFloat(activity.amount)
     ).then((result) =>
       UsersController.change_account_amount(
         activity.user,
         activity.accountDest,
-        parseInt(activity.amount)
+        parseFloat(activity.amount)
       )
         .then((result) =>
           activity.save(function (err) {

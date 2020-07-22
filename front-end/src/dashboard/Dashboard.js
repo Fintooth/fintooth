@@ -13,7 +13,7 @@ import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import Link from "@material-ui/core/Link";
 import Chart from "./Chart";
-import Deposits from "./Deposits";
+import Account from "./Account";
 
 import Activities from "./Activities";
 
@@ -131,9 +131,16 @@ function Dashboard(props) {
     currentUser,
   } = props;
 
+  const [activitiesToShow, setActivitiesToShow] = React.useState([]);
+  const [accountToView, setAccountToView] = React.useState("");
+
+  React.useEffect(() => {
+    setActivitiesToShow([...activities]);
+  }, [setActivitiesToShow, activities]);
+
   React.useEffect(() => {
     let mounted = true;
-    if (mounted && currentUser.token) {
+    if (mounted && currentUser.token && currentUser.user.id) {
       getActivities(currentUser.user.id);
     }
     return () => {
@@ -154,21 +161,36 @@ function Dashboard(props) {
               {request.fetching && <Progress />}
               <Grid container spacing={3}>
                 {/* Chart */}
-                <Grid item xs={12} md={8} lg={9}>
+                <Grid item xs={8} md={8} lg={8}>
                   <Paper className={fixedHeightPaper}>
                     <Chart />
                   </Paper>
                 </Grid>
-                {/* Recent Deposits */}
-                <Grid item xs={12} md={4} lg={3}>
-                  <Paper className={fixedHeightPaper}>
-                    <Deposits />
-                  </Paper>
-                </Grid>
+                {/* Accounts */}
+
+                {currentUser.user &&
+                  currentUser.user.accounts.map((account, ind) => (
+                    <Grid item xs={4} md={4} lg={2} key={"account" + ind}>
+                      <Paper className={fixedHeightPaper}>
+                        <Account
+                          account={account}
+                          activities={activities}
+                          setActivities={setActivitiesToShow}
+                          accountToView={accountToView}
+                          setAccountToView={setAccountToView}
+                        />
+                      </Paper>
+                    </Grid>
+                  ))}
 
                 <Grid item xs={12}>
                   <Paper className={classes.paper}>
-                    <Activities activities={activities} />
+                    <Activities
+                      activities={activitiesToShow}
+                      accounts={
+                        currentUser.user ? currentUser.user.accounts : []
+                      }
+                    />
                   </Paper>
                 </Grid>
               </Grid>

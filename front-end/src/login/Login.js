@@ -40,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Login = (props) => {
+const Login = ({ registerUser, setCurrentUser, setToken }) => {
   const classes = useStyles();
   const [isLoginPage, setIsLoginPage] = useState(true);
 
@@ -71,7 +71,7 @@ const Login = (props) => {
         password: registerInput.password,
         nickname: registerInput.username,
       };
-      props.registerUser(user);
+      registerUser(user);
       setIsLoginPage(!isLoginPage);
     } else if (isLoginPage) {
       const user = {
@@ -82,6 +82,8 @@ const Login = (props) => {
       axios
         .post(`${URL}/users/login`, user)
         .then((response) => {
+          setToken(response.data.token);
+          setCurrentUser(response.data.user);
           window.localStorage.setItem(
             "currentUser",
             JSON.stringify({
@@ -90,15 +92,11 @@ const Login = (props) => {
               expiry: Date.now() + 1000 * 60 * 60,
             })
           );
-          props.addUserData({
-            user: response.data.user,
-            token: response.data.token,
-          });
           history.replace("/dashboard");
         })
         .catch((e) => {
+          console.log(e);
           window.alert("Incorrect username or password :(");
-          window.location.reload();
         });
     }
   };
@@ -117,7 +115,7 @@ const Login = (props) => {
         </Typography>
         <form
           className={classes.form}
-          onSubmit={(event) => submitForm(event)}
+          onSubmit={submitForm}
           noValidate
           method="POST"
         >
@@ -301,8 +299,10 @@ function mapDispatchToProps(dispatch) {
   return {
     registerUser: (user) =>
       dispatch({ type: SAGA_USER_ACTIONS.ADD_USER_ASYNC, user }),
-    addUserData: (userData) =>
-      dispatch({ type: CURRENT_USER_ACTIONS.SET_CURRENT_USER, userData }),
+    setToken: (token) =>
+      dispatch({ type: CURRENT_USER_ACTIONS.SET_CURRENT_USER_TOKEN, token }),
+    setCurrentUser: (user) =>
+      dispatch({ type: CURRENT_USER_ACTIONS.SET_CURRENT_USER, user }),
   };
 }
 

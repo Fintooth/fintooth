@@ -31,7 +31,7 @@ exports.poll_create = (req, res, next) => {
 };
 
 exports.poll_get_all = (req, res, next) => {
-  Poll.find()
+  Poll.find({ expires: { $gt: new Date() } })
     .select("_id title description group creator")
     .exec()
     .then((count) => {

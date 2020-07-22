@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 
 const Poll = require("../model/poll");
+const poll = require("../model/poll");
 
 exports.poll_create = (req, res, next) => {
   const groupId = req.params.groupId;
@@ -59,6 +60,7 @@ exports.poll_get_all = (req, res, next) => {
 
 exports.poll_get_one = (req, res, next) => {
   const pollId = req.params.pollId;
+  console.log(pollId);
   Poll.findById(pollId)
     .select(
       "_id title description creator group result votes created expires comments"
@@ -156,6 +158,30 @@ exports.poll_delete = (req, res, next) => {
     .catch((e) => {
       res.status(500).json({
         error: e,
+      });
+    });
+};
+
+exports.poll_vote = (req, res, next) => {
+  const pollId = req.params.pollId;
+  const vote = req.body.vote;
+  Poll.updateOne(
+    { _id: pollId },
+    {
+      $push: {
+        votes: vote,
+      },
+    }
+  )
+    .exec()
+    .then((result) => {
+      res.status(200).json({
+        message: "Vote added",
+      });
+    })
+    .catch((err) => {
+      res.status(500).json({
+        error: err,
       });
     });
 };

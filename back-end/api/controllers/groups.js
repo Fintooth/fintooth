@@ -249,3 +249,13 @@ exports.account_delete = (req, res, next) => {
       });
     });
 };
+
+exports.change_account_amount = (groupId, accountId, amount) => {
+  return Group.updateOne(
+    { _id: groupId },
+    { $inc: { "accounts.$[element].amount": amount } },
+    {
+      arrayFilters: [{ "element._id": { $eq: accountId } }],
+    }
+  ).exec();
+};

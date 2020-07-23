@@ -5,7 +5,11 @@ import * as requestActions from "../actions/requestActions";
 import * as activityActions from "../actions/activityActions";
 import { SAGA_ACTIVITY_ACTIONS, URL } from "../constants";
 
+<<<<<<< HEAD
 const token = JSON.parse(localStorage.getItem("currentUser")).token;
+=======
+const token = "asd" || JSON.parse(localStorage.getItem("currentUser")).token;
+>>>>>>> 9d3d52244dcb3666cf8abe91f13a45090ebe2b1d
 
 const getActivities = (userId) =>
   axios.get(`${URL}/activities/user/${userId}`, {
@@ -73,6 +77,6 @@ export function* activitiesWatcherSaga() {
     takeLatest(SAGA_ACTIVITY_ACTIONS.GET_ACTIVITIES_ASYNC, getActivitiesSaga),
     takeLatest(SAGA_ACTIVITY_ACTIONS.ADD_ACTIVITY_ASYNC, postActivitySaga),
     takeLatest(SAGA_ACTIVITY_ACTIONS.EDIT_ACTIVITY_ASYNC, editActivitySaga),
-    takeLatest(SAGA_ACTIVITY_ACTIONS.DELETE_ACTIVITY_ASYNC, deleteActivitySaga),
+    takeLatest(SAGA_ACTIVITY_ACTIONS.DELETE_ACTIVITY_ASYNC, deleteActivitySaga)
   ]);
 }

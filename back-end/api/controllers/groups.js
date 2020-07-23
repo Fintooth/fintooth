@@ -136,6 +136,40 @@ exports.groups_get_all = (req, res, next) => {
     });
 };
 
+// exports.groups_get_all_for_user = (req, res, next) => {
+//   const userId = req.params.userId;
+//   Group.find({ members: userId })
+//     .select("id name members dateCreated accounts")
+//     .exec()
+//     .then((docs) => {
+//       if (docs) {
+//         res.status(200).json({
+//           count: docs.length,
+//           groups: docs.map((doc) => {
+//             return {
+//               name: doc.name,
+//               dateCreated: doc.dateCreated,
+//               id: doc._id,
+//               members: doc.members,
+//               accounts: doc.accounts,
+//               request: {
+//                 type: "GET DELETE",
+//                 url: "http://localhost:3001/groups/" + doc._id,
+//               },
+//             };
+//           }),
+//         });
+//       } else {
+//         res.status(404).json({
+//           message: "No created groups",
+//         });
+//       }
+//     })
+//     .catch((err) => {
+//       res.status(500).json({ error: err });
+//     });
+// };
+
 exports.add_account = (req, res, next) => {
   const id = req.params.groupId;
   const name = req.body.name;

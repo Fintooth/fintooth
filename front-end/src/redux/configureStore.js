@@ -9,6 +9,7 @@ import activityReducer from "./reducers/activityReducer";
 
 import rootSaga from "./sagas/rootSaga";
 import { composeWithDevTools } from "redux-devtools-extension";
+import pollsReducer from "./reducers/pollsReducer";
 
 const rootReducer = combineReducers({
   users: userReducer,
@@ -16,6 +17,7 @@ const rootReducer = combineReducers({
   groups: groupReducer,
   currentUser: userDataReducer,
   activities: activityReducer,
+  polls: pollsReducer
 });
 
 const sagaMiddleware = createSagaMiddleware();

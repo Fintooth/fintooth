@@ -73,6 +73,6 @@ export function* activitiesWatcherSaga() {
     takeLatest(SAGA_ACTIVITY_ACTIONS.GET_ACTIVITIES_ASYNC, getActivitiesSaga),
     takeLatest(SAGA_ACTIVITY_ACTIONS.ADD_ACTIVITY_ASYNC, postActivitySaga),
     takeLatest(SAGA_ACTIVITY_ACTIONS.EDIT_ACTIVITY_ASYNC, editActivitySaga),
-    takeLatest(SAGA_ACTIVITY_ACTIONS.DELETE_ACTIVITY_ASYNC, deleteActivitySaga),
+    takeLatest(SAGA_ACTIVITY_ACTIONS.DELETE_ACTIVITY_ASYNC, deleteActivitySaga)
   ]);
 }

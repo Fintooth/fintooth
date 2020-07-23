@@ -3,19 +3,20 @@ import {
   BrowserRouter as Router,
   Switch,
   Route,
-  Redirect,
+  Redirect
 } from "react-router-dom";
 import { connect } from "react-redux";
 import {
   CURRENT_USER_ACTIONS,
   USER_ACTIONS,
-  SAGA_USER_ACTIONS,
+  SAGA_USER_ACTIONS
 } from "./redux/constants";
 
 import Login from "./login/Login";
 import Dashboard from "./dashboard/Dashboard";
 import AdminView from "./admin-view/layout";
 import UserSettingsForm from "./settings-view/user-settings";
+import PollsAndComments from "./polls";
 
 function App({ setToken, removeUserData, getCurrentUser }) {
   React.useEffect(() => {
@@ -52,6 +53,9 @@ function App({ setToken, removeUserData, getCurrentUser }) {
         <Route path="/settings">
           <UserSettingsForm />
         </Route>
+        <Route path="/polls">
+          <PollsAndComments groupId='5f020a141ed58522c0f64030'/>
+        </Route>
         <Route path="/">
           <Redirect to="/dashboard" />
         </Route>
@@ -62,18 +66,18 @@ function App({ setToken, removeUserData, getCurrentUser }) {
 
 function mapStateToProps(state) {
   return {
-    currentUser: state.currentUser,
+    currentUser: state.currentUser
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
-    getCurrentUser: (userId) =>
+    getCurrentUser: userId =>
       dispatch({ type: SAGA_USER_ACTIONS.GET_CURRENT_USER_ASYNC, userId }),
-    setToken: (token) =>
+    setToken: token =>
       dispatch({ type: CURRENT_USER_ACTIONS.SET_CURRENT_USER_TOKEN, token }),
     removeUserData: () =>
-      dispatch({ type: CURRENT_USER_ACTIONS.UNSET_CURRENT_USER }),
+      dispatch({ type: CURRENT_USER_ACTIONS.UNSET_CURRENT_USER })
   };
 }
 

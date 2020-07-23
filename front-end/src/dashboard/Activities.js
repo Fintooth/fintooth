@@ -123,7 +123,12 @@ const emptyFunc = (event) => {
   return false;
 };
 
-export default function Activities({ activities, accounts }) {
+export default function Activities({
+  activities,
+  accounts,
+  editActivity,
+  deleteActivity,
+}) {
   const classes = useStyles();
 
   const activityColor = {
@@ -154,7 +159,7 @@ export default function Activities({ activities, accounts }) {
     accountDest: "",
     description: "",
     picture: "",
-    date: "Now",
+    date: "",
     amount: "",
   });
 
@@ -163,8 +168,10 @@ export default function Activities({ activities, accounts }) {
     return acc ? acc.name : accId;
   }
 
+  const ref = React.createRef();
+
   return (
-    <div className={classes.root}>
+    <div ref={ref} className={classes.root}>
       <ActivityToEdit
         activityToEdit={activityToEdit}
         setActivityToEdit={setActivityToEdit}
@@ -180,7 +187,11 @@ export default function Activities({ activities, accounts }) {
               <Chip
                 variant="outlined"
                 color={activityColor[activity.type]}
-                label={activity.amount}
+                label={
+                  activity.amount % 1 === 0
+                    ? parseInt(activity.amount)
+                    : parseFloat(activity.amount).toFixed(2)
+                }
                 onClick={emptyFunc}
                 avatar={
                   <Avatar>
@@ -251,8 +262,20 @@ export default function Activities({ activities, accounts }) {
           </AccordionDetails>
           <Divider />
           <AccordionActions>
-            <Button size="small">Change</Button>
-            <Button size="small" color="primary">
+            <Button
+              size="small"
+              onClick={() => {
+                ref.current.scrollIntoView({ behavior: "smooth" });
+                setActivityToEdit({ ...activityToEdit, ...activity });
+              }}
+            >
+              Change
+            </Button>
+            <Button
+              size="small"
+              color="primary"
+              onClick={() => deleteActivity(activity.id)}
+            >
               Delete
             </Button>
           </AccordionActions>

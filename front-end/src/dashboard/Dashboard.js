@@ -190,6 +190,8 @@ function Dashboard(props) {
                       accounts={
                         currentUser.user ? currentUser.user.accounts : []
                       }
+                      editActivity={editActivity}
+                      deleteActivity={deleteActivity}
                     />
                   </Paper>
                 </Grid>

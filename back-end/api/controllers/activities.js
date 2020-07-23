@@ -193,20 +193,84 @@ exports.edit_activity = (req, res, next) => {
       updateOps[ops] = req.body[ops];
     }
   }
-  Activity.updateOne(
+  switch (updateOps.type) {
+    case "Expenditure":
+      updateOps.accountSrc = req.body.accountSrc;
+      break;
+    case "Income":
+      updateOps.accountDest = req.body.accountDest;
+      break;
+    case "Move":
+      updateOps.accountSrc = req.body.accountSrc;
+      updateOps.accountDest = req.body.accountDest;
+      break;
+  }
+  Activity.findOneAndUpdate(
     { _id: id },
     {
       $set: updateOps,
     }
   )
     .exec()
-    .then((result) => {
+    .then((doc) => {
+      switch (doc.type) {
+        case "Expenditure":
+          UsersController.change_account_amount(
+            doc.user,
+            doc.accountSrc,
+            doc.amount
+          );
+          break;
+        case "Income":
+          UsersController.change_account_amount(
+            doc.user,
+            doc.accountDest,
+            -doc.amount
+          );
+          break;
+        case "Move":
+          UsersController.change_account_amount(
+            doc.user,
+            doc.accountSrc,
+            doc.amount
+          );
+          UsersController.change_account_amount(
+            doc.user,
+            doc.accountDest,
+            -doc.amount
+          );
+          break;
+      }
+      switch (updateOps.type) {
+        case "Expenditure":
+          UsersController.change_account_amount(
+            doc.user,
+            updateOps.accountSrc,
+            -doc.amount
+          );
+          break;
+        case "Income":
+          UsersController.change_account_amount(
+            doc.user,
+            updateOps.accountDest,
+            doc.amount
+          );
+          break;
+        case "Move":
+          UsersController.change_account_amount(
+            doc.user,
+            updateOps.accountSrc,
+            -doc.amount
+          );
+          UsersController.change_account_amount(
+            doc.user,
+            updateOps.accountDest,
+            doc.amount
+          );
+          break;
+      }
       res.status(200).json({
-        message: "Activity updated",
-        request: {
-          type: "GET PATCH DELETE",
-          url: "http://localhost:3001/edit-activity/" + id,
-        },
+        message: "Activity updated and accounts changed accordingly",
       });
     })
     .catch((err) => {
@@ -217,11 +281,45 @@ exports.edit_activity = (req, res, next) => {
 };
 
 exports.activities_delete = (req, res, next) => {
-  Activity.deleteOne({ _id: req.params.activityId })
+  Activity.findOneAndDelete({ _id: req.params.activityId })
+    .select("type accountSrc accountDest amount user group")
     .exec()
-    .then((response) => {
-      res.status(200).json({
-        message: "Activity deleted",
+    .then((doc) => {
+      console.log(doc);
+      switch (doc.type) {
+        case "Expenditure":
+          UsersController.change_account_amount(
+            doc.user,
+            doc.accountSrc,
+            doc.amount
+          );
+          break;
+        case "Income":
+          UsersController.change_account_amount(
+            doc.user,
+            doc.accountSrc,
+            -doc.amount
+          );
+          break;
+        case "Move":
+          UsersController.change_account_amount(
+            doc.user,
+            doc.accountSrc,
+            doc.amount
+          );
+          UsersController.change_account_amount(
+            doc.user,
+            doc.accountDest,
+            -doc.amount
+          );
+          break;
+        default:
+          return res.status(404).json({
+            message: "Activity not found",
+          });
+      }
+      return res.status(200).json({
+        message: "Activity deleted and accounts reset",
       });
     })
     .catch((err) => {

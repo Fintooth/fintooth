@@ -9,6 +9,8 @@ const activityRoutes = require("./api/routes/activities");
 const groupRoutes = require("./api/routes/groups");
 const pollRoutes = require("./api/routes/polls");
 
+mongoose.set("useFindAndModify", false);
+
 mongoose.connect(
   "mongodb+srv://teodor:" +
     process.env.MONGO_ATLAS_PW +

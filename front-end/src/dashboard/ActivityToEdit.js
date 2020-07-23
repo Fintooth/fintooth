@@ -82,6 +82,7 @@ const useStyles = makeStyles((theme) => ({
   },
 
   //Input
+  form: { marginBottom: "10px", marginTop: "5px" },
   typeField: {
     maxWidth: "100px",
     backgroundColor: "white",
@@ -132,6 +133,7 @@ function ActivityToEdit({
   activityToEdit,
   setActivityToEdit,
   addActivity,
+  editActivity,
   addToCurrentUserAccount,
 }) {
   const classes = useStyles();
@@ -148,6 +150,11 @@ function ActivityToEdit({
     Move: <NeutralIcon color="disabled" className={classes.iconInput} />,
   };
 
+  const getActivityDate = (date) => {
+    const d = new Date(date);
+    return d.toString().substr(0, 24);
+  };
+
   const handleChangeActivity = (event) => {
     setActivityToEdit({
       ...activityToEdit,
@@ -155,45 +162,66 @@ function ActivityToEdit({
     });
   };
 
-  const handleSave = (event) => {
+  const handleDiscard = (event) => {
     event.preventDefault();
-    addActivity(activityToEdit);
-    if (activityToEdit.type === "Expenditure") {
-      addToCurrentUserAccount(
-        activityToEdit.accountSrc,
-        -activityToEdit.amount
-      );
-    } else if (activityToEdit.type === "Income") {
-      addToCurrentUserAccount(
-        activityToEdit.accountDest,
-        activityToEdit.amount
-      );
-    } else if (activityToEdit.type === "Move") {
-      addToCurrentUserAccount(
-        activityToEdit.accountSrc,
-        -activityToEdit.amount
-      );
-      addToCurrentUserAccount(
-        activityToEdit.accountDest,
-        activityToEdit.amount
-      );
-    }
     setActivityToEdit({
-      id: currentUser.user.id,
-      user: "",
+      id: "",
+      user: currentUser.user.id,
       type: "Expenditure",
       accountSrc: "",
       accountDest: "",
       description: "",
       picture: "",
-      date: "Now",
+      date: "",
+      amount: "",
+    });
+  };
+
+  const handleSave = (event) => {
+    event.preventDefault();
+    if (activityToEdit.id) {
+      //=> edit old activity
+      editActivity(activityToEdit);
+    } else {
+      //=> add new activity
+      addActivity(activityToEdit);
+      if (activityToEdit.type === "Expenditure") {
+        addToCurrentUserAccount(
+          activityToEdit.accountSrc,
+          -activityToEdit.amount
+        );
+      } else if (activityToEdit.type === "Income") {
+        addToCurrentUserAccount(
+          activityToEdit.accountDest,
+          activityToEdit.amount
+        );
+      } else if (activityToEdit.type === "Move") {
+        addToCurrentUserAccount(
+          activityToEdit.accountSrc,
+          -activityToEdit.amount
+        );
+        addToCurrentUserAccount(
+          activityToEdit.accountDest,
+          activityToEdit.amount
+        );
+      }
+    }
+    setActivityToEdit({
+      id: "",
+      user: currentUser.user.id,
+      type: "Expenditure",
+      accountSrc: "",
+      accountDest: "",
+      description: "",
+      picture: "",
+      date: "",
       amount: "",
     });
   };
 
   return (
-    <form onSubmit={handleSave}>
-      <Accordion>
+    <form className={classes.form} onSubmit={handleSave}>
+      <Accordion expanded={true}>
         <AccordionSummary
           expandIcon={<MoreVert />}
           aria-controls="panel0-content"
@@ -244,7 +272,11 @@ function ActivityToEdit({
             </div>
           </div>
           <div className={classes.column}>
-            <Typography className={classes.secondaryHeading}>Now</Typography>
+            <Typography className={classes.secondaryHeading}>
+              {activityToEdit.date
+                ? getActivityDate(activityToEdit.date)
+                : "Now"}
+            </Typography>
           </div>
         </AccordionSummary>
         <AccordionDetails className={classes.details}>
@@ -321,6 +353,11 @@ function ActivityToEdit({
         </AccordionDetails>
         <Divider />
         <AccordionActions>
+          {activityToEdit.id && (
+            <Button size="small" color="secondary" onClick={handleDiscard}>
+              Discard
+            </Button>
+          )}
           <Button size="small" color="primary" type="submit">
             Save
           </Button>

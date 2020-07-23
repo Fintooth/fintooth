@@ -1,6 +1,8 @@
 import React, { forwardRef } from "react";
 import MaterialTable from "material-table";
 import { makeStyles } from "@material-ui/core/styles";
+import UserDetail from "./user-detail";
+import GroupDetail from "./group-detail";
 
 import AddBox from "@material-ui/icons/AddBox";
 import ArrowUpward from "@material-ui/icons/ArrowUpward";
@@ -39,14 +41,14 @@ const tableIcons = {
   Search: forwardRef((props, ref) => <Search {...props} ref={ref} />),
   SortArrow: forwardRef((props, ref) => <ArrowUpward {...props} ref={ref} />),
   ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
-  ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />),
+  ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   root: {
     display: "flex",
-    width: "auto",
-  },
+    width: "auto"
+  }
 }));
 
 export default function MainTable(props) {
@@ -55,7 +57,7 @@ export default function MainTable(props) {
   const [state, setState] = React.useState({
     columns: [],
     data: [],
-    ...props.state,
+    ...props.state
   });
 
   return (
@@ -66,14 +68,14 @@ export default function MainTable(props) {
       data={Array.from(state.data)}
       icons={tableIcons}
       options={{
-        pageSize: 10,
+        pageSize: 10
       }}
       editable={{
-        onRowAdd: (newData) =>
-          new Promise((resolve) => {
+        onRowAdd: newData =>
+          new Promise(resolve => {
             setTimeout(() => {
               resolve();
-              setState((prevState) => {
+              setState(prevState => {
                 const data = [...prevState.data];
                 data.push(newData);
                 props.addUser(newData);
@@ -82,11 +84,11 @@ export default function MainTable(props) {
             }, 600);
           }),
         onRowUpdate: (newData, oldData) =>
-          new Promise((resolve) => {
+          new Promise(resolve => {
             setTimeout(() => {
               resolve();
               if (oldData) {
-                setState((prevState) => {
+                setState(prevState => {
                   const data = [...prevState.data];
                   data[data.indexOf(oldData)] = newData;
                   props.updateUser(newData);
@@ -95,23 +97,24 @@ export default function MainTable(props) {
               }
             }, 600);
           }),
-        onRowDelete: (oldData) =>
-          new Promise((resolve) => {
+        onRowDelete: oldData =>
+          new Promise(resolve => {
             setTimeout(() => {
               resolve();
-              setState((prevState) => {
+              setState(prevState => {
                 const data = [...prevState.data];
                 props.deleteUser(oldData.id);
                 data.splice(data.indexOf(oldData), 1);
                 return { ...prevState, data };
               });
             }, 600);
-          }),
+          })
       }}
-      detailPanel={(rowData) => {
-        let data;
-
-        //return <UserDetail {...data} />;
+      detailPanel={data => {
+        if (data.members) {
+          return <GroupDetail id={data.id} />;
+        }
+        return <UserDetail id={data.id} />;
       }}
     />
   );

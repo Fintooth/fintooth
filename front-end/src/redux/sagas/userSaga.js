@@ -6,11 +6,10 @@ import * as userActions from "../actions/userActions";
 import * as userIdActions from "../actions/userIdActions";
 import { SAGA_USER_ACTIONS, URL } from "../constants";
 
-<<<<<<< HEAD
-const token = JSON.parse(localStorage.getItem("currentUser")).token;
-=======
-const token = "asd" || JSON.parse(localStorage.getItem("currentUser")).token;
->>>>>>> 9d3d52244dcb3666cf8abe91f13a45090ebe2b1d
+const token =
+  (localStorage.getItem("currentUser") &&
+    JSON.parse(localStorage.getItem("currentUser")).token) ||
+  "abc";
 
 const getUser = (userId) =>
   axios.get(`${URL}/users/${userId}`, {
@@ -40,14 +39,11 @@ const deleteAccount = (accountId) =>
   axios.delete(`${URL}/users/delete-account/${accountId}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
-<<<<<<< HEAD
-=======
 
 const changePassword = (user) =>
   axios.patch(`${URL}/users/change-password/${user.userId}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
->>>>>>> 9d3d52244dcb3666cf8abe91f13a45090ebe2b1d
 
 function* getCurrentUserSaga(action) {
   try {

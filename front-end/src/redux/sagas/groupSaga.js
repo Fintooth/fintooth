@@ -5,7 +5,10 @@ import * as requestActions from "../actions/requestActions";
 import * as groupActions from "../actions/groupActions";
 import { SAGA_GROUP_ACTIONS, URL } from "../constants";
 
-let token = "asd" || JSON.parse(localStorage.getItem("currentUser")).token;
+const token =
+  (localStorage.getItem("currentUser") &&
+    JSON.parse(localStorage.getItem("currentUser")).token) ||
+  "abc";
 
 const getGroups = () =>
   axios.get(`${URL}/groups`, { headers: { Authorization: `Bearer ${token}` } });

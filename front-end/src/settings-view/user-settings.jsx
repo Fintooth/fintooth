@@ -37,17 +37,29 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const UserSettingsForm = (props) => {
+const UserSettingsForm = ({
+  currentUser = { user: {} },
+  updateUser,
+  changePassword,
+}) => {
   const history = useHistory();
   const classes = useStyles();
   const [editInput, setEditInput] = useState({
-    username: props.currentUser.user.username
-      ? props.currentUser.user.username
-      : "",
-    email: props.currentUser.user.email,
+    nickname: "",
+    email: "",
     validEmail: true,
-    validUsername: true,
+    validNickname: true,
   });
+
+  React.useEffect(() => {
+    if (!editInput.email && currentUser.user.email) {
+      setEditInput({
+        ...editInput,
+        nickname: currentUser.user.nickname ? currentUser.user.nickname : "",
+        email: currentUser.user.email,
+      });
+    }
+  }, [editInput, setEditInput, currentUser]);
 
   const [passWordInput, setPasswordInput] = useState({
     password: "",
@@ -62,8 +74,8 @@ const UserSettingsForm = (props) => {
   const [isDeleteButtonShown, showDeleteButton] = useState(false);
 
   const deleteUser = () => {
-    const user = props.currentUser.user.id;
-    props.deleteUser(user);
+    const user = currentUser.user.id;
+    deleteUser(user);
     history.replace("/login");
   };
 
@@ -72,16 +84,16 @@ const UserSettingsForm = (props) => {
       const user = {
         email: editInput.email,
         nickname: editInput.nickname,
-        id: props.currentUser.user.id,
+        id: currentUser.user.id,
       };
-      props.updateUser(user);
+      updateUser(user);
       history.replace("/dashboard");
     } else if (!isEditPage) {
       const user = {
         password: passWordInput.newPassword,
-        userId: props.currentUser.user.id,
+        userId: currentUser.user.id,
       };
-      props.changePassword(user);
+      changePassword(user);
       history.replace("/dashboard");
     }
   };
@@ -92,7 +104,7 @@ const UserSettingsForm = (props) => {
         <Avatar
           className={classes.avatar}
           alt="blackTooth"
-          src={`../../../back-end/uploads/${props.currentUser.user.id}/avatar.png/`}
+          src={`../../../back-end/uploads/${currentUser.user.id}/avatar.png/`}
         ></Avatar>
         <form
           onSubmit={(event) => submitForm(event)}
@@ -135,29 +147,29 @@ const UserSettingsForm = (props) => {
               label="Change Nickname"
               name="nickname"
               autoComplete="nickname"
-              value={editInput.username}
+              value={editInput.nickname}
               onChange={(event) => {
                 setEditInput({
                   ...editInput,
-                  username: event.target.value,
+                  nickname: event.target.value,
                 });
               }}
               onBlur={() => {
-                editInput.username.length < 3 ||
-                editInput.username.length > 10 ||
-                !editInput.username.match(new RegExp(/^[a-z0-9_]+$/i))
+                editInput.nickname.length < 3 ||
+                editInput.nickname.length > 10 ||
+                !editInput.nickname.match(new RegExp(/^[a-z0-9_]+$/i))
                   ? setEditInput({
                       ...editInput,
-                      validUsername: false,
+                      validNickname: false,
                     })
                   : setEditInput({
                       ...editInput,
-                      validUsername: true,
+                      validNickname: true,
                     });
               }}
-              error={!editInput.validUsername}
+              error={!editInput.validNickname}
               helperText={
-                !editInput.validUsername
+                !editInput.validNickname
                   ? "Nickname can be from 3 to 10 characters and can contain only alphanumerical symbols and _"
                   : ""
               }
@@ -246,7 +258,7 @@ const UserSettingsForm = (props) => {
           fullWidth
           variant="contained"
           color="primary"
-          onClick={(event) => submitForm(props, event)}
+          onClick={(event) => submitForm(event)}
         >
           {isEditPage ? "Save your properties" : "Change your password"}
         </Button>

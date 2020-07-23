@@ -37,6 +37,11 @@ const deleteAccount = (accountId) =>
     headers: { Authorization: `Bearer ${token}` },
   });
 
+const changePassword = (user) =>
+  axios.patch(`${URL}/users/change-password/${user.userId}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
 function* getCurrentUserSaga(action) {
   try {
     yield put(requestActions.startRequest());
@@ -103,6 +108,17 @@ function* addAccountSaga(action) {
   }
 }
 
+function* changePasswordSaga(action) {
+  try {
+    yield put(requestActions.startRequest());
+    const response = yield changePassword(action.user);
+    yield put(userActions.changeUserPassword(action.user));
+    yield put(requestActions.successRequest(response.data));
+  } catch (e) {
+    yield put(requestActions.errorRequest(e.message));
+  }
+}
+
 function* deleteAccountSaga(action) {
   try {
     yield put(requestActions.startRequest());
@@ -123,5 +139,6 @@ export function* usersWatcherSaga() {
     takeLatest(SAGA_USER_ACTIONS.REMOVE_USER_ASYNC, removeUserSaga),
     takeLatest(SAGA_USER_ACTIONS.ADD_ACCOUNT_ASYNC, addAccountSaga),
     takeLatest(SAGA_USER_ACTIONS.DELETE_ACCOUNT_ASYNC, deleteAccountSaga),
+    takeLatest(SAGA_USER_ACTIONS.CHANGE_PASSWORD_ASYNC, changePasswordSaga),
   ]);
 }

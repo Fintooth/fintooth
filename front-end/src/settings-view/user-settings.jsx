@@ -7,6 +7,7 @@ import axios from "axios";
 import { makeStyles } from "@material-ui/core/styles";
 import Avatar from "@material-ui/core/Avatar";
 import blackTooth from "../images/blackTooth.png";
+import { useHistory } from "react-router-dom";
 
 import {
   SAGA_USER_ACTIONS,
@@ -37,6 +38,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const UserSettingsForm = (props) => {
+  const history = useHistory();
   const classes = useStyles();
   const [editInput, setEditInput] = useState({
     username: props.currentUser.user.username
@@ -56,6 +58,33 @@ const UserSettingsForm = (props) => {
   });
 
   const [isEditPage, setIsEditPage] = useState(true);
+
+  const [isDeleteButtonShown, showDeleteButton] = useState(false);
+
+  const deleteUser = () => {
+    const user = props.currentUser.user.id;
+    props.deleteUser(user);
+    history.replace("/login");
+  };
+
+  const submitForm = (event) => {
+    if (isEditPage) {
+      const user = {
+        email: editInput.email,
+        nickname: editInput.nickname,
+        id: props.currentUser.user.id,
+      };
+      props.updateUser(user);
+      history.replace("/dashboard");
+    } else if (!isEditPage) {
+      const user = {
+        password: passWordInput.newPassword,
+        userId: props.currentUser.user.id,
+      };
+      props.changePassword(user);
+      history.replace("/dashboard");
+    }
+  };
 
   return (
     <Container component="main" maxWidth="xs">
@@ -240,10 +269,33 @@ const UserSettingsForm = (props) => {
           fullWidth
           variant="contained"
           color="secondary"
-          onClick={(event) => prompt("Please enter your password")}
+          onClick={() => {
+            showDeleteButton(!isDeleteButtonShown);
+          }}
         >
-          Delete your user
+          {!isDeleteButtonShown
+            ? "Delete your account"
+            : "I don't want to delete it"}
         </Button>
+        {isDeleteButtonShown ? (
+          <Fragment>
+            <br />
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              color="secondary"
+              onClick={() => {
+                deleteUser();
+              }}
+            >
+              {" "}
+              Confirm that you want to delete your account
+            </Button>
+          </Fragment>
+        ) : (
+          ""
+        )}
       </div>
     </Container>
   );
@@ -253,15 +305,6 @@ const UserSettingsForm = (props) => {
 This function does not work and does not update the nickname and the
 email address of the user, but I don't know how. 
 */
-const submitForm = (props, event) => {
-  event.preventDefault();
-  const user = {
-    //email: editInput.email,
-    nickname: props.currentUser.user.nickname,
-  };
-
-  axios.patch(`${URL}/users/${props.currentUser.user.id}`, user);
-};
 
 function mapStateToProps(state) {
   return {
@@ -273,9 +316,13 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    removeUser: (user) =>
-      dispatch({ type: SAGA_USER_ACTIONS.REMOVE_USER_ASYNC, user }),
+    deleteUser: (userId) =>
+      dispatch({ type: SAGA_USER_ACTIONS.REMOVE_USER_ASYNC, userId }),
+    updateUser: (user) =>
+      dispatch({ type: SAGA_USER_ACTIONS.MODIFY_USER_ASYNC, user }),
+    changePassword: (user) =>
+      dispatch({ type: SAGA_USER_ACTIONS.CHANGE_PASSWORD_ASYNC, user }),
   };
 }
 
-export default connect(mapStateToProps)(UserSettingsForm);
+export default connect(mapStateToProps, mapDispatchToProps)(UserSettingsForm);

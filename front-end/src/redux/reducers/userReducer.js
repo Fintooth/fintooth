@@ -34,6 +34,15 @@ const userReducer = (state = [], action) => {
         action.user,
         ...state.slice(toModifyIndex2 + 1, state.length),
       ];
+    case USER_ACTIONS.CHANGE_PASSWORD:
+      const toModifyIndex3 = state.findIndex(
+        (user) => user.email === action.user.email
+      );
+      return [
+        ...state.slice(0, toModifyIndex3),
+        action.user,
+        ...state.slice(toModifyIndex3 + 1, state.length),
+      ];
     default:
       return state;
   }

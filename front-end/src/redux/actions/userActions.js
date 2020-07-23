@@ -8,6 +8,10 @@ export function removeUser(userId) {
   return { type: USER_ACTIONS.REMOVE_USER, userId };
 }
 
+export function changeUserPassword(user) {
+  return { type: USER_ACTIONS.CHANGE_PASSWORD, user };
+}
+
 export function modifyUser(user) {
   return { type: USER_ACTIONS.MODIFY_USER, user };
 }

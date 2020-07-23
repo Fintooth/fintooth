@@ -5,19 +5,24 @@ import * as requestActions from "../actions/requestActions";
 import * as activityActions from "../actions/activityActions";
 import { SAGA_ACTIVITY_ACTIONS, URL } from "../constants";
 
-const token = JSON.parse(localStorage.getItem('currentUser')).token
+const token = "asd" || JSON.parse(localStorage.getItem("currentUser")).token;
 
-const getActivities = (userId) => axios.get(`${URL}/activities/user/${userId}`, {
-  headers: { Authorization: `Bearer ${token}` }});
+const getActivities = (userId) =>
+  axios.get(`${URL}/activities/user/${userId}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
 const postActivity = (activity) =>
   axios.post(`${URL}/activities/user/${activity.user}`, activity, {
-    headers: { Authorization: `Bearer ${token}` }});
+    headers: { Authorization: `Bearer ${token}` },
+  });
 const updateActivity = (activity) =>
   axios.patch(`${URL}/activities/${activity.id}`, activity, {
-    headers: { Authorization: `Bearer ${token}` }});
+    headers: { Authorization: `Bearer ${token}` },
+  });
 const deleteActivity = (activityId) =>
   axios.delete(`${URL}/activities/${activityId}`, {
-    headers: { Authorization: `Bearer ${token}` }});
+    headers: { Authorization: `Bearer ${token}` },
+  });
 
 function* getActivitiesSaga(action) {
   try {

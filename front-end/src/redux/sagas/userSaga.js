@@ -6,24 +6,36 @@ import * as userActions from "../actions/userActions";
 import * as userIdActions from "../actions/userIdActions";
 import { SAGA_USER_ACTIONS, URL } from "../constants";
 
-const token = JSON.parse(localStorage.getItem('currentUser')).token
+const token = "asd" || JSON.parse(localStorage.getItem("currentUser")).token;
 
-const getUser = (userId) => axios.get(`${URL}/users/${userId}`, {
-  headers: { Authorization: `Bearer ${token}` }});
-const getUsers = () => axios.get(`${URL}/users`, {
-  headers: { Authorization: `Bearer ${token}` }});
-const postUser = (user) => axios.post(`${URL}/users/signup`, user, {
-  headers: { Authorization: `Bearer ${token}` }});
+const getUser = (userId) =>
+  axios.get(`${URL}/users/${userId}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+const getUsers = () =>
+  axios.get(`${URL}/users`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+const postUser = (user) =>
+  axios.post(`${URL}/users/signup`, user, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
 const addAccount = (user) =>
   axios.post(`${URL}/users/${user.id}/accounts`, user, {
-    headers: { Authorization: `Bearer ${token}` }});
-const updateUser = (user) => axios.patch(`${URL}/users/${user.id}`, user, {
-  headers: { Authorization: `Bearer ${token}` }});
-const deleteUser = (userId) => axios.delete(`${URL}/users/${userId}`, {
-  headers: { Authorization: `Bearer ${token}` }});
+    headers: { Authorization: `Bearer ${token}` },
+  });
+const updateUser = (user) =>
+  axios.patch(`${URL}/users/${user.id}`, user, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+const deleteUser = (userId) =>
+  axios.delete(`${URL}/users/${userId}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
 const deleteAccount = (accountId) =>
   axios.delete(`${URL}/users/delete-account/${accountId}`, {
-    headers: { Authorization: `Bearer ${token}` }});
+    headers: { Authorization: `Bearer ${token}` },
+  });
 
 function* getCurrentUserSaga(action) {
   try {

@@ -7,6 +7,7 @@ const GroupsController = require("../controllers/groups");
 
 router.get("/:groupId", GroupsController.groups_get_one);
 router.get("/", GroupsController.groups_get_all);
+//router.get("/user-groups/:userId", GroupsController.groups_get_all_for_user);
 
 router.post("/create", GroupsController.create_group);
 router.post("/:groupId/add-user", GroupsController.add_user);

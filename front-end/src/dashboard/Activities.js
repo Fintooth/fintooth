@@ -130,7 +130,6 @@ export default function Activities({
   deleteActivity,
 }) {
   const classes = useStyles();
-
   const activityColor = {
     Income: "primary",
     Expenditure: "secondary",

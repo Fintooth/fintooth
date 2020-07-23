@@ -50,7 +50,9 @@ export default function Accounts({
             handleViewActivities(account._id);
           }}
         >
-          {accountToView === account._id ? "Clear view" : "View acctivities"}
+          {accountToView === account._id
+            ? "Clear"
+            : "Select account's activities"}
         </Link>
       </div>
     </React.Fragment>

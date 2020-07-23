@@ -92,7 +92,7 @@ const Login = ({ registerUser, setCurrentUser, setToken }) => {
               expiry: Date.now() + 1000 * 60 * 60,
             })
           );
-          history.replace("/dashboard");
+          history.replace("/dashboard/activity-manager");
         })
         .catch((e) => {
           console.log(e);

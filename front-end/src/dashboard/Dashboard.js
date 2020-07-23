@@ -1,4 +1,5 @@
 import React from "react";
+import { Switch, Route, Link } from "react-router-dom";
 import { useHistory } from "react-router-dom";
 import { connect } from "react-redux";
 import { SAGA_ACTIVITY_ACTIONS } from "../redux/constants";
@@ -11,19 +12,20 @@ import Typography from "@material-ui/core/Typography";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
-import Link from "@material-ui/core/Link";
-import Chart from "./Chart";
+import MaterialLink from "@material-ui/core/Link";
+import Charts from "./Charts";
 import Account from "./Account";
 
 import Activities from "./Activities";
+import { Button } from "@material-ui/core";
 
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
       {"Copyright © "}
-      <Link color="inherit" href="https://material-ui.com/">
+      <MaterialLink color="inherit" href="https://material-ui.com/">
         Fintooth
-      </Link>{" "}
+      </MaterialLink>{" "}
       {new Date().getFullYear()}
       {"."}
     </Typography>
@@ -105,9 +107,11 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     overflow: "auto",
     flexDirection: "column",
+    minHeight: "240",
   },
   fixedHeight: {
-    height: 240,
+    height: 290,
+    paddingBottom: 30,
   },
 }));
 
@@ -160,17 +164,11 @@ function Dashboard(props) {
             <Container maxWidth="lg" className={classes.container}>
               {request.fetching && <Progress />}
               <Grid container spacing={3}>
-                {/* Chart */}
-                <Grid item xs={8} md={8} lg={8}>
-                  <Paper className={fixedHeightPaper}>
-                    <Chart />
-                  </Paper>
-                </Grid>
                 {/* Accounts */}
 
                 {currentUser.user &&
                   currentUser.user.accounts.map((account, ind) => (
-                    <Grid item xs={4} md={4} lg={2} key={"account" + ind}>
+                    <Grid item xs={4} md={4} lg={3} key={"account" + ind}>
                       <Paper className={fixedHeightPaper}>
                         <Account
                           account={account}
@@ -183,18 +181,35 @@ function Dashboard(props) {
                     </Grid>
                   ))}
 
-                <Grid item xs={12}>
-                  <Paper className={classes.paper}>
-                    <Activities
-                      activities={activitiesToShow}
-                      accounts={
-                        currentUser.user ? currentUser.user.accounts : []
-                      }
-                      editActivity={editActivity}
-                      deleteActivity={deleteActivity}
-                    />
-                  </Paper>
+                <Grid item xs={3} md={3} lg={2}>
+                  <Button variant="outlined">Add account</Button>
                 </Grid>
+
+                <Switch>
+                  <Route path="/dashboard/charts">
+                    <Grid item xs={12}>
+                      <Link to="/dashboard/activity-manager">
+                        Show activity manager{" "}
+                      </Link>
+                      <Charts activitiesToShow={activitiesToShow} />
+                    </Grid>
+                  </Route>
+                  <Route path="/dashboard/activity-manager">
+                    <Grid item xs={12}>
+                      <Link to="/dashboard/charts">Show charts</Link>
+                      <Paper className={classes.paper}>
+                        <Activities
+                          activities={activitiesToShow}
+                          accounts={
+                            currentUser.user ? currentUser.user.accounts : []
+                          }
+                          editActivity={editActivity}
+                          deleteActivity={deleteActivity}
+                        />
+                      </Paper>
+                    </Grid>
+                  </Route>
+                </Switch>
               </Grid>
               <Box pt={4}>
                 <Copyright />

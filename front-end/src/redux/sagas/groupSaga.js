@@ -12,17 +12,17 @@ const getGroups = () =>
 // const postUser = user => axios.post(`${URL}/users/signup`, user);
 // const updateUser = user => axios.patch(`${URL}/users/${user.id}`, user);
 // const deleteUser = userId => axios.delete(`${URL}/users/${userId}`);
-const addAccount = group =>
+const addAccount = (group) =>
   axios.post(`${URL}/groups/${group.id}/add-account`, {
-    headers: { Authorization: `Bearer ${token}` }
+    headers: { Authorization: `Bearer ${token}` },
   });
-const addUser = group =>
+const addUser = (group) =>
   axios.post(`${URL}/groups/${group.id}/add-user`, {
-    headers: { Authorization: `Bearer ${token}` }
+    headers: { Authorization: `Bearer ${token}` },
   });
-const removeUser = group =>
+const removeUser = (group) =>
   axios.delete(`${URL}/groups/${group.id}/remove-user`, {
-    headers: { Authorization: `Bearer ${token}` }
+    headers: { Authorization: `Bearer ${token}` },
   });
 
 function* getGroupsSaga() {
@@ -107,6 +107,6 @@ export function* groupsWatcherSaga() {
     takeLatest(SAGA_GROUP_ACTIONS.GET_GROUPS_ASYNC, getGroupsSaga),
     takeLatest(SAGA_GROUP_ACTIONS.ADD_ACCOUNT_ASYNC, addAccountSaga),
     takeLatest(SAGA_GROUP_ACTIONS.ADD_USER_ASYNC, addUserSaga),
-    takeLatest(SAGA_GROUP_ACTIONS.REMOVE_USER_ASYNC, removeUserSaga)
+    takeLatest(SAGA_GROUP_ACTIONS.REMOVE_USER_ASYNC, removeUserSaga),
   ]);
 }

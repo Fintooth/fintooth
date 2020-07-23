@@ -29,10 +29,6 @@ exports.activity_get_all_for_user = (req, res, next) => {
             date: doc.date,
             accountSrc: doc.accountSrc,
             accountDest: doc.accountDest,
-            request: {
-              type: "GET DELETE",
-              url: "http://localhost:3001/activities/" + doc._id,
-            },
           };
         }),
       });

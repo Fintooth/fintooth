@@ -33,7 +33,9 @@ const GroupDetail = props => {
     let mounted = true;
 
     if (mounted) {
-      axios.get(URL + `/groups/${props.id}`).then(res => {
+      const token = JSON.parse(localStorage.getItem('currentUser')).token
+      axios.get(URL + `/groups/${props.id}`, {
+        headers: { Authorization: `Bearer ${token}` }}).then(res => {
         setDetails(res.data);
       });
     }

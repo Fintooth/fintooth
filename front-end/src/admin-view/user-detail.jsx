@@ -63,17 +63,26 @@ const UserDetail = props => {
     let mounted = true;
 
     if (mounted) {
-      axios.get(URL + `/users/${props.id}`).then(res => {
-        setDetails(res.data);
-        res.data.groups.length > 0 &&
-          res.data.groups.forEach(id => {
-            axios.get(URL + `/groups/${id}`).then(groupRes => {
-              let temp = groupsDetails;
-              temp.push(groupRes.data);
-              setGroupsDetails(temp);
+      const token = JSON.parse(localStorage.getItem("currentUser")).token;
+      axios
+        .get(URL + `/users/${props.id}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        })
+        .then(res => {
+          setDetails(res.data);
+          res.data.groups.length > 0 &&
+            res.data.groups.forEach(id => {
+              axios
+                .get(URL + `/groups/${id}`, {
+                  headers: { Authorization: `Bearer ${token}` }
+                })
+                .then(groupRes => {
+                  let temp = groupsDetails;
+                  temp.push(groupRes.data);
+                  setGroupsDetails(temp);
+                });
             });
-          });
-      });
+        });
     }
 
     return () => {

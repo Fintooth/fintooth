@@ -7,11 +7,7 @@ const addGroupsToRows = (groups) => {
     .filter((group) => group)
     .map((group) => {
       const { id, name, members, dateCreated, accounts } = group;
-<<<<<<< HEAD
-      return { id, name, members, dateCreated, accounts };
-=======
       return { name, id, dateCreated, members, accounts };
->>>>>>> dcfa33e0204f61719e2d8edb08879c806025c258
     });
 };
 

@@ -115,13 +115,13 @@ export default function Dashboard(props) {
 
   const openAcc = Boolean(anchorEl);
   const handleMenu = (event) => {
+    console.log(props);
     setAnchorEl(event.currentTarget);
   };
 
   const handleClose = () => {
     setAnchorEl(null);
   };
-
   return (
     <div className={classes.root}>
       <CssBaseline />
@@ -178,6 +178,18 @@ export default function Dashboard(props) {
             <MenuItem onClick={() => history.push("/settings")}>
               Settings
             </MenuItem>
+            {props.user && props.user.admin ? (
+              <div>
+                <MenuItem onClick={() => history.push("/admin-view/groups")}>
+                  Admin view groups
+                </MenuItem>
+                <MenuItem onClick={() => history.push("/admin-view/users")}>
+                  Admin view users
+                </MenuItem>
+              </div>
+            ) : (
+              ""
+            )}
             <MenuItem
               onClick={() => {
                 localStorage.removeItem("currentUser");

@@ -24,7 +24,7 @@ class PollsAndComments extends React.Component {
           postPoll={this.props.postPoll}
         />
         <Divider variant="fullWidth" style={{ margin: "30px 0" }} />
-        {this.props.polls.map(poll => {
+        {this.props.polls.map((poll) => {
           if (poll.group === this.props.groupId) {
             return (
               <React.Fragment>
@@ -39,15 +39,16 @@ class PollsAndComments extends React.Component {
   }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   polls: state.polls,
-  currentUser: state.currentUser
+  currentUser: state.currentUser,
 });
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch) => ({
   getPollsFromDatabase: () =>
     dispatch({ type: SAGA_POLLS_ACTIONS.GET_POLLS_ASYNC }),
-  postPoll: poll => dispatch({ type: SAGA_POLLS_ACTIONS.ADD_POLL_ASYNC, poll })
+  postPoll: (poll) =>
+    dispatch({ type: SAGA_POLLS_ACTIONS.ADD_POLL_ASYNC, poll }),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(PollsAndComments);

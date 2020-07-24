@@ -2,8 +2,9 @@ import React from "react";
 
 import MainTable from "./main-table";
 
-const addGroupsToRows = groups => {
-  return groups.map(group => {
+const addGroupsToRows = (groups) => {
+  console.log(groups);
+  return groups.map((group) => {
     const { id, name, members, dateCreated, accounts } = group;
     return { name, id, dateCreated, members, accounts };
   });
@@ -14,9 +15,9 @@ export default function GroupsTable(props) {
     columns: [
       { title: "Name", field: "name" },
       { title: "Date Created", field: "dateCreated" },
-      { title: "Id", field: "id" }
+      { title: "Id", field: "id" },
     ],
-    data: addGroupsToRows(props.groups)
+    data: addGroupsToRows(props.groups),
   };
 
   return <MainTable state={state} />;

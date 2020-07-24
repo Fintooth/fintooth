@@ -35,6 +35,7 @@ const UserSettingsForm = ({
   currentUser = { user: {} },
   updateUser,
   changePassword,
+  removeUser,
 }) => {
   const history = useHistory();
   const classes = useStyles();
@@ -69,8 +70,9 @@ const UserSettingsForm = ({
 
   const deleteUser = () => {
     const user = currentUser.user.id;
-    deleteUser(user);
-    history.replace("/login");
+    removeUser(user);
+    localStorage.removeItem("currentUser");
+    history.push("/login");
   };
 
   const submitForm = (event) => {
@@ -81,14 +83,15 @@ const UserSettingsForm = ({
         id: currentUser.user.id,
       };
       updateUser(user);
-      history.replace("/dashboard");
+      history.push("/dashboard/activity-manager");
     } else if (!isEditPage) {
       const user = {
         password: passWordInput.newPassword,
         userId: currentUser.user.id,
       };
       changePassword(user);
-      history.replace("/dashboard");
+      localStorage.removeItem("currentUser");
+      history.push("/login");
     }
   };
 
@@ -97,7 +100,7 @@ const UserSettingsForm = ({
       <div className={classes.paper}>
         <Avatar
           className={classes.avatar}
-          alt="blackTooth"
+          alt="Avatar"
           src={`../../../back-end/uploads/${currentUser.user.id}/avatar.png/`}
         ></Avatar>
         <form
@@ -307,11 +310,6 @@ const UserSettingsForm = ({
   );
 };
 
-/*
-This function does not work and does not update the nickname and the
-email address of the user, but I don't know how. 
-*/
-
 function mapStateToProps(state) {
   return {
     users: state.users,
@@ -322,7 +320,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    deleteUser: (userId) =>
+    removeUser: (userId) =>
       dispatch({ type: SAGA_USER_ACTIONS.REMOVE_USER_ASYNC, userId }),
     updateUser: (user) =>
       dispatch({ type: SAGA_USER_ACTIONS.MODIFY_USER_ASYNC, user }),

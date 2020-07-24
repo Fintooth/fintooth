@@ -14,13 +14,13 @@ class Comments extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      newComment: ""
+      newComment: "",
     };
   }
 
-  _handleCommentInput = e => {
+  _handleCommentInput = (e) => {
     this.setState({
-      newComment: e.target.value
+      newComment: e.target.value,
     });
   };
 
@@ -28,20 +28,22 @@ class Comments extends React.Component {
     const commentToUpload = {
       comment: this.state.newComment,
       date: Date.now().toString(),
-      author: this.props.user.user.email
+      authorId: this.props.user.user.id,
     };
 
     const currentPoll = this.props;
     currentPoll.comments.push(commentToUpload);
     this.props.updatePoll(currentPoll);
+    window.location.reload();
   };
 
   render() {
+    console.log(this.props.comments);
     return (
       <div style={{ padding: 14 }} className="App">
         <h1>Comments</h1>
         <Paper style={{ padding: "40px 20px" }}>
-          {this.props.comments.map(comment => {
+          {this.props.comments.map((comment) => {
             return (
               <div key={comment.date}>
                 <Grid container wrap="nowrap" spacing={2}>
@@ -69,7 +71,7 @@ class Comments extends React.Component {
             fullWidth
             margin="normal"
             InputLabelProps={{
-              shrink: true
+              shrink: true,
             }}
             variant="outlined"
             onChange={this._handleCommentInput}
@@ -89,13 +91,13 @@ class Comments extends React.Component {
   }
 }
 
-const mapStateToProps = state => ({
-  user: state.currentUser
+const mapStateToProps = (state) => ({
+  user: state.currentUser,
 });
 
-const mapDispatchToProps = dispatch => ({
-  updatePoll: poll =>
-    dispatch({ type: SAGA_POLLS_ACTIONS.EDIT_POLL_ASYNC, poll })
+const mapDispatchToProps = (dispatch) => ({
+  updatePoll: (poll) =>
+    dispatch({ type: SAGA_POLLS_ACTIONS.EDIT_POLL_ASYNC, poll }),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Comments);

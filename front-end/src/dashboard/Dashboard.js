@@ -164,7 +164,7 @@ function Dashboard(props) {
     } else {
       return (
         <div className={classes.root}>
-          <Toolbar title="Dashboard" />
+          <Toolbar title="Dashboard" user={currentUser.user} />
           <main className={classes.content}>
             <div className={classes.appBarSpacer} />
             <Container maxWidth="lg" className={classes.container}>

@@ -32,7 +32,7 @@ exports.poll_create = (req, res, next) => {
 
 exports.poll_get_all = (req, res, next) => {
   Poll.find({ expires: { $gt: new Date() } })
-    .select("_id title description group creator comments result")
+    .select("_id title description group creator comments votes")
     .exec()
     .then(count => {
       res.status(201).json({
@@ -45,7 +45,7 @@ exports.poll_get_all = (req, res, next) => {
           group: poll.group,
           created: poll.created,
           comments: poll.comments,
-          result: poll.result,
+          votes: poll.votes,
           request: {
             type: "GET DELETE",
             url: "http://localhost:3001/polls/" + poll._id

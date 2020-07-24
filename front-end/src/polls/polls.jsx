@@ -8,6 +8,15 @@ import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
 
 class PollData extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      for: this.props.votes.filter(vote => vote === "For").length,
+      against: this.props.votes.filter(vote => vote === "Against").length,
+      voted: false
+    };
+  }
+
   _voteFor = () => {
     const voteSubmit = {
       vote: {
@@ -25,6 +34,12 @@ class PollData extends React.Component {
       }
     };
 
+    !this.state.voted &&
+      this.setState({
+        for: this.state.for + 1,
+        voted: true
+      });
+
     this.props.votePoll(voteSubmit);
   };
 
@@ -34,8 +49,24 @@ class PollData extends React.Component {
         vote: "Against",
         voterId: this.props.currentUser.user.id
       },
-      pollId: this.props._id
+      poll: {
+        comments: this.props.comments,
+        creator: this.props.creator,
+        description: this.props.description,
+        group: this.props.group,
+        result: this.props.result,
+        title: this.props.title,
+        _id: this.props._id
+      }
     };
+
+    !this.state.voted &&
+      this.setState({
+        against: this.state.against + 1,
+        voted: true
+      });
+
+    this.props.votePoll(voteSubmit);
   };
 
   render() {
@@ -49,13 +80,13 @@ class PollData extends React.Component {
           style={{ justifyContent: "space-between" }}
         >
           <Grid>
-            <Typography>For: {this.props.result[0]}</Typography>
+            <Typography>For: {this.state.for}</Typography>
             <Button variant="contained" color="primary" onClick={this._voteFor}>
               Vote For
             </Button>
           </Grid>
           <Grid>
-            <Typography>Against: {this.props.result[1]}</Typography>
+            <Typography>Against: {this.state.against}</Typography>
             <Button
               variant="contained"
               color="secondary"

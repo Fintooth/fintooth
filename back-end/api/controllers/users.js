@@ -24,7 +24,6 @@ const User = require("../model/user");
 exports.users_get_all = (req, res, next) => {
   User.find()
     .select("nickname groups email dateCreated _id")
-    //.populate("groups.group", "name")
     .exec()
     .then((docs) => {
       res.status(200).json({
@@ -54,7 +53,7 @@ exports.users_get_all = (req, res, next) => {
 exports.users_get_one = (req, res, next) => {
   const id = req.params.userId;
   User.findById(id)
-    .select("email nickname dateCreated groups accounts _id")
+    .select("email nickname dateCreated groups accounts _id admin")
     //.populate("groups.group", "name")
     .exec()
     .then((doc) => {
@@ -66,6 +65,7 @@ exports.users_get_one = (req, res, next) => {
           groups: doc.groups,
           accounts: doc.accounts,
           id: doc._id,
+          admin: doc.admin,
         });
       } else {
         res.status(404).json({
@@ -284,6 +284,7 @@ exports.users_patch = (req, res, next) => {
 };
 
 exports.users_change_password = (req, res, next) => {
+  console.log(req.body.password);
   bcrypt.hash(req.body.password, 10, (err, hash) => {
     if (err) {
       res.status(500).json({ error: err });

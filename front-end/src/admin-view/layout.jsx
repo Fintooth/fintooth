@@ -43,6 +43,7 @@ const AdminView = (props) => {
   }, [page, getUsers, getGroups]);
 
   const requestStatus = () => {
+    console.log(request);
     if (request.fetching) {
       return <Progress />;
     } else if (request.error) {

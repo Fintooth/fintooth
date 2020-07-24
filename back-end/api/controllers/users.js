@@ -54,7 +54,7 @@ exports.users_get_all = (req, res, next) => {
 exports.users_get_one = (req, res, next) => {
   const id = req.params.userId;
   User.findById(id)
-    .select("email nickname dateCreated groups accounts _id")
+    .select("email nickname admin dateCreated groups accounts _id")
     //.populate("groups.group", "name")
     .exec()
     .then((doc) => {
@@ -66,6 +66,7 @@ exports.users_get_one = (req, res, next) => {
           groups: doc.groups,
           accounts: doc.accounts,
           id: doc._id,
+          admin: doc.admin,
         });
       } else {
         res.status(404).json({
@@ -164,7 +165,6 @@ exports.users_login = (req, res, next) => {
             expiresIn: "1h",
           }
         );
-        console.log(user);
         return res.status(200).json({
           message: "Auth successful",
           token: token,

@@ -142,7 +142,8 @@ function Group(props) {
     getActivities,
     request,
     currentUser,
-    deleteAccount,
+    addGroupAccount,
+    deleteGroupAccount,
     currentGroup,
     loadCurrentGroup,
   } = props;
@@ -199,7 +200,7 @@ function Group(props) {
                           <Button
                             color="secondary"
                             onClick={() =>
-                              deleteAccount(account.user, account._id)
+                              deleteGroupAccount(currentGroup.id, account._id)
                             }
                           >
                             Delete
@@ -242,7 +243,10 @@ function Group(props) {
                   <Route path={path + "/account-editor"}>
                     <Grid item xs={12}>
                       <Paper className={classes.paper}>
-                        <AddAccountPage />
+                        <AddAccountPage
+                          ownerId={currentGroup.id}
+                          addAccount={addGroupAccount}
+                        />
                       </Paper>
                     </Grid>
                   </Route>
@@ -283,10 +287,16 @@ const mapDispatchToProps = (dispatch) => ({
     }),
   addActivity: (activity) =>
     dispatch({ type: SAGA_ACTIVITY_ACTIONS.ADD_ACTIVITY_ASYNC, activity }),
-  deleteAccount: (userId, accountId) =>
+  addGroupAccount: (groupId, account) =>
     dispatch({
-      type: SAGA_USER_ACTIONS.DELETE_ACCOUNT_ASYNC,
-      userId,
+      type: SAGA_GROUP_ACTIONS.ADD_ACCOUNT_ASYNC,
+      groupId,
+      account,
+    }),
+  deleteGroupAccount: (groupId, accountId) =>
+    dispatch({
+      type: SAGA_GROUP_ACTIONS.REMOVE_ACCOUNT_ASYNC,
+      groupId,
       accountId,
     }),
 });

@@ -13,7 +13,7 @@ import Badge from "@material-ui/core/Badge";
 import MenuIcon from "@material-ui/icons/Menu";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import AccountCircle from "@material-ui/icons/AccountCircle";
-import { mainListItems, secondaryListItems } from "../dashboard/listItems";
+import { MainListItems, secondaryListItems } from "../dashboard/listItems";
 import MenuItem from "@material-ui/core/MenuItem";
 import Menu from "@material-ui/core/Menu";
 
@@ -115,7 +115,6 @@ export default function Dashboard(props) {
 
   const openAcc = Boolean(anchorEl);
   const handleMenu = (event) => {
-    console.log(props);
     setAnchorEl(event.currentTarget);
   };
 
@@ -215,7 +214,9 @@ export default function Dashboard(props) {
           </IconButton>
         </div>
         <Divider />
-        <List>{mainListItems}</List>
+        <List>
+          <MainListItems />
+        </List>
         <Divider />
         <List>{secondaryListItems}</List>
       </Drawer>

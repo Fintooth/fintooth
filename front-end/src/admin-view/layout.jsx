@@ -27,20 +27,14 @@ const AdminView = (props) => {
   const { getUsers, getGroups, request, currentUser } = props;
 
   React.useEffect(() => {
-    let mounted = true;
-
-    if (mounted) {
+    if (currentUser.user.id) {
       if (page === "users") {
         getUsers();
       } else if (page === "groups") {
         getGroups();
       }
     }
-
-    return () => {
-      mounted = false;
-    };
-  }, [page, getUsers, getGroups]);
+  }, [page, getUsers, getGroups, currentUser]);
 
   const requestStatus = () => {
     if (request.fetching) {
@@ -51,7 +45,7 @@ const AdminView = (props) => {
       if (page === "groups") {
         return <GroupsTable {...props} />;
       } else if (page === "users") {
-        return <UserTable {...props} />;
+        return <UserTable users={props.users} />;
       }
     }
   };

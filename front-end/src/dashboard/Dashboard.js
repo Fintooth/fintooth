@@ -18,6 +18,7 @@ import Account from "./Account";
 import Activities from "./Activities";
 import { Button } from "@material-ui/core";
 import AddAccountPage from "./AddAccountPage";
+import { addAccount } from "../redux/actions/groupActions";
 
 function Copyright() {
   return (
@@ -134,6 +135,7 @@ function Dashboard(props) {
     request,
     currentUser,
     deleteAccount,
+    addAccount,
   } = props;
 
   const [activitiesToShow, setActivitiesToShow] = React.useState([]);
@@ -234,7 +236,10 @@ function Dashboard(props) {
                   <Route path="/dashboard/account-editor">
                     <Grid item xs={12}>
                       <Paper className={classes.paper}>
-                        <AddAccountPage />
+                        <AddAccountPage
+                          ownerId={currentUser.user.id}
+                          addAccount={addAccount}
+                        />
                       </Paper>
                     </Grid>
                   </Route>
@@ -279,6 +284,8 @@ const mapDispatchToProps = (dispatch) => ({
       userId,
       accountId,
     }),
+  addAccount: (userId, account) =>
+    dispatch({ type: SAGA_USER_ACTIONS.ADD_ACCOUNT_ASYNC, userId, account }),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Dashboard);

@@ -9,16 +9,20 @@ export const unloadCurrentGroup = () => {
 };
 
 export const addToCurrentGroupAccount = (amount, accountId) => {
-  return { type: CURRENT_GROUP_ACTIONS.ADD_TO_ACCOUNT, accountId, amount };
+  return {
+    type: CURRENT_GROUP_ACTIONS.ADD_TO_CURRENT_GROUP_ACCOUNT,
+    accountId,
+    amount,
+  };
 };
 
 export const currentGroupAddAccount = (account) => {
-  return { type: CURRENT_GROUP_ACTIONS.CURRENT_GROUP_ADD_ACCOUNT, account };
+  return { type: CURRENT_GROUP_ACTIONS.ADD_CURRENT_GROUP_ACCOUNT, account };
 };
 
 export const currentGroupDeleteAccount = (accountId) => {
   return {
-    type: CURRENT_GROUP_ACTIONS.CURRENT_GROUP_DELETE_ACCOUNT,
+    type: CURRENT_GROUP_ACTIONS.REMOVE_CURRENT_GROUP_ACCOUNT,
     accountId,
   };
 };

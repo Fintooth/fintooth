@@ -3,11 +3,12 @@ import React from "react";
 import MainTable from "./main-table";
 
 const addGroupsToRows = (groups) => {
-  console.log(groups);
-  return groups.map((group) => {
-    const { id, name, members, dateCreated, accounts } = group;
-    return { name, id, dateCreated, members, accounts };
-  });
+  return groups
+    .filter((group) => group)
+    .map((group) => {
+      const { id, name, members, dateCreated, accounts } = group;
+      return { name, id, dateCreated, members, accounts };
+    });
 };
 
 export default function GroupsTable(props) {

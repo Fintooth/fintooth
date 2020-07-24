@@ -16,7 +16,7 @@ import Login from "./login/Login";
 import Dashboard from "./dashboard/Dashboard";
 import AdminView from "./admin-view/layout";
 import UserSettingsForm from "./settings-view/user-settings";
-import PollsAndComments from "./polls";
+import CreateGroupForm from "./common/group-form";
 
 function App({ setToken, removeUserData, getCurrentUser }) {
   React.useEffect(() => {
@@ -54,7 +54,7 @@ function App({ setToken, removeUserData, getCurrentUser }) {
           <UserSettingsForm />
         </Route>
         <Route path="/polls">
-          <PollsAndComments groupId='5f020a141ed58522c0f64030'/>
+          <CreateGroupForm userId="5f034c0eebf38f58181bd243" />
         </Route>
         <Route path="/">
           <Redirect to="/dashboard" />

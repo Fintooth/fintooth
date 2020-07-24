@@ -11,9 +11,9 @@ class PollData extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      for: this.props.votes.filter(vote => vote === "For").length,
-      against: this.props.votes.filter(vote => vote === "Against").length,
-      voted: false
+      for: this.props.votes.filter((vote) => vote === "For").length,
+      against: this.props.votes.filter((vote) => vote === "Against").length,
+      voted: false,
     };
   }
 
@@ -21,7 +21,7 @@ class PollData extends React.Component {
     const voteSubmit = {
       vote: {
         vote: "For",
-        voterId: this.props.currentUser.user.id
+        voterId: this.props.currentUser.user.id,
       },
       poll: {
         comments: this.props.comments,
@@ -30,24 +30,32 @@ class PollData extends React.Component {
         group: this.props.group,
         result: this.props.result,
         title: this.props.title,
-        _id: this.props._id
-      }
+        _id: this.props._id,
+      },
     };
 
     !this.state.voted &&
       this.setState({
         for: this.state.for + 1,
-        voted: true
+        voted: true,
       });
 
     this.props.votePoll(voteSubmit);
+  };
+
+  countVotes = (forOrAgainst) => {
+    var count = 0;
+    for (var i = 0; i < this.props.votes.length; ++i) {
+      if (this.props.votes[i] === forOrAgainst) count++;
+    }
+    return count;
   };
 
   _voteAgainst = () => {
     const voteSubmit = {
       vote: {
         vote: "Against",
-        voterId: this.props.currentUser.user.id
+        voterId: this.props.currentUser.user.id,
       },
       poll: {
         comments: this.props.comments,
@@ -56,14 +64,14 @@ class PollData extends React.Component {
         group: this.props.group,
         result: this.props.result,
         title: this.props.title,
-        _id: this.props._id
-      }
+        _id: this.props._id,
+      },
     };
 
     !this.state.voted &&
       this.setState({
         against: this.state.against + 1,
-        voted: true
+        voted: true,
       });
 
     this.props.votePoll(voteSubmit);
@@ -80,13 +88,13 @@ class PollData extends React.Component {
           style={{ justifyContent: "space-between" }}
         >
           <Grid>
-            <Typography>For: {this.state.for}</Typography>
+            <Typography>For: {this.countVotes("For")}</Typography>
             <Button variant="contained" color="primary" onClick={this._voteFor}>
               Vote For
             </Button>
           </Grid>
           <Grid>
-            <Typography>Against: {this.state.against}</Typography>
+            <Typography>Against: {this.countVotes("Against")}</Typography>
             <Button
               variant="contained"
               color="secondary"
@@ -101,13 +109,13 @@ class PollData extends React.Component {
   }
 }
 
-const mapStateToProps = store => ({
-  currentUser: store.currentUser
+const mapStateToProps = (store) => ({
+  currentUser: store.currentUser,
 });
 
-const mapDispatchToProps = dispatch => ({
-  votePoll: obj =>
-    dispatch({ type: SAGA_POLLS_ACTIONS.VOTE_POLL_ASYNC, vote: obj })
+const mapDispatchToProps = (dispatch) => ({
+  votePoll: (obj) =>
+    dispatch({ type: SAGA_POLLS_ACTIONS.VOTE_POLL_ASYNC, vote: obj }),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(PollData);

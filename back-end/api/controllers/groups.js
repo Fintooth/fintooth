@@ -8,9 +8,16 @@ const User = require("../model/user");
 const { domainToASCII } = require("url");
 
 exports.create_group = (req, res, next) => {
+  const userId = req.body.userId;
+  const avatar = req.body.avatar;
+
+  const groupId = mongoose.Types.ObjectId();
+
   const group = new Group({
-    _id: mongoose.Types.ObjectId(),
+    _id: groupId,
     name: req.body.name,
+    members: [userId],
+    avatar: avatar,
   });
   group
     .save()
@@ -24,6 +31,27 @@ exports.create_group = (req, res, next) => {
         error: err,
       })
     );
+  User.update(
+    { _id: userId },
+    {
+      $addToSet: {
+        groups: {
+          _id: groupId,
+        },
+      },
+    }
+  )
+    .exec()
+    .then((result) => {
+      res.status(200).json({
+        message: "Group with id " + id + "added to user with id " + userId,
+      });
+    })
+    .catch((err) => {
+      res.status(500).json({
+        error: err,
+      });
+    });
 };
 
 exports.add_user = (req, res, next) => {

@@ -14,7 +14,6 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Chart({ activitiesToShow }) {
   const classes = useStyles();
-  const cumulativeSum = ((sum) => (value) => (sum += value))(0);
 
   const objectDataLastMonth = activitiesToShow
     .filter((act) => {
@@ -66,9 +65,10 @@ export default function Chart({ activitiesToShow }) {
         <ChartElement
           title="Daily balance by date cumulative"
           yLabel="Daily balance cumulative"
-          data={Object.entries(objectDataLastMonth).map((arr) => {
-            return { date: arr[0], amount: cumulativeSum(arr[1]) };
-          })}
+          data={((cumulativeSum) =>
+            Object.entries(objectDataLastMonth).map((arr) => {
+              return { date: arr[0], amount: cumulativeSum(arr[1]) };
+            }))(((sum) => (value) => (sum += value))(0))}
         />
       </Paper>
       <Paper className={classes.fixedHeight}>
@@ -86,9 +86,10 @@ export default function Chart({ activitiesToShow }) {
         <ChartElement
           title="Balance by date cumulative"
           yLabel="Balance cumulative"
-          data={Object.entries(objectData).map((arr) => {
-            return { date: arr[0], amount: cumulativeSum(arr[1]) };
-          })}
+          data={((cumulativeSum) =>
+            Object.entries(objectData).map((arr) => {
+              return { date: arr[0], amount: cumulativeSum(arr[1]) };
+            }))(((sum) => (value) => (sum += value))(0))}
         />
       </Paper>
     </>

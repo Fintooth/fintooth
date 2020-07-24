@@ -78,6 +78,7 @@ exports.groups_get_one = (req, res, next) => {
   const groupId = req.params.groupId;
   Group.findById(groupId)
     .select("id name members dateCreated accounts")
+    .populate("members", "nickname email _id")
     .exec()
     .then((doc) => {
       if (doc) {

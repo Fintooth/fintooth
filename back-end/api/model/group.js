@@ -8,6 +8,7 @@ const groupSchema = mongoose.Schema({
       ref: "User",
     },
   ],
+  creator: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   name: { type: String },
   avatar: { type: String, default: "" },
   dateCreated: { type: Date, default: Date.now },

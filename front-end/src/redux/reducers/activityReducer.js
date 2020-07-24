@@ -3,7 +3,7 @@ import { ACTIVITY_ACTIONS } from "../constants";
 const activityReducer = (state = [], action) => {
   switch (action.type) {
     case ACTIVITY_ACTIONS.GET_ACTIVITIES:
-      return [...state, ...action.activities];
+      return [...action.activities];
     case ACTIVITY_ACTIONS.ADD_ACTIVITY:
       return [{ ...action.activity }, ...state];
     case ACTIVITY_ACTIONS.DELETE_ACTIVITY:

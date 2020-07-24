@@ -6,6 +6,7 @@ import groupReducer from "./reducers/groupReducer";
 import userReducer from "./reducers/userReducer";
 import { userDataReducer } from "./reducers/userIdReducer";
 import activityReducer from "./reducers/activityReducer";
+import currentGroupReducer from "./reducers/currentGroupReducer";
 
 import rootSaga from "./sagas/rootSaga";
 import { composeWithDevTools } from "redux-devtools-extension";
@@ -17,7 +18,8 @@ const rootReducer = combineReducers({
   groups: groupReducer,
   currentUser: userDataReducer,
   activities: activityReducer,
-  polls: pollsReducer
+  polls: pollsReducer,
+  currentGroup: currentGroupReducer,
 });
 
 const sagaMiddleware = createSagaMiddleware();

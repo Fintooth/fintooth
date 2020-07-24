@@ -10,7 +10,7 @@ const User = require("../model/user");
 
 exports.activity_get_all_for_user = (req, res, next) => {
   const id = req.params.id;
-  Activity.find({ user: id })
+  Activity.find({ $or: [{ user: id }, { group: id }] })
     .select(
       "id type accountSrc accountDest description picture date group amount"
     )

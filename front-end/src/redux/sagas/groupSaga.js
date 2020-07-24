@@ -3,6 +3,7 @@ import axios from "axios";
 
 import * as requestActions from "../actions/requestActions";
 import * as groupActions from "../actions/groupActions";
+import * as currentGroupActions from "../actions/currentGroupActions";
 import { SAGA_GROUP_ACTIONS, URL } from "../constants";
 
 const token =
@@ -10,6 +11,10 @@ const token =
     JSON.parse(localStorage.getItem("currentUser")).token) ||
   "abc";
 
+const getGroup = (groupId) =>
+  axios.get(`${URL}/groups/${groupId}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
 const getGroups = () =>
   axios.get(`${URL}/groups`, { headers: { Authorization: `Bearer ${token}` } });
 // const postUser = user => axios.post(`${URL}/users/signup`, user);
@@ -27,6 +32,17 @@ const removeUser = (group) =>
   axios.delete(`${URL}/groups/${group.id}/remove-user`, {
     headers: { Authorization: `Bearer ${token}` },
   });
+
+function* getGroupSaga(action) {
+  try {
+    yield put(requestActions.startRequest());
+    const response = yield getGroup(action.groupId);
+    yield put(currentGroupActions.loadCurrentGroup(response.data));
+    yield put(requestActions.successRequest(response));
+  } catch (e) {
+    yield put(requestActions.errorRequest(e.message));
+  }
+}
 
 function* getGroupsSaga() {
   try {
@@ -107,6 +123,7 @@ function* removeUserSaga(action) {
 
 export function* groupsWatcherSaga() {
   yield all([
+    takeLatest(SAGA_GROUP_ACTIONS.GET_GROUP_ASYNC, getGroupSaga),
     takeLatest(SAGA_GROUP_ACTIONS.GET_GROUPS_ASYNC, getGroupsSaga),
     takeLatest(SAGA_GROUP_ACTIONS.ADD_ACCOUNT_ASYNC, addAccountSaga),
     takeLatest(SAGA_GROUP_ACTIONS.ADD_USER_ASYNC, addUserSaga),

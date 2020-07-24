@@ -40,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const AddAccountPage = ({ currentUser = { user: {} }, addAccount }) => {
+export default function AddAccountPage({ ownerId, addAccount }) {
   const classes = useStyles();
 
   const [accountToEdit, setAccountToEdit] = useState({
@@ -55,7 +55,7 @@ const AddAccountPage = ({ currentUser = { user: {} }, addAccount }) => {
 
   const submitForm = (event) => {
     event.preventDefault();
-    addAccount(currentUser.user.id, accountToEdit);
+    addAccount(ownerId, accountToEdit);
   };
 
   return (
@@ -183,24 +183,4 @@ const AddAccountPage = ({ currentUser = { user: {} }, addAccount }) => {
       </div>
     </Container>
   );
-};
-
-/*
-This function does not work and does not update the nickname and the
-name address of the user, but I don't know how. 
-*/
-
-function mapStateToProps(state) {
-  return {
-    currentUser: state.currentUser,
-  };
 }
-
-function mapDispatchToProps(dispatch) {
-  return {
-    addAccount: (userId, account) =>
-      dispatch({ type: SAGA_USER_ACTIONS.ADD_ACCOUNT_ASYNC, userId, account }),
-  };
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(AddAccountPage);

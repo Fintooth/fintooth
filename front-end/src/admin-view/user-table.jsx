@@ -9,7 +9,7 @@ const addUsersToRows = (users) => {
   });
 };
 
-export default function UserTable(props) {
+export default function UserTable({ users }) {
   const state = {
     columns: [
       { title: "Email", field: "email" },
@@ -21,7 +21,7 @@ export default function UserTable(props) {
       },
       { title: "Groups", field: "groups" },
     ],
-    data: addUsersToRows(props.users),
+    data: addUsersToRows(users),
   };
 
   return <MainTable state={state} />;

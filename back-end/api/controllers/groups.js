@@ -6,6 +6,7 @@ const fs = require("fs");
 const Group = require("../model/group");
 const User = require("../model/user");
 const { domainToASCII } = require("url");
+const { group } = require("console");
 
 exports.create_group = (req, res, next) => {
   const userId = req.body.userId;
@@ -106,6 +107,7 @@ exports.groups_get_one = (req, res, next) => {
   const groupId = req.params.groupId;
   Group.findById(groupId)
     .select("id name members dateCreated accounts")
+    .populate("members", "nickname email _id")
     .exec()
     .then((doc) => {
       if (doc) {
@@ -199,41 +201,52 @@ exports.groups_get_all = (req, res, next) => {
 // };
 
 exports.add_account = (req, res, next) => {
-  const id = req.params.groupId;
-  const name = req.body.name;
-  const type = req.body.type;
-  const amount = req.body.amount;
-  const currency = req.body.currency;
-  const bankAccType = req.body.bankAccType;
-  const rate = req.body.rate;
-  const period = req.body.period;
-  Group.update(
-    { _id: id },
+  const groupId = req.params.groupId;
+  const {
+    name,
+    type = "bank",
+    amount = 0,
+    currency = "usd",
+    bankAccType = "debit",
+    bankAccInterestRate = 0,
+    bankAccInterestPeriod = 12,
+  } = req.body;
+  const id = mongoose.Types.ObjectId();
+  Group.updateOne(
+    { _id: groupId },
     {
       $push: {
         accounts: {
-          _id: mongoose.Types.ObjectId(),
+          _id: id,
           name: name,
           type: type,
           amount: amount,
           currency: currency,
           bankAccType: bankAccType,
           bankAccInterest: {
-            rate: rate,
-            period: period,
+            rate: bankAccInterestRate,
+            period: bankAccInterestPeriod,
           },
         },
       },
-    },
-    { runValidators: true }
+    }
   )
     .exec()
     .then((result) => {
       res.status(200).json({
         message: "Account created",
-        request: {
-          type: "GET PATCH DELETE",
-          url: "http://localhost:3001/groups/" + id,
+        Location: id,
+        account: {
+          _id: id,
+          name: name,
+          type: type,
+          amount: amount,
+          currency: currency,
+          bankAccType: bankAccType,
+          bankAccInterest: {
+            rate: bankAccInterestRate,
+            period: bankAccInterestPeriod,
+          },
         },
       });
     })
@@ -289,13 +302,13 @@ exports.remove_user = (req, res, next) => {
 };
 
 exports.account_delete = (req, res, next) => {
-  const id = req.params.accId;
-  Group.update(
-    {},
+  const { accId, groupId } = req.params;
+  Group.updateOne(
+    { _id: groupId },
     {
       $pull: {
         accounts: {
-          _id: id,
+          _id: accId,
         },
       },
     }

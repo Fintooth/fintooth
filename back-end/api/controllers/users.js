@@ -53,7 +53,7 @@ exports.users_get_all = (req, res, next) => {
 exports.users_get_one = (req, res, next) => {
   const id = req.params.userId;
   User.findById(id)
-    .select("email nickname dateCreated groups accounts _id admin")
+    .select("email nickname admin dateCreated groups accounts _id")
     //.populate("groups.group", "name")
     .exec()
     .then((doc) => {

@@ -9,35 +9,62 @@ import PeopleIcon from "@material-ui/icons/People";
 import BarChartIcon from "@material-ui/icons/BarChart";
 import LayersIcon from "@material-ui/icons/Layers";
 import AssignmentIcon from "@material-ui/icons/Assignment";
-import { Link } from "react-router-dom";
+import { Link, useRouteMatch } from "react-router-dom";
 
-export const mainListItems = (
-  <div>
-    <Link to="/dashboard/activity-manager" style={{ textDecoration: "none" }}>
-      <ListItem button>
-        <ListItemIcon>
-          <DashboardIcon />
-        </ListItemIcon>
-        <ListItemText primary="Activity Manager" />
-      </ListItem>
-    </Link>
-    <Link to="/dashboard/charts" style={{ textDecoration: "none" }}>
-      <ListItem button>
-        <ListItemIcon>
-          <ShoppingCartIcon />
-        </ListItemIcon>
-        <ListItemText primary="Charts" />
-      </ListItem>
-    </Link>
-    <Link to="/dashboard/account-editor" style={{ textDecoration: "none" }}>
-      <ListItem button>
-        <ListItemIcon>
-          <PeopleIcon />
-        </ListItemIcon>
-        <ListItemText primary="Account editor" />
-      </ListItem>
-    </Link>
-    {/* <ListItem button>
+export const MainListItems = () => {
+  const { url } = useRouteMatch();
+
+  return /(^\/dashboard$|^\/groups\/[\w]+$)/.test(url) ? (
+    <div>
+      <Link to={url + "/activity-manager"} style={{ textDecoration: "none" }}>
+        <ListItem button>
+          <ListItemIcon>
+            <DashboardIcon />
+          </ListItemIcon>
+          <ListItemText primary="Activity Manager" />
+        </ListItem>
+      </Link>
+      <Link to={url + "/charts"} style={{ textDecoration: "none" }}>
+        <ListItem button>
+          <ListItemIcon>
+            <ShoppingCartIcon />
+          </ListItemIcon>
+          <ListItemText primary="Charts" />
+        </ListItem>
+      </Link>
+      <Link to={url + "/account-editor"} style={{ textDecoration: "none" }}>
+        <ListItem button>
+          <ListItemIcon>
+            <PeopleIcon />
+          </ListItemIcon>
+          <ListItemText primary="Account editor" />
+        </ListItem>
+      </Link>
+      {/^\/groups\/[\w]+$/.test(url) && (
+        <>
+          <Link to={url + "/account-editor"} style={{ textDecoration: "none" }}>
+            <ListItem button>
+              <ListItemIcon>
+                <PeopleIcon />
+              </ListItemIcon>
+              <ListItemText primary="Polls" />
+            </ListItem>
+          </Link>
+          <Link
+            to={url + "/account-editor"}
+            style={{ textDecoration: "none" }}
+            disabled
+          >
+            <ListItem button>
+              <ListItemIcon>
+                <PeopleIcon />
+              </ListItemIcon>
+              <ListItemText primary="Budget" />
+            </ListItem>
+          </Link>
+        </>
+      )}
+      {/* <ListItem button>
       <ListItemIcon>
         <BarChartIcon />
       </ListItemIcon>
@@ -49,8 +76,11 @@ export const mainListItems = (
       </ListItemIcon>
       <ListItemText primary="Integrations" />
     </ListItem> */}
-  </div>
-);
+    </div>
+  ) : (
+    ""
+  );
+};
 
 export const secondaryListItems = (
   <div>

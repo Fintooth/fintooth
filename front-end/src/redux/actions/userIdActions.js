@@ -13,7 +13,11 @@ export const unsetCurrentUser = () => {
 };
 
 export const addToCurrentUserAccount = (amount, accountId) => {
-  return { type: CURRENT_USER_ACTIONS.ADD_TO_ACCOUNT, accountId, amount };
+  return {
+    type: CURRENT_USER_ACTIONS.ADD_TO_CURRENT_USER_ACCOUNT,
+    accountId,
+    amount,
+  };
 };
 
 export const currentUserAddAccount = (account) => {

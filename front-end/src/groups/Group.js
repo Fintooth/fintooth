@@ -1,7 +1,19 @@
 import React from "react";
-import { Switch, Route, Link, useLocation, useHistory } from "react-router-dom";
+import {
+  Switch,
+  Route,
+  Link,
+  useParams,
+  useRouteMatch,
+  useHistory,
+  useLocation,
+} from "react-router-dom";
 import { connect } from "react-redux";
-import { SAGA_ACTIVITY_ACTIONS, SAGA_USER_ACTIONS } from "../redux/constants";
+import {
+  SAGA_ACTIVITY_ACTIONS,
+  SAGA_USER_ACTIONS,
+  SAGA_GROUP_ACTIONS,
+} from "../redux/constants";
 import Progress from "../common/progress";
 import Toolbar from "../common/toolbar";
 import clsx from "clsx";
@@ -12,13 +24,12 @@ import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import MaterialLink from "@material-ui/core/Link";
-import Charts from "./Charts";
-import Account from "./Account";
+import Charts from "../dashboard/Charts";
+import Account from "../dashboard/Account";
 
-import Activities from "./Activities";
+import Activities from "../dashboard/Activities";
 import { Button } from "@material-ui/core";
-import AddAccountPage from "./AddAccountPage";
-import { addAccount } from "../redux/actions/groupActions";
+import AddAccountPage from "../dashboard/AddAccountPage";
 
 function Copyright() {
   return (
@@ -116,11 +127,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function Dashboard(props) {
+function Group(props) {
   const classes = useStyles();
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
   let history = useHistory();
-  const pathname = useLocation().pathname.split("/");
 
   const localCurrentUserString = window.localStorage.getItem("currentUser");
   if (!localCurrentUserString) {
@@ -129,14 +139,24 @@ function Dashboard(props) {
 
   const {
     activities,
-    editActivity,
     getActivities,
-    deleteActivity,
     request,
     currentUser,
-    deleteAccount,
-    addAccount,
+    addGroupAccount,
+    deleteGroupAccount,
+    currentGroup,
+    loadCurrentGroup,
   } = props;
+
+  const { groupId } = useParams();
+  let { path, url } = useRouteMatch();
+  let { pathname } = useLocation();
+
+  React.useEffect(() => {
+    if (groupId && !currentGroup.id && !request.fetching) {
+      loadCurrentGroup(groupId);
+    }
+  }, [currentGroup, loadCurrentGroup, groupId, request]);
 
   const [activitiesToShow, setActivitiesToShow] = React.useState([]);
   const [accountToView, setAccountToView] = React.useState("");
@@ -146,19 +166,10 @@ function Dashboard(props) {
   }, [setActivitiesToShow, activities]);
 
   React.useEffect(() => {
-    let mounted = true;
-    if (
-      mounted &&
-      currentUser.token &&
-      currentUser.user &&
-      currentUser.user.id
-    ) {
-      getActivities(currentUser.user.id);
+    if (currentUser.token && currentGroup.id) {
+      getActivities(currentGroup.id);
     }
-    return () => {
-      mounted = false;
-    };
-  }, [getActivities, currentUser]);
+  }, [getActivities, currentGroup, currentUser]);
 
   const requestStatus = () => {
     if (request.error) {
@@ -166,7 +177,7 @@ function Dashboard(props) {
     } else {
       return (
         <div className={classes.root}>
-          <Toolbar title="Dashboard" user={currentUser.user} />
+          <Toolbar title="Dashboard" isAdmin={currentUser.user.admin} />
           <main className={classes.content}>
             <div className={classes.appBarSpacer} />
             <Container maxWidth="lg" className={classes.container}>
@@ -174,8 +185,8 @@ function Dashboard(props) {
               <Grid container spacing={3}>
                 {/* Accounts */}
 
-                {currentUser.user &&
-                  currentUser.user.accounts.map((account, ind) => (
+                {currentGroup.id &&
+                  currentGroup.accounts.map((account, ind) => (
                     <Grid item xs={4} md={4} lg={3} key={"account" + ind}>
                       <Paper className={fixedHeightPaper}>
                         <Account
@@ -189,7 +200,7 @@ function Dashboard(props) {
                           <Button
                             color="secondary"
                             onClick={() =>
-                              deleteAccount(currentUser.user.id, account._id)
+                              deleteGroupAccount(currentGroup.id, account._id)
                             }
                           >
                             Delete
@@ -202,7 +213,7 @@ function Dashboard(props) {
                   <Grid item xs={3} md={3} lg={2}>
                     <Button
                       variant="outlined"
-                      onClick={() => history.push("/dashboard/account-editor")}
+                      onClick={() => history.push(url + "/account-editor")}
                     >
                       Add or delete account
                     </Button>
@@ -210,35 +221,31 @@ function Dashboard(props) {
                 )}
 
                 <Switch>
-                  <Route path="/dashboard/charts">
+                  <Route path={path + "/charts"}>
                     <Grid item xs={12}>
-                      <Link to="/dashboard/activity-manager">
+                      <Link to={url + "/activity-manager"}>
                         Show activity manager{" "}
                       </Link>
                       <Charts activitiesToShow={activitiesToShow} />
                     </Grid>
                   </Route>
-                  <Route path="/dashboard/activity-manager">
+                  <Route path={path + "/activity-manager"}>
                     <Grid item xs={12}>
-                      <Link to="/dashboard/charts">Show charts</Link>
+                      <Link to={url + "/charts"}>Show charts</Link>
                       <Paper className={classes.paper}>
                         <Activities
                           activities={activitiesToShow}
-                          accounts={
-                            currentUser.user ? currentUser.user.accounts : []
-                          }
-                          editActivity={editActivity}
-                          deleteActivity={deleteActivity}
+                          accounts={currentGroup ? currentGroup.accounts : []}
                         />
                       </Paper>
                     </Grid>
                   </Route>
-                  <Route path="/dashboard/account-editor">
+                  <Route path={path + "/account-editor"}>
                     <Grid item xs={12}>
                       <Paper className={classes.paper}>
                         <AddAccountPage
-                          ownerId={currentUser.user.id}
-                          addAccount={addAccount}
+                          ownerId={currentGroup.id}
+                          addAccount={addGroupAccount}
                         />
                       </Paper>
                     </Grid>
@@ -263,29 +270,35 @@ const mapStateToProps = (state) => {
     request: state.request,
     groups: state.groups,
     currentUser: state.currentUser,
+    currentGroup: state.currentGroup,
   };
 };
 
 const mapDispatchToProps = (dispatch) => ({
-  getActivities: (userId) =>
+  loadCurrentGroup: (groupId) =>
+    dispatch({
+      type: SAGA_GROUP_ACTIONS.GET_GROUP_ASYNC,
+      groupId,
+    }),
+  getActivities: (groupId) =>
     dispatch({
       type: SAGA_ACTIVITY_ACTIONS.GET_ACTIVITIES_ASYNC,
-      userId,
+      userId: groupId,
     }),
   addActivity: (activity) =>
     dispatch({ type: SAGA_ACTIVITY_ACTIONS.ADD_ACTIVITY_ASYNC, activity }),
-  editActivity: (activity) =>
-    dispatch({ type: SAGA_ACTIVITY_ACTIONS.EDIT_ACTIVITY_ASYNC, activity }),
-  deleteActivity: (activityId) =>
-    dispatch({ type: SAGA_ACTIVITY_ACTIONS.DELETE_ACTIVITY_ASYNC, activityId }),
-  deleteAccount: (userId, accountId) =>
+  addGroupAccount: (groupId, account) =>
     dispatch({
-      type: SAGA_USER_ACTIONS.DELETE_ACCOUNT_ASYNC,
-      userId,
+      type: SAGA_GROUP_ACTIONS.ADD_ACCOUNT_ASYNC,
+      groupId,
+      account,
+    }),
+  deleteGroupAccount: (groupId, accountId) =>
+    dispatch({
+      type: SAGA_GROUP_ACTIONS.REMOVE_ACCOUNT_ASYNC,
+      groupId,
       accountId,
     }),
-  addAccount: (userId, account) =>
-    dispatch({ type: SAGA_USER_ACTIONS.ADD_ACCOUNT_ASYNC, userId, account }),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Dashboard);
+export default connect(mapStateToProps, mapDispatchToProps)(Group);

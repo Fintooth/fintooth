@@ -23,6 +23,24 @@ export const userDataReducer = (
           : account
       );
       return { ...state, user: { ...state.user, accounts: newAccounts } };
+    case CURRENT_USER_ACTIONS.CURRENT_USER_ADD_ACCOUNT:
+      return {
+        user: {
+          ...state.user,
+          accounts: [...state.user.accounts, { ...action.account }],
+        },
+        token: state.token,
+      };
+    case CURRENT_USER_ACTIONS.CURRENT_USER_DELETE_ACCOUNT:
+      return {
+        user: {
+          ...state.user,
+          accounts: state.user.accounts.filter(
+            (acc) => acc._id !== action.accountId
+          ),
+        },
+        token: state.token,
+      };
     default:
       return state;
   }

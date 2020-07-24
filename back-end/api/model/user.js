@@ -29,7 +29,7 @@ const userSchema = mongoose.Schema({
         required: true,
       },
       amount: { type: Number, required: true, default: 0 },
-      currency: { type: String, default: "usd", enum: ["usd", "euro", "bgn"] },
+      currency: { type: String, default: "usd", enum: ["usd", "eur", "bgn"] },
       bankAccType: {
         type: String,
         default: "debit",

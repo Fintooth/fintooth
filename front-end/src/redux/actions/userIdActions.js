@@ -15,3 +15,11 @@ export const unsetCurrentUser = () => {
 export const addToCurrentUserAccount = (amount, accountId) => {
   return { type: CURRENT_USER_ACTIONS.ADD_TO_ACCOUNT, accountId, amount };
 };
+
+export const currentUserAddAccount = (account) => {
+  return { type: CURRENT_USER_ACTIONS.CURRENT_USER_ADD_ACCOUNT, account };
+};
+
+export const currentUserDeleteAccount = (accountId) => {
+  return { type: CURRENT_USER_ACTIONS.CURRENT_USER_DELETE_ACCOUNT, accountId };
+};

@@ -39,7 +39,6 @@ class PollData extends React.Component {
   };
 
   render() {
-    console.log(this.props);
     return (
       <Container style={{ textAlign: "center" }}>
         <Typography variant="h2">{this.props.title}</Typography>

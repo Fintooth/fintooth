@@ -3,17 +3,11 @@ import { connect } from "react-redux";
 import TextField from "@material-ui/core/TextField";
 import Container from "@material-ui/core/Container";
 import Button from "@material-ui/core/Button";
-import axios from "axios";
 import { makeStyles } from "@material-ui/core/styles";
 import Avatar from "@material-ui/core/Avatar";
-import blackTooth from "../images/blackTooth.png";
 import { useHistory } from "react-router-dom";
 
-import {
-  SAGA_USER_ACTIONS,
-  URL,
-  CURRENT_USER_ACTIONS,
-} from "../redux/constants";
+import { SAGA_USER_ACTIONS } from "../redux/constants";
 
 const useStyles = makeStyles((theme) => ({
   paper: {

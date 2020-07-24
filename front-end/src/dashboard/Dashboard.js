@@ -1,8 +1,7 @@
 import React from "react";
-import { Switch, Route, Link } from "react-router-dom";
-import { useHistory } from "react-router-dom";
+import { Switch, Route, Link, useLocation, useHistory } from "react-router-dom";
 import { connect } from "react-redux";
-import { SAGA_ACTIVITY_ACTIONS } from "../redux/constants";
+import { SAGA_ACTIVITY_ACTIONS, SAGA_USER_ACTIONS } from "../redux/constants";
 import Progress from "../common/progress";
 import Toolbar from "../common/toolbar";
 import clsx from "clsx";
@@ -18,6 +17,7 @@ import Account from "./Account";
 
 import Activities from "./Activities";
 import { Button } from "@material-ui/core";
+import AddAccountPage from "./AddAccountPage";
 
 function Copyright() {
   return (
@@ -119,6 +119,7 @@ function Dashboard(props) {
   const classes = useStyles();
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
   let history = useHistory();
+  const pathname = useLocation().pathname.split("/");
 
   const localCurrentUserString = window.localStorage.getItem("currentUser");
   if (!localCurrentUserString) {
@@ -127,12 +128,12 @@ function Dashboard(props) {
 
   const {
     activities,
-    addActivity,
     editActivity,
     getActivities,
     deleteActivity,
     request,
     currentUser,
+    deleteAccount,
   } = props;
 
   const [activitiesToShow, setActivitiesToShow] = React.useState([]);
@@ -144,7 +145,12 @@ function Dashboard(props) {
 
   React.useEffect(() => {
     let mounted = true;
-    if (mounted && currentUser.token && currentUser.user.id) {
+    if (
+      mounted &&
+      currentUser.token &&
+      currentUser.user &&
+      currentUser.user.id
+    ) {
       getActivities(currentUser.user.id);
     }
     return () => {
@@ -177,13 +183,29 @@ function Dashboard(props) {
                           accountToView={accountToView}
                           setAccountToView={setAccountToView}
                         />
+                        {pathname.includes("account-editor") && (
+                          <Button
+                            color="secondary"
+                            onClick={() =>
+                              deleteAccount(currentUser.user.id, account._id)
+                            }
+                          >
+                            Delete
+                          </Button>
+                        )}
                       </Paper>
                     </Grid>
                   ))}
-
-                <Grid item xs={3} md={3} lg={2}>
-                  <Button variant="outlined">Add account</Button>
-                </Grid>
+                {!pathname.includes("account-editor") && (
+                  <Grid item xs={3} md={3} lg={2}>
+                    <Button
+                      variant="outlined"
+                      onClick={() => history.push("/dashboard/account-editor")}
+                    >
+                      Add or delete account
+                    </Button>
+                  </Grid>
+                )}
 
                 <Switch>
                   <Route path="/dashboard/charts">
@@ -206,6 +228,13 @@ function Dashboard(props) {
                           editActivity={editActivity}
                           deleteActivity={deleteActivity}
                         />
+                      </Paper>
+                    </Grid>
+                  </Route>
+                  <Route path="/dashboard/account-editor">
+                    <Grid item xs={12}>
+                      <Paper className={classes.paper}>
+                        <AddAccountPage />
                       </Paper>
                     </Grid>
                   </Route>
@@ -244,6 +273,12 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch({ type: SAGA_ACTIVITY_ACTIONS.EDIT_ACTIVITY_ASYNC, activity }),
   deleteActivity: (activityId) =>
     dispatch({ type: SAGA_ACTIVITY_ACTIONS.DELETE_ACTIVITY_ASYNC, activityId }),
+  deleteAccount: (userId, accountId) =>
+    dispatch({
+      type: SAGA_USER_ACTIONS.DELETE_ACCOUNT_ASYNC,
+      userId,
+      accountId,
+    }),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Dashboard);

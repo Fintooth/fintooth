@@ -36,10 +36,10 @@ export default function Accounts({
     <React.Fragment>
       <Title>{account.name}</Title>
       <Typography component="p" variant="h4">
-        {account.amount.toFixed(2)}
+        {parseFloat(account.amount).toFixed(2)}
       </Typography>
       <Typography color="textSecondary" className={classes.depositContext}>
-        {account.type} {account.bankAccType}
+        {account.type} {account.type === "bank" && account.bankAccType}
       </Typography>
       <div>
         <Link

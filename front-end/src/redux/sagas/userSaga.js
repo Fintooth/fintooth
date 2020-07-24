@@ -23,8 +23,13 @@ const postUser = (user) =>
   axios.post(`${URL}/users/signup`, user, {
     headers: { Authorization: `Bearer ${token}` },
   });
-const addAccount = (user) =>
-  axios.post(`${URL}/users/${user.id}/accounts`, user, {
+const addAccount = (userId, account) =>
+  axios.post(`${URL}/users/${userId}/accounts`, account, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+const deleteAccount = (userId, accountId) =>
+  axios.delete(`${URL}/users/${userId}/accounts/${accountId}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
 const updateUser = (user) =>
@@ -33,10 +38,6 @@ const updateUser = (user) =>
   });
 const deleteUser = (userId) =>
   axios.delete(`${URL}/users/${userId}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-const deleteAccount = (accountId) =>
-  axios.delete(`${URL}/users/delete-account/${accountId}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
 
@@ -100,17 +101,6 @@ function* modifyUserSaga(action) {
   }
 }
 
-function* addAccountSaga(action) {
-  try {
-    yield put(requestActions.startRequest());
-    const response = yield addAccount(action.user);
-    yield put(userActions.addAccount(action.user));
-    yield put(requestActions.successRequest(response.data));
-  } catch (e) {
-    yield put(requestActions.errorRequest(e.message));
-  }
-}
-
 function* changePasswordSaga(action) {
   try {
     yield put(requestActions.startRequest());
@@ -122,11 +112,22 @@ function* changePasswordSaga(action) {
   }
 }
 
+function* addAccountSaga(action) {
+  try {
+    yield put(requestActions.startRequest());
+    const response = yield addAccount(action.userId, action.account);
+    yield put(userIdActions.currentUserAddAccount(response.data.account));
+    yield put(requestActions.successRequest(response.data));
+  } catch (e) {
+    yield put(requestActions.errorRequest(e.message));
+  }
+}
+
 function* deleteAccountSaga(action) {
   try {
     yield put(requestActions.startRequest());
-    const response = yield deleteAccount(action.accountId);
-    yield put(userActions.deleteAccount(action.accountId, action.user));
+    const response = yield deleteAccount(action.userId, action.accountId);
+    yield put(userIdActions.currentUserDeleteAccount(action.accountId));
     yield put(requestActions.successRequest(response.data));
   } catch (e) {
     yield put(requestActions.errorRequest(e.message));

@@ -87,6 +87,6 @@ router.delete(
   UsersController.users_delete
 );
 
-router.delete("/delete-account/:accId", UsersController.account_delete);
+router.delete("/:userId/accounts/:accId", UsersController.account_delete);
 
 module.exports = router;

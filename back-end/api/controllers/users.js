@@ -192,8 +192,8 @@ exports.add_account = (req, res, next) => {
     amount = 0,
     currency = "usd",
     bankAccType = "debit",
-    rate = 0,
-    period = 12,
+    bankAccInterestRate = 0,
+    bankAccInterestPeriod = 12,
   } = req.body;
   const id = mongoose.Types.ObjectId();
   User.updateOne(
@@ -208,8 +208,8 @@ exports.add_account = (req, res, next) => {
           currency: currency,
           bankAccType: bankAccType,
           bankAccInterest: {
-            rate: rate,
-            period: period,
+            rate: bankAccInterestRate,
+            period: bankAccInterestPeriod,
           },
         },
       },
@@ -220,6 +220,18 @@ exports.add_account = (req, res, next) => {
       res.status(200).json({
         message: "Account created",
         Location: id,
+        account: {
+          _id: id,
+          name: name,
+          type: type,
+          amount: amount,
+          currency: currency,
+          bankAccType: bankAccType,
+          bankAccInterest: {
+            rate: bankAccInterestRate,
+            period: bankAccInterestPeriod,
+          },
+        },
       });
     })
     .catch((err) => {
@@ -319,13 +331,13 @@ exports.users_delete = (req, res, next) => {
 };
 
 exports.account_delete = (req, res, next) => {
-  const id = req.params.accId;
-  User.update(
-    {},
+  const { accId, userId } = req.params;
+  User.updateOne(
+    { _id: userId },
     {
       $pull: {
         accounts: {
-          _id: id,
+          _id: accId,
         },
       },
     }

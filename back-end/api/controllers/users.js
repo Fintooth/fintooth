@@ -20,6 +20,7 @@ var deleteFolderRecursive = function (path) {
 };
 
 const User = require("../model/user");
+const Group = require("../model/group");
 
 exports.users_get_all = (req, res, next) => {
   User.find()
@@ -55,7 +56,7 @@ exports.users_get_one = (req, res, next) => {
   const id = req.params.userId;
   User.findById(id)
     .select("email nickname admin dateCreated groups accounts _id")
-    //.populate("groups.group", "name")
+    .populate("groups", "name _id")
     .exec()
     .then((doc) => {
       if (doc) {
@@ -242,15 +243,23 @@ exports.add_account = (req, res, next) => {
     });
 };
 
-exports.change_account_amount = (userId, accountId, amount) => {
+exports.change_account_amount = (userId, accountId, amount, groupId = "") => {
   console.log(userId, accountId, amount);
-  return User.updateOne(
-    { _id: userId },
-    { $inc: { "accounts.$[element].amount": amount } },
-    {
-      arrayFilters: [{ "element._id": { $eq: accountId } }],
-    }
-  ).exec();
+  return groupId
+    ? Group.updateOne(
+        { _id: groupId },
+        { $inc: { "accounts.$[element].amount": amount } },
+        {
+          arrayFilters: [{ "element._id": { $eq: accountId } }],
+        }
+      ).exec()
+    : User.updateOne(
+        { _id: userId },
+        { $inc: { "accounts.$[element].amount": amount } },
+        {
+          arrayFilters: [{ "element._id": { $eq: accountId } }],
+        }
+      ).exec();
 };
 
 exports.users_patch = (req, res, next) => {

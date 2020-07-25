@@ -22,6 +22,7 @@ import MinusIcon from "@material-ui/icons/Remove";
 import NeutralIcon from "@material-ui/icons/FiberManualRecordOutlined";
 
 import ActivityToEdit from "./ActivityToEdit";
+import { addToCurrentGroupAccount } from "../redux/actions/currentGroupActions";
 
 const Chip = withStyles({
   root: {
@@ -128,6 +129,8 @@ export default function Activities({
   accounts,
   editActivity,
   deleteActivity,
+  groupId = "",
+  addToCurrentAccount,
 }) {
   const classes = useStyles();
   const activityColor = {
@@ -160,6 +163,7 @@ export default function Activities({
     picture: "",
     date: "",
     amount: "",
+    group: groupId,
   });
 
   function getAccountName(accId) {
@@ -172,8 +176,10 @@ export default function Activities({
   return (
     <div ref={ref} className={classes.root}>
       <ActivityToEdit
+        accounts={accounts}
         activityToEdit={activityToEdit}
         setActivityToEdit={setActivityToEdit}
+        addToCurrentAccount={addToCurrentAccount}
       />
       {activities.map((activity, ind) => (
         <Accordion key={ind + 1}>
@@ -261,15 +267,17 @@ export default function Activities({
           </AccordionDetails>
           <Divider />
           <AccordionActions>
-            <Button
-              size="small"
-              onClick={() => {
-                ref.current.scrollIntoView({ behavior: "smooth" });
-                setActivityToEdit({ ...activityToEdit, ...activity });
-              }}
-            >
-              Change
-            </Button>
+            {!activity.group && (
+              <Button
+                size="small"
+                onClick={() => {
+                  ref.current.scrollIntoView({ behavior: "smooth" });
+                  setActivityToEdit({ ...activityToEdit, ...activity });
+                }}
+              >
+                Change
+              </Button>
+            )}
             <Button
               size="small"
               color="primary"

@@ -11,7 +11,7 @@ import {
 import { connect } from "react-redux";
 import {
   SAGA_ACTIVITY_ACTIONS,
-  SAGA_USER_ACTIONS,
+  CURRENT_GROUP_ACTIONS,
   SAGA_GROUP_ACTIONS,
 } from "../redux/constants";
 import Progress from "../common/progress";
@@ -113,6 +113,7 @@ const useStyles = makeStyles((theme) => ({
   container: {
     paddingTop: theme.spacing(4),
     paddingBottom: theme.spacing(4),
+    minWidth: 160,
   },
   paper: {
     padding: theme.spacing(2),
@@ -145,7 +146,9 @@ function Group(props) {
     addGroupAccount,
     deleteGroupAccount,
     currentGroup,
+    addToCurrentGroupAccount,
     loadCurrentGroup,
+    leaveGroup,
   } = props;
 
   const { groupId } = useParams();
@@ -153,7 +156,13 @@ function Group(props) {
   let { pathname } = useLocation();
 
   React.useEffect(() => {
-    if (groupId && !currentGroup.id && !request.fetching) {
+    if (
+      (groupId && !currentGroup.id && !request.fetching) ||
+      (groupId &&
+        currentGroup.id &&
+        groupId !== currentGroup.id &&
+        !request.fetching)
+    ) {
       loadCurrentGroup(groupId);
     }
   }, [currentGroup, loadCurrentGroup, groupId, request]);
@@ -177,7 +186,10 @@ function Group(props) {
     } else {
       return (
         <div className={classes.root}>
-          <Toolbar title="Dashboard" isAdmin={currentUser.user.admin} />
+          <Toolbar
+            title={currentGroup ? currentGroup.name : "Group"}
+            user={currentUser.user}
+          />
           <main className={classes.content}>
             <div className={classes.appBarSpacer} />
             <Container maxWidth="lg" className={classes.container}>
@@ -187,7 +199,7 @@ function Group(props) {
 
                 {currentGroup.id &&
                   currentGroup.accounts.map((account, ind) => (
-                    <Grid item xs={4} md={4} lg={3} key={"account" + ind}>
+                    <Grid item xs={4} md={4} lg={4} key={"account" + ind}>
                       <Paper className={fixedHeightPaper}>
                         <Account
                           account={account}
@@ -209,33 +221,34 @@ function Group(props) {
                       </Paper>
                     </Grid>
                   ))}
-                {!pathname.includes("account-editor") && (
-                  <Grid item xs={3} md={3} lg={2}>
-                    <Button
-                      variant="outlined"
-                      onClick={() => history.push(url + "/account-editor")}
-                    >
-                      Add or delete account
-                    </Button>
-                  </Grid>
-                )}
+
+                <Grid item xs={3} md={3} lg={2}>
+                  <Button
+                    variant="outlined"
+                    color="secondary"
+                    onClick={() => {
+                      leaveGroup(currentUser.user.id, groupId);
+                      history.push("/dashboard/activity-manager");
+                    }}
+                  >
+                    Leave group
+                  </Button>
+                </Grid>
 
                 <Switch>
                   <Route path={path + "/charts"}>
                     <Grid item xs={12}>
-                      <Link to={url + "/activity-manager"}>
-                        Show activity manager{" "}
-                      </Link>
                       <Charts activitiesToShow={activitiesToShow} />
                     </Grid>
                   </Route>
                   <Route path={path + "/activity-manager"}>
                     <Grid item xs={12}>
-                      <Link to={url + "/charts"}>Show charts</Link>
                       <Paper className={classes.paper}>
                         <Activities
                           activities={activitiesToShow}
                           accounts={currentGroup ? currentGroup.accounts : []}
+                          groupId={groupId}
+                          addToCurrentAccount={addToCurrentGroupAccount}
                         />
                       </Paper>
                     </Grid>
@@ -298,6 +311,18 @@ const mapDispatchToProps = (dispatch) => ({
       type: SAGA_GROUP_ACTIONS.REMOVE_ACCOUNT_ASYNC,
       groupId,
       accountId,
+    }),
+  addToCurrentGroupAccount: (accountId, amount) =>
+    dispatch({
+      type: CURRENT_GROUP_ACTIONS.ADD_TO_CURRENT_GROUP_ACCOUNT,
+      accountId,
+      amount,
+    }),
+  leaveGroup: (userId, groupId) =>
+    dispatch({
+      type: SAGA_GROUP_ACTIONS.REMOVE_USER_ASYNC,
+      userId,
+      groupId,
     }),
 });
 

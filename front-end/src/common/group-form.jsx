@@ -12,21 +12,19 @@ class CreateGroupForm extends React.Component {
     super(props);
     this.state = {
       groupName: "",
-      groupPicUrl: ""
+      groupPicUrl: "",
     };
-
-    console.log(this.props);
   }
 
-  _handleChangeGroupName = e => {
+  _handleChangeGroupName = (e) => {
     this.setState({
-      groupName: e.target.value
+      groupName: e.target.value,
     });
   };
 
-  _handleChangeGroupPic = e => {
+  _handleChangeGroupPic = (e) => {
     this.setState({
-      groupPicUrl: e.target.value
+      groupPicUrl: e.target.value,
     });
   };
 
@@ -34,7 +32,7 @@ class CreateGroupForm extends React.Component {
     const group = {
       name: this.state.groupName,
       avatar: this.state.groupPicUrl,
-      userId: this.props.user.user.id || this.props.userId
+      userId: this.props.user.user.id,
     };
 
     this.props.createGroup(group);
@@ -50,7 +48,7 @@ class CreateGroupForm extends React.Component {
           fullWidth
           margin="normal"
           InputLabelProps={{
-            shrink: true
+            shrink: true,
           }}
           variant="outlined"
           onChange={this._handleChangeGroupName}
@@ -61,7 +59,7 @@ class CreateGroupForm extends React.Component {
           fullWidth
           margin="normal"
           InputLabelProps={{
-            shrink: true
+            shrink: true,
           }}
           variant="outlined"
           onChange={this._handleChangeGroupPic}
@@ -81,13 +79,13 @@ class CreateGroupForm extends React.Component {
   }
 }
 
-const mapStateToProps = state => ({
-  user: state.currentUser
+const mapStateToProps = (state) => ({
+  user: state.currentUser,
 });
 
-const mapDispatchToProps = dispatch => ({
-  createGroup: group =>
-    dispatch({ type: SAGA_GROUP_ACTIONS.ADD_GROUP_ASYNC, group })
+const mapDispatchToProps = (dispatch) => ({
+  createGroup: (group) =>
+    dispatch({ type: SAGA_GROUP_ACTIONS.ADD_GROUP_ASYNC, group }),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(CreateGroupForm);

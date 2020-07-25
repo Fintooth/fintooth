@@ -13,46 +13,43 @@ exports.create_group = (req, res, next) => {
   const avatar = req.body.avatar;
 
   const groupId = mongoose.Types.ObjectId();
-
   const group = new Group({
     _id: groupId,
     name: req.body.name,
-    members: [userId],
+    members: [mongoose.Types.ObjectId(userId)],
     avatar: avatar,
   });
   group
     .save()
     .then((result) =>
-      res.status(201).json({
-        message: "Group created with id" + group._id,
-      })
+      User.updateOne(
+        { _id: userId },
+        {
+          $addToSet: {
+            groups: {
+              _id: groupId,
+            },
+          },
+        }
+      )
+        .exec()
+        .then((result) => {
+          res.status(200).json({
+            message: "Group created and user added to group",
+            Location: "/groups/" + groupId,
+          });
+        })
+        .catch((err) => {
+          res.status(500).json({
+            error: err,
+          });
+        })
     )
     .catch((err) =>
       res.status(500).json({
         error: err,
       })
     );
-  User.update(
-    { _id: userId },
-    {
-      $addToSet: {
-        groups: {
-          _id: groupId,
-        },
-      },
-    }
-  )
-    .exec()
-    .then((result) => {
-      res.status(200).json({
-        message: "Group with id " + id + "added to user with id " + userId,
-      });
-    })
-    .catch((err) => {
-      res.status(500).json({
-        error: err,
-      });
-    });
 };
 
 exports.add_user = (req, res, next) => {
@@ -259,7 +256,7 @@ exports.add_account = (req, res, next) => {
 
 exports.remove_user = (req, res, next) => {
   const id = req.params.groupId;
-  const userId = req.body.userId;
+  const userId = req.params.userId;
   Group.updateOne(
     { _id: id },
     {
@@ -270,29 +267,25 @@ exports.remove_user = (req, res, next) => {
   )
     .exec()
     .then((result) => {
-      res.status(200).json({
-        message: "User with id " + userId + " removed from group with id " + id,
-      });
-    })
-    .catch((err) => {
-      res.status(500).json({
-        error: err,
-      });
-    });
-
-  User.update(
-    { _id: userId },
-    {
-      $pull: {
-        groups: id,
-      },
-    }
-  )
-    .exec()
-    .then((result) => {
-      res.status(200).json({
-        message: "Group with id " + id + " removed from user with id " + userId,
-      });
+      User.update(
+        { _id: userId },
+        {
+          $pull: {
+            groups: id,
+          },
+        }
+      )
+        .exec()
+        .then((result) => {
+          res.status(200).json({
+            message: "The user was removed from the group",
+          });
+        })
+        .catch((err) => {
+          res.status(500).json({
+            error: err,
+          });
+        });
     })
     .catch((err) => {
       res.status(500).json({

@@ -40,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Login = ({ registerUser, setCurrentUser, setToken }) => {
+const Login = ({ registerUser, setCurrentUser, setToken, getCurrentUser }) => {
   const classes = useStyles();
   const [isLoginPage, setIsLoginPage] = useState(true);
 
@@ -84,6 +84,7 @@ const Login = ({ registerUser, setCurrentUser, setToken }) => {
         .then((response) => {
           setToken(response.data.token);
           setCurrentUser(response.data.user);
+          getCurrentUser(response.data.user.id);
           window.localStorage.setItem(
             "currentUser",
             JSON.stringify({
@@ -303,6 +304,8 @@ function mapDispatchToProps(dispatch) {
       dispatch({ type: CURRENT_USER_ACTIONS.SET_CURRENT_USER_TOKEN, token }),
     setCurrentUser: (user) =>
       dispatch({ type: CURRENT_USER_ACTIONS.SET_CURRENT_USER, user }),
+    getCurrentUser: (userId) =>
+      dispatch({ type: SAGA_USER_ACTIONS.GET_CURRENT_USER_ASYNC, userId }),
   };
 }
 

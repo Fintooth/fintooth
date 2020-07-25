@@ -3,6 +3,7 @@ import axios from "axios";
 
 import * as requestActions from "../actions/requestActions";
 import * as groupActions from "../actions/groupActions";
+import * as userIdActions from "../actions/userIdActions";
 import * as currentGroupActions from "../actions/currentGroupActions";
 import { SAGA_GROUP_ACTIONS, URL } from "../constants";
 
@@ -25,12 +26,12 @@ const addUser = (group) =>
   axios.post(`${URL}/groups/${group.id}/add-user`, {
     headers: { Authorization: `Bearer ${token}` },
   });
-const removeUser = (group) =>
-  axios.delete(`${URL}/groups/${group.id}/remove-user`, {
+const removeUser = (userId, groupId) =>
+  axios.delete(`${URL}/groups/${groupId}/users/${userId}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
 const createGroup = (group) => {
-  axios.post(`${URL}/groups/create`, group, {
+  axios.post(`${URL}/groups`, group, {
     headers: { Authorization: `Bearer ${token}` },
   });
 };
@@ -104,8 +105,8 @@ function* addUserSaga(action) {
 function* removeUserSaga(action) {
   try {
     yield put(requestActions.startRequest());
-    const response = yield removeUser(action.group);
-    yield put(groupActions.removeUser(action.userId, action.group));
+    const response = yield removeUser(action.userId, action.groupId);
+    yield put(userIdActions.leaveGroup(action.groupId));
     yield put(requestActions.successRequest(response));
   } catch (e) {
     yield put(requestActions.errorRequest(e.message));

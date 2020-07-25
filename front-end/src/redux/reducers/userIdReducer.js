@@ -1,4 +1,4 @@
-import { CURRENT_USER_ACTIONS } from "../constants";
+import { CURRENT_USER_ACTIONS, CURRENT_GROUP_ACTIONS } from "../constants";
 
 export const userDataReducer = (
   state = { user: { accounts: [] }, token: "" },
@@ -38,6 +38,22 @@ export const userDataReducer = (
           accounts: state.user.accounts.filter(
             (acc) => acc._id !== action.accountId
           ),
+        },
+        token: state.token,
+      };
+    case CURRENT_USER_ACTIONS.LEAVE_GROUP:
+      return {
+        user: {
+          ...state.user,
+          groups: state.user.groups.filter((g) => g._id !== action.groupId),
+        },
+        token: state.token,
+      };
+    case CURRENT_USER_ACTIONS.JOIN_GROUP:
+      return {
+        user: {
+          ...state.user,
+          groups: [...state.user.groups, action.groupId],
         },
         token: state.token,
       };

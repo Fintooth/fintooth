@@ -242,7 +242,6 @@ exports.add_account = (req, res, next) => {
 };
 
 exports.change_account_amount = (userId, accountId, amount) => {
-  console.log(userId, accountId, amount);
   return User.updateOne(
     { _id: userId },
     { $inc: { "accounts.$[element].amount": amount } },

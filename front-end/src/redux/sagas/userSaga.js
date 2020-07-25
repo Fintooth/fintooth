@@ -41,10 +41,11 @@ const deleteUser = (userId) =>
     headers: { Authorization: `Bearer ${token}` },
   });
 
-const changePassword = (user) =>
+const changePassword = (user) => {
   axios.patch(`${URL}/users/change-password/${user.userId}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
+};
 
 function* getCurrentUserSaga(action) {
   try {

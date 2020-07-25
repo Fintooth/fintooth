@@ -9,17 +9,17 @@ import Progress from "../common/progress";
 import GroupsTable from "./groups-table";
 import { SAGA_USER_ACTIONS, SAGA_GROUP_ACTIONS } from "../redux/constants";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   root: {
-    display: "flex",
+    display: "flex"
   },
   errorMessage: {
     marginTop: theme.spacing(20),
-    marginLeft: "35%",
-  },
+    marginLeft: "35%"
+  }
 }));
 
-const AdminView = (props) => {
+const AdminView = props => {
   const classes = useStyles();
   let location = useLocation();
   const page = location.pathname.split("/").slice(-1)[0];
@@ -37,7 +37,6 @@ const AdminView = (props) => {
   }, [page, getUsers, getGroups, currentUser]);
 
   const requestStatus = () => {
-    console.log(request);
     if (request.fetching) {
       return <Progress />;
     } else if (request.error) {
@@ -62,23 +61,23 @@ const AdminView = (props) => {
   );
 };
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   request: state.request,
   users: state.users,
   groups: state.groups,
-  currentUser: state.currentUser,
+  currentUser: state.currentUser
 });
 
-const mapDispatchToProps = (dispatch) => ({
+const mapDispatchToProps = dispatch => ({
   getUsers: () => dispatch({ type: SAGA_USER_ACTIONS.GET_USERS_ASYNC }),
-  addUser: (user) =>
+  addUser: user =>
     dispatch({ type: SAGA_USER_ACTIONS.ADD_USER_ASYNC, user: user }),
-  updateUser: (user) =>
+  updateUser: user =>
     dispatch({ type: SAGA_USER_ACTIONS.MODIFY_USER_ASYNC, user }),
-  deleteUser: (userId) =>
+  deleteUser: userId =>
     dispatch({ type: SAGA_USER_ACTIONS.REMOVE_USER_ASYNC, userId }),
 
-  getGroups: () => dispatch({ type: SAGA_GROUP_ACTIONS.GET_GROUPS_ASYNC }),
+  getGroups: () => dispatch({ type: SAGA_GROUP_ACTIONS.GET_GROUPS_ASYNC })
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(AdminView);

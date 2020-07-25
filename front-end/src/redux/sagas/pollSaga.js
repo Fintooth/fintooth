@@ -51,8 +51,9 @@ function* postPollSaga(action) {
   try {
     yield put(requestActions.startRequest());
     const response = yield postPoll(action.poll);
-    console.log(response);
+    const response2 = yield getPolls();
     yield put(pollActions.addPoll(response.data.poll));
+    yield put(pollActions.getPolls(response2.data.polls));
     yield put(requestActions.successRequest(response.data));
   } catch (e) {
     yield put(requestActions.errorRequest(e.message));

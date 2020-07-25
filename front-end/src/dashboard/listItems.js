@@ -52,7 +52,7 @@ export const MainListItems = () => {
         <>
           <ListItem
             button
-            onClick={() => history.push(url + "/account-editor")}
+            onClick={() => history.push(url + "/polls")}
             selected={pathname.includes("polls")}
           >
             <ListItemIcon>

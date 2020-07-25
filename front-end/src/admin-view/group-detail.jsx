@@ -27,17 +27,26 @@ const useStyles = makeStyles({
 });
 
 const GroupDetail = props => {
-  const [details, setDetails] = React.useState({});
+  const [details, setDetails] = React.useState({
+    id: "",
+    name: "",
+    dateCreated: "",
+    memberes: []
+  });
 
   React.useEffect(() => {
     let mounted = true;
 
     if (mounted) {
-      const token = JSON.parse(localStorage.getItem('currentUser')).token
-      axios.get(URL + `/groups/${props.id}`, {
-        headers: { Authorization: `Bearer ${token}` }}).then(res => {
-        setDetails(res.data);
-      });
+      const token = JSON.parse(localStorage.getItem("currentUser")).token;
+      axios
+        .get(URL + `/groups/${props.id}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        })
+        .then(res => {
+          console.log("res", res);
+          setDetails(res.data);
+        });
     }
 
     return () => {
@@ -46,8 +55,9 @@ const GroupDetail = props => {
   }, []);
 
   const classes = useStyles();
-  let userIndex = 0;
+  let userIndex = 1;
 
+  console.log(details);
   return (
     <Container>
       <Typography className={classes.headerText} variant="h5">
@@ -64,13 +74,13 @@ const GroupDetail = props => {
         <Typography>{details.dateCreated}</Typography>
       </Grid>
 
-      <Typography>Ids of users in the group</Typography>
+      <Typography>Emails of users in the group</Typography>
       <Grid container className={classes.usersGrid}>
         {details.members &&
           details.members.map(user => {
             return (
               <Typography className={classes.userRow} key={userIndex}>
-                {userIndex++}: {user}
+                {userIndex++}: {user.email}
               </Typography>
             );
           })}

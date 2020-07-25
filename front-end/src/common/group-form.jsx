@@ -6,25 +6,26 @@ import Container from "@material-ui/core/Container";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
+import { useHistory } from "react-router-dom";
 
 class CreateGroupForm extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       groupName: "",
-      groupPicUrl: "",
+      groupPicUrl: ""
     };
   }
 
-  _handleChangeGroupName = (e) => {
+  _handleChangeGroupName = e => {
     this.setState({
-      groupName: e.target.value,
+      groupName: e.target.value
     });
   };
 
-  _handleChangeGroupPic = (e) => {
+  _handleChangeGroupPic = e => {
     this.setState({
-      groupPicUrl: e.target.value,
+      groupPicUrl: e.target.value
     });
   };
 
@@ -32,7 +33,7 @@ class CreateGroupForm extends React.Component {
     const group = {
       name: this.state.groupName,
       avatar: this.state.groupPicUrl,
-      userId: this.props.user.user.id,
+      userId: this.props.user.user.id
     };
 
     this.props.createGroup(group);
@@ -48,7 +49,7 @@ class CreateGroupForm extends React.Component {
           fullWidth
           margin="normal"
           InputLabelProps={{
-            shrink: true,
+            shrink: true
           }}
           variant="outlined"
           onChange={this._handleChangeGroupName}
@@ -59,7 +60,7 @@ class CreateGroupForm extends React.Component {
           fullWidth
           margin="normal"
           InputLabelProps={{
-            shrink: true,
+            shrink: true
           }}
           variant="outlined"
           onChange={this._handleChangeGroupPic}
@@ -79,13 +80,13 @@ class CreateGroupForm extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  user: state.currentUser,
+const mapStateToProps = state => ({
+  user: state.currentUser
 });
 
-const mapDispatchToProps = (dispatch) => ({
-  createGroup: (group) =>
-    dispatch({ type: SAGA_GROUP_ACTIONS.ADD_GROUP_ASYNC, group }),
+const mapDispatchToProps = dispatch => ({
+  createGroup: group =>
+    dispatch({ type: SAGA_GROUP_ACTIONS.ADD_GROUP_ASYNC, group })
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(CreateGroupForm);

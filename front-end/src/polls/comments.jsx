@@ -14,13 +14,13 @@ class Comments extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      newComment: "",
+      newComment: ""
     };
   }
 
-  _handleCommentInput = (e) => {
+  _handleCommentInput = e => {
     this.setState({
-      newComment: e.target.value,
+      newComment: e.target.value
     });
   };
 
@@ -28,7 +28,7 @@ class Comments extends React.Component {
     const commentToUpload = {
       comment: this.state.newComment,
       date: Date.now().toString(),
-      authorId: this.props.user.user.id,
+      authorId: this.props.user.user.id
     };
 
     const currentPoll = this.props;
@@ -38,32 +38,32 @@ class Comments extends React.Component {
   };
 
   render() {
-    console.log(this.props.comments);
     return (
       <div style={{ padding: 14 }} className="App">
         <h1>Comments</h1>
         <Paper style={{ padding: "40px 20px" }}>
-          {this.props.comments.map((comment) => {
-            return (
-              <div key={comment.date}>
-                <Grid container wrap="nowrap" spacing={2}>
-                  <Grid item>
-                    <Avatar alt="Remy Sharp" src={imgLink} />
+          {this.props.comments &&
+            this.props.comments.map((comment, ind) => {
+              return (
+                <div key={`${comment.date}` + ind}>
+                  <Grid container wrap="nowrap" spacing={2}>
+                    <Grid item>
+                      <Avatar alt="Remy Sharp" src={imgLink} />
+                    </Grid>
+                    <Grid item xs zeroMinWidth>
+                      <h4 style={{ margin: 0, textAlign: "left" }}>
+                        {comment.author}
+                      </h4>
+                      <p style={{ textAlign: "left" }}>{comment.comment}</p>
+                      <p style={{ textAlign: "left", color: "gray" }}>
+                        posted {comment.date}
+                      </p>
+                    </Grid>
                   </Grid>
-                  <Grid item xs zeroMinWidth>
-                    <h4 style={{ margin: 0, textAlign: "left" }}>
-                      {comment.author}
-                    </h4>
-                    <p style={{ textAlign: "left" }}>{comment.comment}</p>
-                    <p style={{ textAlign: "left", color: "gray" }}>
-                      posted {comment.date}
-                    </p>
-                  </Grid>
-                </Grid>
-                <Divider variant="fullWidth" style={{ margin: "30px 0" }} />
-              </div>
-            );
-          })}
+                  <Divider variant="fullWidth" style={{ margin: "30px 0" }} />
+                </div>
+              );
+            })}
           <TextField
             id="outlined-full-width"
             label="Write a comment"
@@ -71,7 +71,7 @@ class Comments extends React.Component {
             fullWidth
             margin="normal"
             InputLabelProps={{
-              shrink: true,
+              shrink: true
             }}
             variant="outlined"
             onChange={this._handleCommentInput}
@@ -91,13 +91,13 @@ class Comments extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  user: state.currentUser,
+const mapStateToProps = state => ({
+  user: state.currentUser
 });
 
-const mapDispatchToProps = (dispatch) => ({
-  updatePoll: (poll) =>
-    dispatch({ type: SAGA_POLLS_ACTIONS.EDIT_POLL_ASYNC, poll }),
+const mapDispatchToProps = dispatch => ({
+  updatePoll: poll =>
+    dispatch({ type: SAGA_POLLS_ACTIONS.EDIT_POLL_ASYNC, poll })
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Comments);

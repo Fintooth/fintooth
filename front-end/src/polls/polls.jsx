@@ -8,20 +8,25 @@ import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
 
 class PollData extends React.Component {
+  static defaultProps = {
+    votes: []
+  };
+
   constructor(props) {
     super(props);
     this.state = {
-      for: this.props.votes.filter((vote) => vote === "For").length,
-      against: this.props.votes.filter((vote) => vote === "Against").length,
-      voted: false,
+      for: this.props.votes.filter(vote => vote === "For").length,
+      against: this.props.votes.filter(vote => vote === "Against").length,
+      voted: false
     };
   }
 
-  _voteFor = () => {
+  _voteFor = e => {
+    e.preventDefault();
     const voteSubmit = {
       vote: {
         vote: "For",
-        voterId: this.props.currentUser.user.id,
+        voterId: this.props.currentUser.user.id
       },
       poll: {
         comments: this.props.comments,
@@ -30,20 +35,21 @@ class PollData extends React.Component {
         group: this.props.group,
         result: this.props.result,
         title: this.props.title,
-        _id: this.props._id,
-      },
+        _id: this.props._id
+      }
     };
 
     !this.state.voted &&
       this.setState({
         for: this.state.for + 1,
-        voted: true,
+        voted: true
       });
 
     this.props.votePoll(voteSubmit);
+    window.location.reload();
   };
 
-  countVotes = (forOrAgainst) => {
+  countVotes = forOrAgainst => {
     var count = 0;
     for (var i = 0; i < this.props.votes.length; ++i) {
       if (this.props.votes[i] === forOrAgainst) count++;
@@ -55,7 +61,7 @@ class PollData extends React.Component {
     const voteSubmit = {
       vote: {
         vote: "Against",
-        voterId: this.props.currentUser.user.id,
+        voterId: this.props.currentUser.user.id
       },
       poll: {
         comments: this.props.comments,
@@ -64,20 +70,22 @@ class PollData extends React.Component {
         group: this.props.group,
         result: this.props.result,
         title: this.props.title,
-        _id: this.props._id,
-      },
+        _id: this.props._id
+      }
     };
 
     !this.state.voted &&
       this.setState({
         against: this.state.against + 1,
-        voted: true,
+        voted: true
       });
 
     this.props.votePoll(voteSubmit);
+    window.location.reload();
   };
 
   render() {
+    console.log(this.props);
     return (
       <Container style={{ textAlign: "center" }}>
         <Typography variant="h2">{this.props.title}</Typography>
@@ -109,13 +117,13 @@ class PollData extends React.Component {
   }
 }
 
-const mapStateToProps = (store) => ({
-  currentUser: store.currentUser,
+const mapStateToProps = store => ({
+  currentUser: store.currentUser
 });
 
-const mapDispatchToProps = (dispatch) => ({
-  votePoll: (obj) =>
-    dispatch({ type: SAGA_POLLS_ACTIONS.VOTE_POLL_ASYNC, vote: obj }),
+const mapDispatchToProps = dispatch => ({
+  votePoll: obj =>
+    dispatch({ type: SAGA_POLLS_ACTIONS.VOTE_POLL_ASYNC, vote: obj })
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(PollData);

@@ -50,9 +50,6 @@ function App({ setToken, removeUserData, getCurrentUser }) {
         <Route path="/settings">
           <UserSettingsForm />
         </Route>
-        <Route path="/polls">
-          <CreateGroupForm userId="5f034c0eebf38f58181bd243" />
-        </Route>
         <Route path="/create-group">
           <CreateGroupForm />
         </Route>

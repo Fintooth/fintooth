@@ -5,7 +5,9 @@ import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 
-export default class PollForm extends React.Component {
+import { connect } from "react-redux";
+
+class PollForm extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -44,9 +46,9 @@ export default class PollForm extends React.Component {
       },
       () => {
         this.props.postPoll(this.state);
-        setTimeout(() => {
-          window.location.reload();
-        }, 1000);
+        // setTimeout(() => {
+        //   window.location.reload();
+        // }, 1000);
       }
     );
   };
@@ -104,3 +106,9 @@ export default class PollForm extends React.Component {
     );
   }
 }
+
+const mapStateToProps = state => ({
+  groupId: state.currentGroup.id
+});
+
+export default connect(mapStateToProps)(PollForm);

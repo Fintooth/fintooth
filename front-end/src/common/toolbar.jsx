@@ -9,11 +9,10 @@ import List from "@material-ui/core/List";
 import Typography from "@material-ui/core/Typography";
 import Divider from "@material-ui/core/Divider";
 import IconButton from "@material-ui/core/IconButton";
-import Badge from "@material-ui/core/Badge";
 import MenuIcon from "@material-ui/icons/Menu";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import AccountCircle from "@material-ui/icons/AccountCircle";
-import { MainListItems, secondaryListItems } from "../dashboard/listItems";
+import { MainListItems, SecondaryListItems } from "../dashboard/listItems";
 import MenuItem from "@material-ui/core/MenuItem";
 import Menu from "@material-ui/core/Menu";
 
@@ -100,7 +99,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Dashboard(props) {
+export default function Dashboard({ title, user, element = "" }) {
   const history = useHistory();
   const classes = useStyles();
   const [open, setOpen] = React.useState(true);
@@ -148,7 +147,7 @@ export default function Dashboard(props) {
             noWrap
             className={classes.title}
           >
-            {props.title}
+            {title}
           </Typography>
           <IconButton
             aria-label="account of current user"
@@ -177,7 +176,7 @@ export default function Dashboard(props) {
             <MenuItem onClick={() => history.push("/settings")}>
               Settings
             </MenuItem>
-            {props.user && props.user.admin ? (
+            {user && user.admin ? (
               <div>
                 <MenuItem onClick={() => history.push("/admin-view/groups")}>
                   Admin view groups
@@ -199,7 +198,7 @@ export default function Dashboard(props) {
             </MenuItem>
           </Menu>
         </Toolbar>
-        {props.element}
+        {element}
       </AppBar>
       <Drawer
         variant="permanent"
@@ -218,7 +217,7 @@ export default function Dashboard(props) {
           <MainListItems />
         </List>
         <Divider />
-        <List>{secondaryListItems}</List>
+        <List>{user && <SecondaryListItems groups={user.groups} />}</List>
       </Drawer>
     </div>
   );

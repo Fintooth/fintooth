@@ -6,6 +6,7 @@ import Container from "@material-ui/core/Container";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
+import { useHistory } from "react-router-dom";
 
 class CreateGroupForm extends React.Component {
   constructor(props) {
@@ -14,8 +15,6 @@ class CreateGroupForm extends React.Component {
       groupName: "",
       groupPicUrl: ""
     };
-
-    console.log(this.props);
   }
 
   _handleChangeGroupName = e => {
@@ -34,7 +33,7 @@ class CreateGroupForm extends React.Component {
     const group = {
       name: this.state.groupName,
       avatar: this.state.groupPicUrl,
-      userId: this.props.user.user.id || this.props.userId
+      userId: this.props.user.user.id
     };
 
     this.props.createGroup(group);

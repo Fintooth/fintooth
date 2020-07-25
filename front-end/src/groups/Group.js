@@ -6,13 +6,13 @@ import {
   useParams,
   useRouteMatch,
   useHistory,
-  useLocation,
+  useLocation
 } from "react-router-dom";
 import { connect } from "react-redux";
 import {
   SAGA_ACTIVITY_ACTIONS,
-  SAGA_USER_ACTIONS,
-  SAGA_GROUP_ACTIONS,
+  CURRENT_GROUP_ACTIONS,
+  SAGA_GROUP_ACTIONS
 } from "../redux/constants";
 import Progress from "../common/progress";
 import Toolbar from "../common/toolbar";
@@ -28,8 +28,13 @@ import Charts from "../dashboard/Charts";
 import Account from "../dashboard/Account";
 
 import Activities from "../dashboard/Activities";
+
+import Members from "./Members";
+import AddMember from "./AddMember";
 import { Button } from "@material-ui/core";
 import AddAccountPage from "../dashboard/AddAccountPage";
+
+import PollsAndComments from "../polls";
 
 function Copyright() {
   return (
@@ -46,43 +51,43 @@ function Copyright() {
 
 const drawerWidth = 240;
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   root: {
-    display: "flex",
+    display: "flex"
   },
   toolbar: {
-    paddingRight: 24, // keep right padding when drawer closed
+    paddingRight: 24 // keep right padding when drawer closed
   },
   toolbarIcon: {
     display: "flex",
     alignItems: "center",
     justifyContent: "flex-end",
     padding: "0 8px",
-    ...theme.mixins.toolbar,
+    ...theme.mixins.toolbar
   },
   appBar: {
     zIndex: theme.zIndex.drawer + 1,
     transition: theme.transitions.create(["width", "margin"], {
       easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
+      duration: theme.transitions.duration.leavingScreen
+    })
   },
   appBarShift: {
     marginLeft: drawerWidth,
     width: `calc(100% - ${drawerWidth}px)`,
     transition: theme.transitions.create(["width", "margin"], {
       easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
+      duration: theme.transitions.duration.enteringScreen
+    })
   },
   menuButton: {
-    marginRight: 36,
+    marginRight: 36
   },
   menuButtonHidden: {
-    display: "none",
+    display: "none"
   },
   title: {
-    flexGrow: 1,
+    flexGrow: 1
   },
   drawerPaper: {
     position: "relative",
@@ -90,41 +95,42 @@ const useStyles = makeStyles((theme) => ({
     width: drawerWidth,
     transition: theme.transitions.create("width", {
       easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
+      duration: theme.transitions.duration.enteringScreen
+    })
   },
   drawerPaperClose: {
     overflowX: "hidden",
     transition: theme.transitions.create("width", {
       easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
+      duration: theme.transitions.duration.leavingScreen
     }),
     width: theme.spacing(7),
     [theme.breakpoints.up("sm")]: {
-      width: theme.spacing(9),
-    },
+      width: theme.spacing(9)
+    }
   },
   appBarSpacer: theme.mixins.toolbar,
   content: {
     flexGrow: 1,
     height: "100vh",
-    overflow: "auto",
+    overflow: "auto"
   },
   container: {
     paddingTop: theme.spacing(4),
     paddingBottom: theme.spacing(4),
+    minWidth: 160
   },
   paper: {
     padding: theme.spacing(2),
     display: "flex",
     overflow: "auto",
     flexDirection: "column",
-    minHeight: "240",
+    minHeight: "240"
   },
   fixedHeight: {
     height: 290,
-    paddingBottom: 30,
-  },
+    paddingBottom: 30
+  }
 }));
 
 function Group(props) {
@@ -145,7 +151,10 @@ function Group(props) {
     addGroupAccount,
     deleteGroupAccount,
     currentGroup,
+    addToCurrentGroupAccount,
     loadCurrentGroup,
+    leaveGroup,
+    addUserToGroup,
   } = props;
 
   const { groupId } = useParams();
@@ -153,7 +162,13 @@ function Group(props) {
   let { pathname } = useLocation();
 
   React.useEffect(() => {
-    if (groupId && !currentGroup.id && !request.fetching) {
+    if (
+      (groupId && !currentGroup.id && !request.fetching) ||
+      (groupId &&
+        currentGroup.id &&
+        groupId !== currentGroup.id &&
+        !request.fetching)
+    ) {
       loadCurrentGroup(groupId);
     }
   }, [currentGroup, loadCurrentGroup, groupId, request]);
@@ -177,7 +192,10 @@ function Group(props) {
     } else {
       return (
         <div className={classes.root}>
-          <Toolbar title="Dashboard" isAdmin={currentUser.user.admin} />
+          <Toolbar
+            title={currentGroup ? currentGroup.name : "Group"}
+            user={currentUser.user}
+          />
           <main className={classes.content}>
             <div className={classes.appBarSpacer} />
             <Container maxWidth="lg" className={classes.container}>
@@ -187,7 +205,7 @@ function Group(props) {
 
                 {currentGroup.id &&
                   currentGroup.accounts.map((account, ind) => (
-                    <Grid item xs={4} md={4} lg={3} key={"account" + ind}>
+                    <Grid item xs={4} md={4} lg={4} key={"account" + ind}>
                       <Paper className={fixedHeightPaper}>
                         <Account
                           account={account}
@@ -209,33 +227,54 @@ function Group(props) {
                       </Paper>
                     </Grid>
                   ))}
-                {!pathname.includes("account-editor") && (
-                  <Grid item xs={3} md={3} lg={2}>
-                    <Button
-                      variant="outlined"
-                      onClick={() => history.push(url + "/account-editor")}
-                    >
-                      Add or delete account
-                    </Button>
-                  </Grid>
-                )}
+
+                <Grid item xs={3} md={3} lg={2}>
+                  <Button
+                    variant="outlined"
+                    color="secondary"
+                    onClick={() => {
+                      leaveGroup(currentUser.user.id, groupId);
+                      history.push("/dashboard/activity-manager");
+                    }}
+                  >
+                    Leave group
+                  </Button>
+                </Grid>
 
                 <Switch>
                   <Route path={path + "/charts"}>
                     <Grid item xs={12}>
-                      <Link to={url + "/activity-manager"}>
-                        Show activity manager{" "}
-                      </Link>
                       <Charts activitiesToShow={activitiesToShow} />
+                    </Grid>
+                  </Route>
+                  <Route path={path + "/members"}>
+                    <Grid item xs={12}>
+                      <Paper className={classes.paper}>
+                        <Members
+                          url={url}
+                          members={currentGroup ? currentGroup.members : []}
+                        />
+                      </Paper>
+                    </Grid>
+                  </Route>
+                  <Route path={path + "/add-member"}>
+                    <Grid item xs={12}>
+                      <Paper className={classes.paper}>
+                        <AddMember
+                          groupId={groupId}
+                          addUserToGroup={addUserToGroup}
+                        />
+                      </Paper>
                     </Grid>
                   </Route>
                   <Route path={path + "/activity-manager"}>
                     <Grid item xs={12}>
-                      <Link to={url + "/charts"}>Show charts</Link>
                       <Paper className={classes.paper}>
                         <Activities
                           activities={activitiesToShow}
                           accounts={currentGroup ? currentGroup.accounts : []}
+                          groupId={groupId}
+                          addToCurrentAccount={addToCurrentGroupAccount}
                         />
                       </Paper>
                     </Grid>
@@ -249,6 +288,9 @@ function Group(props) {
                         />
                       </Paper>
                     </Grid>
+                  </Route>
+                  <Route path={path + "/polls"}>
+                    <PollsAndComments />
                   </Route>
                 </Switch>
               </Grid>
@@ -264,40 +306,58 @@ function Group(props) {
   return <div className={classes.root}>{requestStatus()}</div>;
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   return {
     activities: state.activities,
     request: state.request,
     groups: state.groups,
     currentUser: state.currentUser,
-    currentGroup: state.currentGroup,
+    currentGroup: state.currentGroup
   };
 };
 
-const mapDispatchToProps = (dispatch) => ({
-  loadCurrentGroup: (groupId) =>
+const mapDispatchToProps = dispatch => ({
+  loadCurrentGroup: groupId =>
     dispatch({
       type: SAGA_GROUP_ACTIONS.GET_GROUP_ASYNC,
-      groupId,
+      groupId
     }),
-  getActivities: (groupId) =>
+  getActivities: groupId =>
     dispatch({
       type: SAGA_ACTIVITY_ACTIONS.GET_ACTIVITIES_ASYNC,
-      userId: groupId,
+      userId: groupId
     }),
-  addActivity: (activity) =>
+  addActivity: activity =>
     dispatch({ type: SAGA_ACTIVITY_ACTIONS.ADD_ACTIVITY_ASYNC, activity }),
   addGroupAccount: (groupId, account) =>
     dispatch({
       type: SAGA_GROUP_ACTIONS.ADD_ACCOUNT_ASYNC,
       groupId,
-      account,
+      account
     }),
   deleteGroupAccount: (groupId, accountId) =>
     dispatch({
       type: SAGA_GROUP_ACTIONS.REMOVE_ACCOUNT_ASYNC,
       groupId,
+      accountId
+    }),
+  addToCurrentGroupAccount: (accountId, amount) =>
+    dispatch({
+      type: CURRENT_GROUP_ACTIONS.ADD_TO_CURRENT_GROUP_ACCOUNT,
       accountId,
+      amount
+    }),
+  leaveGroup: (userId, groupId) =>
+    dispatch({
+      type: SAGA_GROUP_ACTIONS.REMOVE_USER_ASYNC,
+      userId,
+      groupId,
+    }),
+  addUserToGroup: (userEmail, groupId) =>
+    dispatch({
+      type: SAGA_GROUP_ACTIONS.ADD_USER_BY_EMAIL_ASYNC,
+      userEmail,
+      groupId,
     }),
 });
 

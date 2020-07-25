@@ -1,7 +1,6 @@
 import { GROUP_ACTIONS } from "../constants";
 
 const groupReducer = (state = [], action) => {
-  console.log(state, action);
   switch (action.type) {
     case GROUP_ACTIONS.ADD_GROUP:
       return [...action.group];

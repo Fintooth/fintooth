@@ -13,19 +13,19 @@ exports.poll_create = (req, res, next) => {
     creator,
     group: groupId,
     created: Date.now(),
-    expires,
+    expires
   });
 
   poll
     .save()
-    .then((result) => {
+    .then(result => {
       res.status(201).json({
-        message: "Created poll with id: " + poll._id,
+        message: "Created poll with id: " + poll._id
       });
     })
-    .catch((err) => {
+    .catch(err => {
       req.status(500).json({
-        error: err,
+        error: err
       });
     });
 };
@@ -34,10 +34,10 @@ exports.poll_get_all = (req, res, next) => {
   Poll.find({ expires: { $gt: new Date() } })
     .select("_id title description group creator comments votes")
     .exec()
-    .then((count) => {
+    .then(count => {
       res.status(201).json({
         count: count.length,
-        polls: count.map((poll) => ({
+        polls: count.map(poll => ({
           _id: poll._id,
           title: poll.title,
           description: poll.description,
@@ -48,14 +48,14 @@ exports.poll_get_all = (req, res, next) => {
           votes: poll.votes,
           request: {
             type: "GET DELETE",
-            url: "http://localhost:3001/polls/" + poll._id,
-          },
-        })),
+            url: "http://localhost:3001/polls/" + poll._id
+          }
+        }))
       });
     })
-    .catch((e) => {
+    .catch(e => {
       res.status(500).json({
-        error: e,
+        error: e
       });
     });
 };
@@ -65,10 +65,10 @@ exports.poll_get_all_for_group = (req, res, next) => {
   Poll.find({ group: groupId, expires: { $gt: new Date() } })
     .select("_id title description group creator")
     .exec()
-    .then((count) => {
+    .then(count => {
       res.status(201).json({
         count: count.length,
-        polls: count.map((poll) => ({
+        polls: count.map(poll => ({
           _id: poll._id,
           title: poll.title,
           description: poll.description,
@@ -77,14 +77,14 @@ exports.poll_get_all_for_group = (req, res, next) => {
           created: poll.created,
           request: {
             type: "GET DELETE",
-            url: "http://localhost:3001/polls/" + poll._id,
-          },
-        })),
+            url: "http://localhost:3001/polls/" + poll._id
+          }
+        }))
       });
     })
-    .catch((e) => {
+    .catch(e => {
       res.status(500).json({
-        error: e,
+        error: e
       });
     });
 };
@@ -97,7 +97,7 @@ exports.poll_get_one = (req, res, next) => {
       "_id title description creator group result votes created expires comments members"
     )
     .exec()
-    .then((doc) => {
+    .then(doc => {
       if (doc) {
         res.status(201).json({
           _id: doc._id,
@@ -110,17 +110,17 @@ exports.poll_get_one = (req, res, next) => {
           created: doc.created,
           expires: doc.expires,
           comments: doc.comments,
-          members: doc.members,
+          members: doc.members
         });
       } else {
         res.status(404).json({
-          message: `No such poll with id: ${pollId} exists`,
+          message: `No such poll with id: ${pollId} exists`
         });
       }
     })
-    .catch((e) => {
+    .catch(e => {
       res.status(500).json({
-        error: e,
+        error: e
       });
     });
 };
@@ -137,20 +137,20 @@ exports.poll_add_comment = (req, res, next) => {
         comments: {
           _id: mongoose.Types.ObjectId(),
           author: authorId,
-          comment: comment,
-        },
-      },
+          comment: comment
+        }
+      }
     }
   )
     .exec()
-    .then((result) => {
+    .then(result => {
       res.status(200).json({
-        message: "Comment added",
+        message: "Comment added"
       });
     })
-    .catch((err) => {
+    .catch(err => {
       res.status(500).json({
-        error: err,
+        error: err
       });
     });
 };
@@ -161,19 +161,19 @@ exports.poll_delete_comment = (req, res, next) => {
     { _id: pollId },
     {
       $pull: {
-        comments: { _id: commentId },
-      },
+        comments: { _id: commentId }
+      }
     }
   )
     .exec()
-    .then((result) => {
+    .then(result => {
       res.status(200).json({
-        message: "Comment deleted",
+        message: "Comment deleted"
       });
     })
-    .catch((err) => {
+    .catch(err => {
       res.status(500).json({
-        error: err,
+        error: err
       });
     });
 };
@@ -182,14 +182,14 @@ exports.poll_delete = (req, res, next) => {
   const pollId = req.params.pollId;
   Poll.deleteOne({ _id: pollId })
     .exec()
-    .then((result) => {
+    .then(result => {
       res.status(201).json({
-        message: "Successully deleted poll with id: " + pollId,
+        message: "Successully deleted poll with id: " + pollId
       });
     })
-    .catch((e) => {
+    .catch(e => {
       res.status(500).json({
-        error: e,
+        error: e
       });
     });
 };
@@ -198,25 +198,26 @@ exports.poll_vote = (req, res, next) => {
   const pollId = req.params.pollId;
   const vote = req.body.vote;
   const voterId = req.body.voterId;
+  //console.log(req.body, req.params);
   Poll.updateOne(
     { _id: pollId, members: { $ne: voterId } },
     {
       $push: {
         votes: vote,
-        members: voterId,
-      },
+        members: voterId
+      }
     },
     { runValidators: true }
   )
     .exec()
-    .then((result) => {
+    .then(result => {
       res.status(200).json({
-        message: "Vote added",
+        message: "Vote added"
       });
     })
-    .catch((err) => {
+    .catch(err => {
       res.status(500).json({
-        error: err,
+        error: err
       });
     });
 };

@@ -27,3 +27,11 @@ export const currentUserAddAccount = (account) => {
 export const currentUserDeleteAccount = (accountId) => {
   return { type: CURRENT_USER_ACTIONS.CURRENT_USER_DELETE_ACCOUNT, accountId };
 };
+
+export const leaveGroup = (groupId) => {
+  return { type: CURRENT_USER_ACTIONS.LEAVE_GROUP, groupId };
+};
+
+export const joinGroup = (groupId) => {
+  return { type: CURRENT_USER_ACTIONS.JOIN_GROUP, groupId };
+};

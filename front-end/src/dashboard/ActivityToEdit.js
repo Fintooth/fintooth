@@ -134,7 +134,8 @@ function ActivityToEdit({
   setActivityToEdit,
   addActivity,
   editActivity,
-  addToCurrentUserAccount,
+  addToCurrentAccount,
+  accounts,
 }) {
   const classes = useStyles();
 
@@ -186,24 +187,12 @@ function ActivityToEdit({
       //=> add new activity
       addActivity(activityToEdit);
       if (activityToEdit.type === "Expenditure") {
-        addToCurrentUserAccount(
-          activityToEdit.accountSrc,
-          -activityToEdit.amount
-        );
+        addToCurrentAccount(activityToEdit.accountSrc, -activityToEdit.amount);
       } else if (activityToEdit.type === "Income") {
-        addToCurrentUserAccount(
-          activityToEdit.accountDest,
-          activityToEdit.amount
-        );
+        addToCurrentAccount(activityToEdit.accountDest, activityToEdit.amount);
       } else if (activityToEdit.type === "Move") {
-        addToCurrentUserAccount(
-          activityToEdit.accountSrc,
-          -activityToEdit.amount
-        );
-        addToCurrentUserAccount(
-          activityToEdit.accountDest,
-          activityToEdit.amount
-        );
+        addToCurrentAccount(activityToEdit.accountSrc, -activityToEdit.amount);
+        addToCurrentAccount(activityToEdit.accountDest, activityToEdit.amount);
       }
     }
     setActivityToEdit({
@@ -296,8 +285,8 @@ function ActivityToEdit({
                   <MenuItem value="">
                     <em>None</em>
                   </MenuItem>
-                  {currentUser.user.accounts &&
-                    currentUser.user.accounts.map((account, ind) => (
+                  {accounts &&
+                    accounts.map((account, ind) => (
                       <MenuItem key={ind} value={account._id}>
                         {account.name}
                       </MenuItem>
@@ -318,8 +307,8 @@ function ActivityToEdit({
                   <MenuItem value="">
                     <em>None</em>
                   </MenuItem>
-                  {currentUser.user.accounts &&
-                    currentUser.user.accounts.map((account, ind) => (
+                  {accounts &&
+                    accounts.map((account, ind) => (
                       <MenuItem key={ind} value={account._id}>
                         {account.name}
                       </MenuItem>
@@ -375,12 +364,6 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = (dispatch) => ({
-  addToCurrentUserAccount: (accountId, amount) =>
-    dispatch({
-      type: CURRENT_USER_ACTIONS.ADD_TO_CURRENT_USER_ACCOUNT,
-      accountId,
-      amount,
-    }),
   addActivity: (activity) =>
     dispatch({ type: SAGA_ACTIVITY_ACTIONS.ADD_ACTIVITY_ASYNC, activity }),
   editActivity: (activity) =>

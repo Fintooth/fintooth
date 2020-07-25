@@ -7,30 +7,45 @@ import PollForm from "./poll-form";
 import Divider from "@material-ui/core/divider";
 
 class PollsAndComments extends React.Component {
+  static defaultProps = {
+    polls: []
+  };
+
   constructor(props) {
     super(props);
+    this.state = {
+      polls: []
+    };
   }
 
   componentDidMount() {
     this.props.getPollsFromDatabase();
   }
 
+  static getDerivedStateFromProps(props, state) {
+    if (props.polls != state.polls) {
+      return {
+        polls: props.polls
+      };
+    }
+    return null;
+  }
+
   render() {
     return (
       <div>
         <PollForm
-          groupId={this.props.groupId}
           creator={this.props.currentUser.user.id}
           postPoll={this.props.postPoll}
         />
         <Divider variant="fullWidth" style={{ margin: "30px 0" }} />
-        {this.props.polls.map((poll) => {
+        {this.state.polls.map((poll, ind) => {
           if (poll.group === this.props.groupId) {
             return (
-              <React.Fragment>
+              <div key={ind}>
                 <PollData {...poll} />
-                <Comments key={poll.id} {...poll} />;
-              </React.Fragment>
+                <Comments {...poll} />;
+              </div>
             );
           }
         })}
@@ -39,16 +54,16 @@ class PollsAndComments extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   polls: state.polls,
   currentUser: state.currentUser,
+  groupId: state.currentGroup.id
 });
 
-const mapDispatchToProps = (dispatch) => ({
+const mapDispatchToProps = dispatch => ({
   getPollsFromDatabase: () =>
     dispatch({ type: SAGA_POLLS_ACTIONS.GET_POLLS_ASYNC }),
-  postPoll: (poll) =>
-    dispatch({ type: SAGA_POLLS_ACTIONS.ADD_POLL_ASYNC, poll }),
+  postPoll: poll => dispatch({ type: SAGA_POLLS_ACTIONS.ADD_POLL_ASYNC, poll })
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(PollsAndComments);

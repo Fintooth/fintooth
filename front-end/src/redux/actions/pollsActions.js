@@ -1,6 +1,6 @@
 import { POLLS_ACTIONS } from "../constants";
 
-export function getPolls(polls) {
+export function getPolls(polls = {}) {
   return { type: POLLS_ACTIONS.GET_POLLS, polls };
 }
 

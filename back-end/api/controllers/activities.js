@@ -12,7 +12,7 @@ exports.activity_get_all_for_user = (req, res, next) => {
   const id = req.params.id;
   Activity.find({ $or: [{ user: id }, { group: id }] })
     .select(
-      "id type accountSrc accountDest description picture date group amount"
+      "id type accountSrc accountDest description picture date user group amount"
     )
     .sort("-date")
     .exec()
@@ -29,6 +29,8 @@ exports.activity_get_all_for_user = (req, res, next) => {
             date: doc.date,
             accountSrc: doc.accountSrc,
             accountDest: doc.accountDest,
+            user: doc.user,
+            group: doc.group,
           };
         }),
       });
@@ -77,22 +79,22 @@ exports.activity_get_one = (req, res, next) => {
 };
 
 exports.add_activity = (req, res, next) => {
-  console.log(req.body);
   const activity = new Activity({
     _id: mongoose.Types.ObjectId(),
     user: req.params.id,
     type: req.body.type,
     description: req.body.description,
     amount: req.body.amount,
-    //group: req.body.group,
     picture: req.body.picture,
   });
+  if (req.body.group) activity.group = req.body.group;
   if ("Expenditure" === activity.type && req.body.accountSrc) {
     activity.accountSrc = req.body.accountSrc;
     UsersController.change_account_amount(
       activity.user,
       activity.accountSrc,
-      -parseFloat(activity.amount)
+      -parseFloat(activity.amount),
+      activity.group
     )
       .then((result) =>
         activity.save(function (err) {
@@ -118,7 +120,8 @@ exports.add_activity = (req, res, next) => {
     UsersController.change_account_amount(
       activity.user,
       activity.accountDest,
-      parseFloat(activity.amount)
+      parseFloat(activity.amount),
+      activity.group
     )
       .then((result) =>
         activity.save(function (err) {
@@ -148,12 +151,14 @@ exports.add_activity = (req, res, next) => {
     UsersController.change_account_amount(
       activity.user,
       activity.accountSrc,
-      -parseFloat(activity.amount)
+      -parseFloat(activity.amount),
+      activity.group
     ).then((result) =>
       UsersController.change_account_amount(
         activity.user,
         activity.accountDest,
-        parseFloat(activity.amount)
+        parseFloat(activity.amount),
+        activity.group
       )
         .then((result) =>
           activity.save(function (err) {
@@ -287,26 +292,30 @@ exports.activities_delete = (req, res, next) => {
           UsersController.change_account_amount(
             doc.user,
             doc.accountSrc,
-            doc.amount
+            doc.amount,
+            doc.group
           );
           break;
         case "Income":
           UsersController.change_account_amount(
             doc.user,
             doc.accountSrc,
-            -doc.amount
+            -doc.amount,
+            doc.group
           );
           break;
         case "Move":
           UsersController.change_account_amount(
             doc.user,
             doc.accountSrc,
-            doc.amount
+            doc.amount,
+            doc.group
           );
           UsersController.change_account_amount(
             doc.user,
             doc.accountDest,
-            -doc.amount
+            -doc.amount,
+            doc.group
           );
           break;
         default:

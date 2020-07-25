@@ -6,11 +6,7 @@ import {
   Redirect,
 } from "react-router-dom";
 import { connect } from "react-redux";
-import {
-  CURRENT_USER_ACTIONS,
-  USER_ACTIONS,
-  SAGA_USER_ACTIONS,
-} from "./redux/constants";
+import { CURRENT_USER_ACTIONS, SAGA_USER_ACTIONS } from "./redux/constants";
 
 import Login from "./login/Login";
 import Dashboard from "./dashboard/Dashboard";
@@ -54,8 +50,8 @@ function App({ setToken, removeUserData, getCurrentUser }) {
         <Route path="/settings">
           <UserSettingsForm />
         </Route>
-        <Route path="/polls">
-          <CreateGroupForm userId="5f034c0eebf38f58181bd243" />
+        <Route path="/create-group">
+          <CreateGroupForm />
         </Route>
         <Route path="/groups/:groupId">
           <Group />

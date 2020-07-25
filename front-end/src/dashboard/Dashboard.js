@@ -1,7 +1,11 @@
 import React from "react";
 import { Switch, Route, Link, useLocation, useHistory } from "react-router-dom";
 import { connect } from "react-redux";
-import { SAGA_ACTIVITY_ACTIONS, SAGA_USER_ACTIONS } from "../redux/constants";
+import {
+  SAGA_ACTIVITY_ACTIONS,
+  SAGA_USER_ACTIONS,
+  CURRENT_USER_ACTIONS,
+} from "../redux/constants";
 import Progress from "../common/progress";
 import Toolbar from "../common/toolbar";
 import clsx from "clsx";
@@ -19,6 +23,8 @@ import Activities from "./Activities";
 import { Button } from "@material-ui/core";
 import AddAccountPage from "./AddAccountPage";
 import { addAccount } from "../redux/actions/groupActions";
+import { addToCurrentGroupAccount } from "../redux/actions/currentGroupActions";
+import { addToCurrentUserAccount } from "../redux/actions/userIdActions";
 
 function Copyright() {
   return (
@@ -102,6 +108,7 @@ const useStyles = makeStyles((theme) => ({
   container: {
     paddingTop: theme.spacing(4),
     paddingBottom: theme.spacing(4),
+    minWidth: 160,
   },
   paper: {
     padding: theme.spacing(2),
@@ -122,11 +129,6 @@ function Dashboard(props) {
   let history = useHistory();
   const pathname = useLocation().pathname.split("/");
 
-  const localCurrentUserString = window.localStorage.getItem("currentUser");
-  if (!localCurrentUserString) {
-    history.replace("/login");
-  }
-
   const {
     activities,
     editActivity,
@@ -136,7 +138,13 @@ function Dashboard(props) {
     currentUser,
     deleteAccount,
     addAccount,
+    addToCurrentUserAccount,
   } = props;
+
+  const localCurrentUserString = window.localStorage.getItem("currentUser");
+  if (!localCurrentUserString && !request.fetching) {
+    history.replace("/login");
+  }
 
   const [activitiesToShow, setActivitiesToShow] = React.useState([]);
   const [accountToView, setAccountToView] = React.useState("");
@@ -176,7 +184,7 @@ function Dashboard(props) {
 
                 {currentUser.user &&
                   currentUser.user.accounts.map((account, ind) => (
-                    <Grid item xs={4} md={4} lg={3} key={"account" + ind}>
+                    <Grid item xs={4} md={4} lg={4} key={"account" + ind}>
                       <Paper className={fixedHeightPaper}>
                         <Account
                           account={account}
@@ -198,29 +206,15 @@ function Dashboard(props) {
                       </Paper>
                     </Grid>
                   ))}
-                {!pathname.includes("account-editor") && (
-                  <Grid item xs={3} md={3} lg={2}>
-                    <Button
-                      variant="outlined"
-                      onClick={() => history.push("/dashboard/account-editor")}
-                    >
-                      Add or delete account
-                    </Button>
-                  </Grid>
-                )}
 
                 <Switch>
                   <Route path="/dashboard/charts">
                     <Grid item xs={12}>
-                      <Link to="/dashboard/activity-manager">
-                        Show activity manager{" "}
-                      </Link>
                       <Charts activitiesToShow={activitiesToShow} />
                     </Grid>
                   </Route>
                   <Route path="/dashboard/activity-manager">
                     <Grid item xs={12}>
-                      <Link to="/dashboard/charts">Show charts</Link>
                       <Paper className={classes.paper}>
                         <Activities
                           activities={activitiesToShow}
@@ -229,6 +223,7 @@ function Dashboard(props) {
                           }
                           editActivity={editActivity}
                           deleteActivity={deleteActivity}
+                          addToCurrentAccount={addToCurrentUserAccount}
                         />
                       </Paper>
                     </Grid>
@@ -286,6 +281,12 @@ const mapDispatchToProps = (dispatch) => ({
     }),
   addAccount: (userId, account) =>
     dispatch({ type: SAGA_USER_ACTIONS.ADD_ACCOUNT_ASYNC, userId, account }),
+  addToCurrentUserAccount: (accountId, amount) =>
+    dispatch({
+      type: CURRENT_USER_ACTIONS.ADD_TO_CURRENT_USER_ACCOUNT,
+      accountId,
+      amount,
+    }),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Dashboard);

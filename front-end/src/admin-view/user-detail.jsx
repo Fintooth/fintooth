@@ -13,9 +13,6 @@ import Paper from "@material-ui/core/Paper";
 import { Container, Typography, Grid } from "@material-ui/core";
 
 const useStyles = makeStyles({
-  table: {
-    minWidth: 650
-  },
   headerText: {
     textAlign: "center"
   },

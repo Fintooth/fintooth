@@ -68,8 +68,8 @@ router.patch(
 
 router.patch(
   "/change-password/:userId",
-  checkToken,
-  checkSelfOrAdmin,
+  // checkToken,
+  // checkSelfOrAdmin,
   UsersController.users_change_password
 );
 

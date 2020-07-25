@@ -25,7 +25,6 @@ const Group = require("../model/group");
 exports.users_get_all = (req, res, next) => {
   User.find()
     .select("nickname groups email dateCreated _id")
-    //.populate("groups.group", "name")
     .exec()
     .then((docs) => {
       res.status(200).json({
@@ -294,6 +293,7 @@ exports.users_patch = (req, res, next) => {
 };
 
 exports.users_change_password = (req, res, next) => {
+  console.log(req.body.password);
   bcrypt.hash(req.body.password, 10, (err, hash) => {
     if (err) {
       res.status(500).json({ error: err });

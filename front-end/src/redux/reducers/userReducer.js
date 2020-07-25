@@ -4,7 +4,7 @@ import { modifyUser } from "../actions/userActions";
 const userReducer = (state = [], action) => {
   switch (action.type) {
     case USER_ACTIONS.ADD_USER:
-      return [...state, ...action.user];
+      return [...action.user];
     case USER_ACTIONS.REMOVE_USER:
       return state.filter((user) => user.id !== action.userId);
     case USER_ACTIONS.MODIFY_USER:

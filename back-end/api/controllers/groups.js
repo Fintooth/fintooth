@@ -7,6 +7,8 @@ const Group = require("../model/group");
 const User = require("../model/user");
 const { domainToASCII } = require("url");
 const { group } = require("console");
+const { users_change_password } = require("./users");
+const user = require("../model/user");
 
 exports.create_group = (req, res, next) => {
   const userId = req.body.userId;
@@ -54,31 +56,9 @@ exports.create_group = (req, res, next) => {
 
 exports.add_user = (req, res, next) => {
   const id = req.params.groupId;
-  const userId = req.body.userId;
-  Group.update(
-    { _id: id },
-    {
-      $addToSet: {
-        members: {
-          _id: userId,
-        },
-      },
-    }
-  )
-    .exec()
-    .then((result) => {
-      res.status(200).json({
-        message: "User with id " + userId + "added to group with id " + id,
-      });
-    })
-    .catch((err) => {
-      res.status(500).json({
-        error: err,
-      });
-    });
-
-  User.update(
-    { _id: userId },
+  const userEmail = req.params.userEmail;
+  User.findOneAndUpdate(
+    { email: userEmail },
     {
       $addToSet: {
         groups: {
@@ -88,10 +68,29 @@ exports.add_user = (req, res, next) => {
     }
   )
     .exec()
-    .then((result) => {
-      res.status(200).json({
-        message: "Group with id " + id + "added to user with id " + userId,
-      });
+    .then((doc) => {
+      Group.update(
+        { _id: id },
+        {
+          $addToSet: {
+            members: {
+              _id: doc._id,
+            },
+          },
+        }
+      )
+        .exec()
+        .then((result) => {
+          res.status(200).json({
+            message:
+              "User with email " + userEmail + "added to group with id " + id,
+          });
+        })
+        .catch((err) => {
+          res.status(500).json({
+            error: err,
+          });
+        });
     })
     .catch((err) => {
       res.status(500).json({

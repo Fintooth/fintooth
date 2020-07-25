@@ -10,7 +10,7 @@ router.get("/", GroupsController.groups_get_all);
 //router.get("/user-groups/:userId", GroupsController.groups_get_all_for_user);
 
 router.post("/", GroupsController.create_group);
-router.post("/:groupId/add-user", GroupsController.add_user);
+router.post("/:groupId/user/:userEmail", GroupsController.add_user);
 router.post("/:groupId/accounts", GroupsController.add_account);
 
 router.delete("/:groupId/users/:userId", GroupsController.remove_user);

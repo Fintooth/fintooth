@@ -28,6 +28,9 @@ import Charts from "../dashboard/Charts";
 import Account from "../dashboard/Account";
 
 import Activities from "../dashboard/Activities";
+
+import Members from "./Members";
+import AddMember from "./AddMember";
 import { Button } from "@material-ui/core";
 import AddAccountPage from "../dashboard/AddAccountPage";
 
@@ -149,6 +152,7 @@ function Group(props) {
     addToCurrentGroupAccount,
     loadCurrentGroup,
     leaveGroup,
+    addUserToGroup,
   } = props;
 
   const { groupId } = useParams();
@@ -241,6 +245,26 @@ function Group(props) {
                       <Charts activitiesToShow={activitiesToShow} />
                     </Grid>
                   </Route>
+                  <Route path={path + "/members"}>
+                    <Grid item xs={12}>
+                      <Paper className={classes.paper}>
+                        <Members
+                          url={url}
+                          members={currentGroup ? currentGroup.members : []}
+                        />
+                      </Paper>
+                    </Grid>
+                  </Route>
+                  <Route path={path + "/add-member"}>
+                    <Grid item xs={12}>
+                      <Paper className={classes.paper}>
+                        <AddMember
+                          groupId={groupId}
+                          addUserToGroup={addUserToGroup}
+                        />
+                      </Paper>
+                    </Grid>
+                  </Route>
                   <Route path={path + "/activity-manager"}>
                     <Grid item xs={12}>
                       <Paper className={classes.paper}>
@@ -322,6 +346,12 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch({
       type: SAGA_GROUP_ACTIONS.REMOVE_USER_ASYNC,
       userId,
+      groupId,
+    }),
+  addUserToGroup: (userEmail, groupId) =>
+    dispatch({
+      type: SAGA_GROUP_ACTIONS.ADD_USER_BY_EMAIL_ASYNC,
+      userEmail,
       groupId,
     }),
 });

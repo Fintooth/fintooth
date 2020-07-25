@@ -26,6 +26,10 @@ const addUser = (group) =>
   axios.post(`${URL}/groups/${group.id}/add-user`, {
     headers: { Authorization: `Bearer ${token}` },
   });
+const addUserByEmail = (userEmail, groupId) =>
+  axios.post(`${URL}/groups/${groupId}/user/${userEmail}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
 const removeUser = (userId, groupId) =>
   axios.delete(`${URL}/groups/${groupId}/users/${userId}`, {
     headers: { Authorization: `Bearer ${token}` },
@@ -102,6 +106,17 @@ function* addUserSaga(action) {
   }
 }
 
+function* addUserByEmailSaga(action) {
+  try {
+    yield put(requestActions.startRequest());
+    const response = yield addUserByEmail(action.userEmail, action.groupId);
+    yield put(groupActions.addUser(action.group));
+    yield put(requestActions.successRequest(response));
+  } catch (e) {
+    yield put(requestActions.errorRequest(e.message));
+  }
+}
+
 function* removeUserSaga(action) {
   try {
     yield put(requestActions.startRequest());
@@ -166,5 +181,6 @@ export function* groupsWatcherSaga() {
     takeLatest(SAGA_GROUP_ACTIONS.REMOVE_USER_ASYNC, removeUserSaga),
     takeLatest(SAGA_GROUP_ACTIONS.REMOVE_ACCOUNT_ASYNC, removeAccountSaga),
     takeLatest(SAGA_GROUP_ACTIONS.ADD_GROUP_ASYNC, createGroupSaga),
+    takeLatest(SAGA_GROUP_ACTIONS.ADD_USER_BY_EMAIL_ASYNC, addUserByEmailSaga),
   ]);
 }
